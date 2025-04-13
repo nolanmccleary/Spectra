@@ -2,6 +2,9 @@
 
 
 #ISSUE: Small step distances result in hash gradient not being computeable
+#ISSUE: Gets a different hash but then undoes itself, likely due to not finding the appropriate gradient
+#We need to take our gradient from the LF DCT vector
+#First thing to troubleshoot is our distribution vectors -> all perturbations are either all posuitive or all negative, this should be fixed!
 
 from PIL import Image
 import imagehash
@@ -14,13 +17,12 @@ import scipy
 NUM_PERTURBATIONS= 200
 IMAGE_STRING = 'sample_images/peppers.png'
 
-DCT_DIM = 16
+DCT_DIM = 8
 DCT_HFF = 4
 DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
 
 SCALE_FACTOR = 2
 STEP_SIZE = 0.01
-
 
 MAX_CYCLES = 100
 
@@ -36,9 +38,24 @@ def process_image(image, image_size):
 def generate_perturbation_vectors(image_arr):
     dim = image_arr.size
     half = NUM_PERTURBATIONS // 2
+    '''
     base = np.random.randn(half, dim) #Create <half> vectors of length <dim>
     base_normalized = (base - np.min(base, axis=1, keepdims=True)) / (np.max(base, axis=1, keepdims=True) - np.min(base, axis=1, keepdims=True))
+    
+    for vector in base_normalized:
+        for value in vactor:
+            print(vector)
+
     perturbations = np.vstack([base_normalized, -base_normalized])
+    return perturbations
+
+    '''
+    base = np.random.randn(half, dim)
+    perturbations = np.vstack([base, -base])
+    
+    for vector in perturbations:
+        print(vector)
+    
     return perturbations
 
 
@@ -80,10 +97,8 @@ def image_pipeline():
 
     initial_hash = generate_phash(converted_image)
 
-    
-
     perturbations = generate_perturbation_vectors(converted_image)
-    current_image = converted_image.copy()
+    current_image = converted_image.copy()  #Numpy by default passes arrays by reference, I don't  even wanna say how much time I spent trying to debug this.
     total_delta = np.zeros(converted_image_size)
 
     for _ in range(MAX_CYCLES):
@@ -93,13 +108,17 @@ def image_pipeline():
         for i in range(NUM_PERTURBATIONS):
             scaled_perturbation = perturbations[i] * SCALE_FACTOR
             hash_delta = perturbation_hash_delta(current_image, scaled_perturbation) #discrete hamming delta lowers gradient sensitiivity
+            #if(hash_delta != 0):
+            #    print(initial_hash)
+            #    print(generate_phash(current_image + scaled_perturbation))
+
             gradient += hash_delta * scaled_perturbation
                 
         delta = np.sign(gradient) * STEP_SIZE
 
         current_image += delta
         total_delta += delta
-        print(total_delta)
+        #print(total_delta)
 
 
 
@@ -108,9 +127,10 @@ def image_pipeline():
     #        print(converted_image[i])
     #        print(current_image[i])
             
-
     print(initial_hash)
-    print(generate_phash(current_image))
+    current_hash = generate_phash(current_image)
+    print(current_hash)
+    print(hamming_distance_hex(initial_hash, current_hash))
 
 image_pipeline()
 
