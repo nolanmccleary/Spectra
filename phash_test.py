@@ -14,7 +14,7 @@ import scipy
 import math
 
 
-
+'''
 def process_image(image, image_size):
     image = image.convert('L').resize((image_size, image_size), Image.Resampling.LANCZOS)
     pixels = np.asarray(image, dtype='float64')
@@ -106,9 +106,6 @@ def phash_attack():
         if ham >= HASH_THRESHOLD:
             break
 
-
-
-
     print(initial_hash)
     current_hash = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
     print(current_hash)
@@ -116,7 +113,138 @@ def phash_attack():
     print(l2_per_pixel(current_image, converted_image, converted_image_size))
     print(nruns)
 
+'''
+
+
+import torch
+from PIL import Image
+import numpy as np
+import scipy.fftpack
+import math
+from torchvision import transforms
+
+
+def l2_per_pixel(img1, img2, imgsize):
+    delta_arr = (img1 - img2) ** 2
+    sum = 0
+    for element in delta_arr:
+        sum += element
+    sum = math.sqrt(sum)
+    return sum / imgsize
+
+
+
+# Use Metal on Mac, CUDA on Linux/Windows, fallback to CPU
+device = torch.device("mps" if torch.backends.mps.is_available()
+                      else "cuda" if torch.cuda.is_available()
+                      else "cpu")
+
+
+def process_image(image, image_size):
+    transform = transforms.Compose([
+        transforms.Grayscale(),
+        transforms.Resize((image_size, image_size)),
+        transforms.ToTensor()
+    ])
+    tensor = transform(image).squeeze(0).to(torch.float32)  # Shape: (H, W)
+    return tensor.flatten().to(device)
+
+
+def generate_perturbation_vectors(dim, half_size):
+    base = torch.randn((half_size, dim), dtype=torch.float32, device=device)
+    perturbations = torch.cat([base, -base], dim=0)
+    return perturbations
+
+
+def generate_phash(tensor, height, width, dct_dim):
+    pixels_2d = tensor.reshape((height, width)).cpu().numpy()
+    dct = scipy.fftpack.dct(scipy.fftpack.dct(pixels_2d, axis=0, norm='ortho'), axis=1, norm='ortho')
+    dct_kernel = dct[1:dct_dim+1, 1:dct_dim+1]
+    avg = np.median(dct_kernel)
+    diff = dct_kernel > avg
+    bitstring = ''.join(['1' if b else '0' for b in diff.flatten()])
+    return hex(int(bitstring, 2))
+
+
+def l2_per_pixel_torch(img1, img2, imgsize):
+    return torch.linalg.norm(img1 - img2) / imgsize
+
+
+def hamming_distance_hex(hex1, hex2):
+    int1 = int(hex1, 16)
+    int2 = int(hex2, 16)
+    xor_result = int1 ^ int2
+    return bin(xor_result).count('1')
+
+
+def phash_attack():
+    NUM_PERTURBATIONS = 3000 
+    IMAGE_PATH = 'sample_images/peppers.png'
+    DCT_DIM = 8
+    DCT_HFF = 4
+    DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
+    SCALE_FACTOR = 6
+    STEP_SIZE = 0.01
+    MAX_CYCLES = 10000
+    HASH_THRESHOLD = 34
+
+    rgb_image = Image.open(IMAGE_PATH)
+    converted_image = process_image(rgb_image, DCT_SIDE_LENGTH)
+    converted_image_size = converted_image.numel()
+
+    initial_hash = generate_phash(converted_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+
+    perturbations = generate_perturbation_vectors(converted_image_size, NUM_PERTURBATIONS // 2)
+    current_image = converted_image.clone()
+    total_delta = torch.zeros_like(current_image)
+
+    for cycle in range(MAX_CYCLES):
+        gradient = torch.zeros_like(current_image)
+
+        # Compute gradient estimate
+        for i in range(NUM_PERTURBATIONS):
+            scaled_pert = perturbations[i] * SCALE_FACTOR
+            h1 = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+            h2 = generate_phash(current_image + scaled_pert, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+            delta_ham = hamming_distance_hex(h1, h2)
+            gradient += delta_ham * scaled_pert
+
+        delta = torch.sign(gradient) * STEP_SIZE
+        current_image += delta
+        total_delta += delta
+
+        ham = hamming_distance_hex(generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM), initial_hash)
+        l2 = l2_per_pixel(current_image, converted_image, converted_image_size)
+
+        print(f"HAM: {ham} L2: {l2:.4f}")
+
+        if ham >= HASH_THRESHOLD:
+            break
+
+    final_hash = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+    print("\nInitial Hash:", initial_hash)
+    print("Final Hash:  ", final_hash)
+    print("Final HAM:   ", hamming_distance_hex(initial_hash, final_hash))
+    print("Final L2 torch:    ", l2_per_pixel_torch(current_image, converted_image, converted_image_size))
+    print("Final L2 nontorch:    ", l2_per_pixel(current_image, converted_image, converted_image_size))
+    print("Cycles Run:  ", cycle + 1)
+
 phash_attack()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#phash_attack()
 
 
 
