@@ -1,10 +1,6 @@
-#TODO: Allow for non-square image input; absorb full design thus far
-#TODO: Plot hash optimization surface
-#TODO: Plot performance metrics WRT NUM_PERTURBATIONS and MAX_CYCLES; 
-
 #TODO: Add seed, inverse delta
-#TODO: CUDA Parallelism -> CUDA DCT -> CUDA PHASH -> CUDA Hashgrad
-#TODO: LPIPS
+#TODO: CUDA Parallelism -> CUDA DCT -> CUDA PHASH -> CUDA Hashgrad ; CUDA Parallelism done, move to DCT.
+#TODO: LPIPS instead of L2
 
 
 from PIL import Image
@@ -134,10 +130,10 @@ def l2_per_pixel(img1, img2, imgsize):
 
 
 
-# Use Metal on Mac, CUDA on Linux/Windows, fallback to CPU
-device = torch.device("mps" if torch.backends.mps.is_available()
-                      else "cuda" if torch.cuda.is_available()
-                      else "cpu")
+
+device = torch.device("cpu")#"mps" if torch.backends.mps.is_available()
+                      #else "cuda" if torch.cuda.is_available()
+                      #else "cpu")
 
 
 def process_image(image, image_size):
@@ -146,20 +142,21 @@ def process_image(image, image_size):
         transforms.Resize((image_size, image_size)),
         transforms.ToTensor()
     ])
-    tensor = transform(image).squeeze(0).to(torch.float32)  # Shape: (H, W)
+    tensor = transform(image).squeeze(0).to(torch.float16)  # Shape: (H, W)
     return tensor.flatten().to(device)
 
 
 def generate_perturbation_vectors(dim, half_size):
-    base = torch.randn((half_size, dim), dtype=torch.float32, device=device)
+    base = torch.randn((half_size, dim), dtype=torch.float16, device=device)
     perturbations = torch.cat([base, -base], dim=0)
     return perturbations
 
 
 def generate_phash(tensor, height, width, dct_dim):
-    pixels_2d = tensor.reshape((height, width)).cpu().numpy()
-    dct = scipy.fftpack.dct(scipy.fftpack.dct(pixels_2d, axis=0, norm='ortho'), axis=1, norm='ortho')
-    dct_kernel = dct[1:dct_dim+1, 1:dct_dim+1]
+    pixels_2d = tensor.reshape((height, width)).cpu().numpy()               #Reshape to cpu for now as the stock dct doesn't have GPU support
+    dct = scipy.fftpack.dct(scipy.fftpack.dct(pixels_2d, axis=0), axis=1)
+    #dct_kernel = dct[1:dct_dim+1, 1:dct_dim+1]
+    dct_kernel = dct[:dct_dim, :dct_dim]
     avg = np.median(dct_kernel)
     diff = dct_kernel > avg
     bitstring = ''.join(['1' if b else '0' for b in diff.flatten()])
@@ -186,7 +183,7 @@ def phash_attack():
     SCALE_FACTOR = 6
     STEP_SIZE = 0.01
     MAX_CYCLES = 10000
-    HASH_THRESHOLD = 34
+    HASH_THRESHOLD = 40
 
     rgb_image = Image.open(IMAGE_PATH)
     converted_image = process_image(rgb_image, DCT_SIDE_LENGTH)
@@ -201,7 +198,7 @@ def phash_attack():
     for cycle in range(MAX_CYCLES):
         gradient = torch.zeros_like(current_image)
 
-        # Compute gradient estimate
+        # Compute gradient estimate; this can be more efficiently parallelized
         for i in range(NUM_PERTURBATIONS):
             scaled_pert = perturbations[i] * SCALE_FACTOR
             h1 = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)

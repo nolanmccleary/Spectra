@@ -8,3 +8,6 @@ There is a growing body of research that perceptual hash algorithms are particul
 The objective of this project is as follows:
 1) Develop a more robust framework to enable developers to more rigorously test their image hashing pipelines against adversarial-style attacks.
 2) Create a widely accepted standard for evaluating the overall robustness of image recognition systems.
+
+
+## USENIX Artifact Evaluated.
