@@ -73,7 +73,7 @@ def generate_phash(tensor, height, width, dct_dim):
 
 def l2_per_pixel_grayscale_1d(img1, img2):
     diff = img1 - img2
-    return torch.linalg.vector_norm(diff, ord=2).mean().item() / diff.numel()
+    return torch.linalg.vector_norm(diff, ord=2).item() / diff.numel()
 
 
 
@@ -132,8 +132,8 @@ def phash_attack():
     DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
     SCALE_FACTOR = 6.0
     STEP_SIZE = 0.01
-    MAX_CYCLES = 10000
-    HASH_THRESHOLD = 5
+    MAX_CYCLES = 100
+    HASH_THRESHOLD = 6
 
     rgb_image = Image.open(INPUT_IMAGE_PATH)
     rgb_tensor = get_rgb_tensor(rgb_image, device)
@@ -145,8 +145,11 @@ def phash_attack():
     perturbations = generate_perturbation_vectors(dim, NUM_PERTURBATIONS // 2)
     current_image = grayscale_tensor.clone()
     total_delta = torch.zeros_like(current_image)
+    optimal_delta = torch.zeros_like(current_image)
+    min_l2 = 1
 
 
+    #TODO: Add seeding
     for _ in range(MAX_CYCLES):
         gradient = torch.zeros_like(current_image)
         ph_curr = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
@@ -162,17 +165,25 @@ def phash_attack():
         total_delta.add_(delta)
         ham = hamming_distance_hex(generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM), initial_hash)
         
-        print(l2_per_pixel_grayscale_1d(grayscale_tensor, current_image))
+        l2 = l2_per_pixel_grayscale_1d(grayscale_tensor, current_image)
+        print(l2, min_l2)
 
         if ham >= HASH_THRESHOLD:
-            break
+            if l2 < min_l2:
+                min_l2 = l2
+                optimal_delta = total_delta.clone()
+                total_delta = torch.zeros_like(current_image)
+                current_image = grayscale_tensor.clone()    #Will always take same path right now because there is no seeding 
+                
+            else:
+                continue
 
 
     grayscale_hash = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
     grayscale_ham = ham #hamming_distance_hex(initial_hash, final_grayscale_hash)
 
 
-    small = total_delta.view(1, 1, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH)
+    small = optimal_delta.view(1, 1, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH)
     C, H, W = rgb_tensor.shape
     upsampled_delta = Func.interpolate(
         small,
