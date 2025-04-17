@@ -54,6 +54,11 @@ def inverse_delta(rgb_tensor, grayscale_delta, eps=1e-6):
 
 
 
+def generate_seed_perturbation(dim, start_scalar):
+    return torch.rand((1, dim), dtype=torch.float32, device=device) * start_scalar
+
+
+
 def generate_perturbation_vectors(dim, half_size):
     base = torch.randn((half_size, dim), dtype=torch.float32, device=device)
     perturbations = torch.cat([base, -base], dim=0)
@@ -89,7 +94,6 @@ def hamming_distance_hex(hash1, hash2):
     int2 = int(hash2, 16)
     xor = int1 ^ int2
     return bin(xor).count('1')
-
 
 
 
@@ -134,8 +138,10 @@ def phash_attack():
     DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
     SCALE_FACTOR = 6.0
     STEP_SIZE = 0.01
-    MAX_CYCLES = 20
-    HASH_THRESHOLD = 6
+    MAX_CYCLES = 200
+    HASH_THRESHOLD = 5
+    SEED_CONST = 0.06
+
 
     rgb_image = Image.open(INPUT_IMAGE_PATH)
     rgb_tensor = get_rgb_tensor(rgb_image, device)
@@ -151,11 +157,23 @@ def phash_attack():
     min_l2 = 1
 
 
+    seed_flag = True
+
+
     #TODO: Add seeding
     for _ in range(MAX_CYCLES):
+        
+        
+        if seed_flag:
+            current_image = grayscale_tensor.clone()
+            current_image.add_(generate_seed_perturbation(dim, SEED_CONST).squeeze(0)).clamp(0.0, 1.0)
+            seed_flag = False
+        
+        
         gradient = torch.zeros_like(current_image)
         ph_curr = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
         
+
         for i in range(NUM_PERTURBATIONS):
             scaled_pert = perturbations[i] * SCALE_FACTOR
             h2 = generate_phash(current_image + scaled_pert, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
@@ -170,22 +188,17 @@ def phash_attack():
         l2 = l2_per_pixel_grayscale_1d(grayscale_tensor, current_image)
         print(l2, min_l2)
 
-        
-        
-        
         if ham >= HASH_THRESHOLD:
             if l2 < min_l2:
                 min_l2 = l2
                 optimal_delta = total_delta.clone()
-                total_delta = torch.zeros_like(current_image)
-                current_image = grayscale_tensor.clone()    #Will always take same path right now because there is no seeding 
+            
+            total_delta = torch.zeros_like(current_image)
+            seed_flag = True 
                 
-            else:
-                continue
 
 
     grayscale_hash = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
-    grayscale_ham = ham #hamming_distance_hex(initial_hash, final_grayscale_hash)
 
 
     small = optimal_delta.view(1, 1, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH)
@@ -198,8 +211,6 @@ def phash_attack():
     ).view(-1)
     image_delta = inverse_delta(rgb_tensor, upsampled_delta)
 
-
-    print("GRAYSCALE_HAM: " + str(grayscale_ham))
     output_tensor, output_hash, output_hamming, output_l2 = minimize_rgb_l2_preserve_hash(rgb_tensor, image_delta, initial_hash, grayscale_hash, DCT_SIDE_LENGTH, DCT_DIM, HASH_THRESHOLD)
 
     # Print results
