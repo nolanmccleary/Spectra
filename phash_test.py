@@ -94,7 +94,7 @@ def hamming_distance_hex(hash1, hash2):
 
 
 def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_hash, dct_side_length, dct_dim, hash_threshold):
-    scale_factors = torch.linspace(1.0, 0.0, steps=50)
+    scale_factors = torch.linspace(0.0, 1.0, steps=50)
     optimal_delta = rgb_delta.clone()
     optimal_hash = grayscale_hash
     optimal_ham = hash_threshold
@@ -110,8 +110,10 @@ def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_
         if ham_dist >= hash_threshold:
             optimal_delta = candidate_delta
             optimal_ham = ham_dist
+            optimal_hash = candidate_hash
+            break
         else:
-            break  
+            continue  
     
     optimal_tensor = (rgb_tensor + optimal_delta).clamp(0.0, 1.0)
     optimal_l2 = l2_per_pixel_rgb(rgb_tensor, optimal_tensor)
@@ -132,7 +134,7 @@ def phash_attack():
     DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
     SCALE_FACTOR = 6.0
     STEP_SIZE = 0.01
-    MAX_CYCLES = 100
+    MAX_CYCLES = 20
     HASH_THRESHOLD = 6
 
     rgb_image = Image.open(INPUT_IMAGE_PATH)
@@ -168,6 +170,9 @@ def phash_attack():
         l2 = l2_per_pixel_grayscale_1d(grayscale_tensor, current_image)
         print(l2, min_l2)
 
+        
+        
+        
         if ham >= HASH_THRESHOLD:
             if l2 < min_l2:
                 min_l2 = l2
