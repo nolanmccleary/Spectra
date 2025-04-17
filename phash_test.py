@@ -60,7 +60,6 @@ def generate_perturbation_vectors(dim, half_size):
     return perturbations
 
 
-
 def generate_phash(tensor, height, width, dct_dim):
     pixels_2d = tensor.reshape((height, width)).cpu().numpy()
     dct = scipy.fftpack.dct(scipy.fftpack.dct(pixels_2d, axis=0), axis=1)
@@ -72,10 +71,16 @@ def generate_phash(tensor, height, width, dct_dim):
 
 
 
-def l2_per_pixel_torch(img1, img2):
+def l2_per_pixel_grayscale_1d(img1, img2):
+    diff = img1 - img2
+    return torch.linalg.vector_norm(diff, ord=2).mean().item() / diff.numel()
+
+
+
+def l2_per_pixel_rgb(img1, img2):
     C, H, W = img1.shape
-    diff = (img1 - img2).view(C, -1)
-    return torch.norm(diff, p=2, dim=0).mean().item()
+    diff = (img1 - img2).view(C, -1) #Flatten each color's matrix to 1-d array
+    return torch.norm(diff, p=2, dim=0).mean().item() #Convert 3xN arrays to 3N array
 
 
 
@@ -84,6 +89,35 @@ def hamming_distance_hex(hash1, hash2):
     int2 = int(hash2, 16)
     xor = int1 ^ int2
     return bin(xor).count('1')
+
+
+
+
+def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_hash, dct_side_length, dct_dim, hash_threshold):
+    scale_factors = torch.linspace(1.0, 0.0, steps=50)
+    optimal_delta = rgb_delta.clone()
+    optimal_hash = grayscale_hash
+    ham_dist = hash_threshold
+
+    for scale in scale_factors:
+        candidate_delta = rgb_delta * scale
+        candidate_output = (rgb_tensor + candidate_delta).clamp(0.0, 1.0)
+        
+        candidate_gray = get_grayscale_tensor(candidate_output, dct_side_length, device)
+        candidate_hash = generate_phash(candidate_gray, dct_side_length, dct_side_length, dct_dim)
+        
+        ham_dist = hamming_distance_hex(candidate_hash, target_hash)
+        if ham_dist >= hash_threshold:
+            optimal_delta = candidate_delta
+        else:
+            break  
+    
+    optimal_tensor = (rgb_tensor + optimal_delta).clamp(0.0, 1.0)
+    optimal_l2 = l2_per_pixel_rgb(rgb_tensor, optimal_tensor)
+
+    return (optimal_tensor, optimal_hash, ham_dist, optimal_l2)
+
+
 
 
 
@@ -98,7 +132,7 @@ def phash_attack():
     SCALE_FACTOR = 6.0
     STEP_SIZE = 0.01
     MAX_CYCLES = 10000
-    HASH_THRESHOLD = 10
+    HASH_THRESHOLD = 5
 
     rgb_image = Image.open(INPUT_IMAGE_PATH)
     rgb_tensor = get_rgb_tensor(rgb_image, device)
@@ -115,21 +149,26 @@ def phash_attack():
     for _ in range(MAX_CYCLES):
         gradient = torch.zeros_like(current_image)
         ph_curr = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+        
         for i in range(NUM_PERTURBATIONS):
             scaled_pert = perturbations[i] * SCALE_FACTOR
             h2 = generate_phash(current_image + scaled_pert, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
             delta_ham = hamming_distance_hex(ph_curr, h2)
             gradient.add_(delta_ham * scaled_pert)
+        
         delta = gradient.sign() * STEP_SIZE
         current_image = (current_image + delta).clamp(0.0, 1.0)
         total_delta.add_(delta)
         ham = hamming_distance_hex(generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM), initial_hash)
+        
+        print(l2_per_pixel_grayscale_1d(grayscale_tensor, current_image))
+
         if ham >= HASH_THRESHOLD:
             break
 
 
-    final_hash = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
-    final_ham = hamming_distance_hex(initial_hash, final_hash)
+    grayscale_hash = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+    grayscale_ham = ham #hamming_distance_hex(initial_hash, final_grayscale_hash)
 
 
     small = total_delta.view(1, 1, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH)
@@ -143,20 +182,24 @@ def phash_attack():
     image_delta = inverse_delta(rgb_tensor, upsampled_delta)
 
 
-    output_tensor = (rgb_tensor + image_delta).clamp(0.0, 1.0)
-    final_l2 = l2_per_pixel_torch(rgb_tensor, output_tensor)
+    print("GRAYSCALE_HAM: " + str(grayscale_ham))
+    output_tensor, output_hash, output_hamming, output_l2 = minimize_rgb_l2_preserve_hash(rgb_tensor, image_delta, initial_hash, grayscale_hash, DCT_SIDE_LENGTH, DCT_DIM, HASH_THRESHOLD)
 
     # Print results
     print("Initial Hash:", initial_hash)
-    print("Final Hash:  ", final_hash)
-    print("Final HAM:   ", final_ham)
-    print("Final L2 torch:", final_l2)
+    print("Final Hash:  ", output_hash)
+    print("Final  Hamming Distance:   ", output_hamming)
+    print("Final RGB L2:", output_l2)
 
     # Save image
     out = output_tensor.detach().cpu()
     output_image = ToPILImage()(out)
     output_image.save(OUTPUT_IMAGE_PATH)
     print(f"Saved attacked image to {OUTPUT_IMAGE_PATH}")
+
+
+
+
 
 
 
