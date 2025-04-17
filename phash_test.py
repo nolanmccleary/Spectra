@@ -125,11 +125,10 @@ def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_
 
 
 
-
 # Main attack function
 def phash_attack():
     NUM_PERTURBATIONS = 3000
-    NUM_CYCLES = 80
+    NUM_CYCLES = 40
     NUM_PERTURBATION_GENERATIONS = 5
     INPUT_IMAGE_PATH = 'sample_images/peppers.png'
     OUTPUT_IMAGE_PATH = 'output/peppers_attacked.png'
@@ -138,7 +137,7 @@ def phash_attack():
     DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
     SCALE_FACTOR = 6.0
     STEP_SIZE = 0.01
-    HASH_THRESHOLD = 3
+    HASH_THRESHOLD = 5
     SEED_CONST = 0.06
 
 
