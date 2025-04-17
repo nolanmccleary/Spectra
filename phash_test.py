@@ -1,5 +1,3 @@
-#TODO: Add seed, inverse delta ; Inverse delta done, still need to test
-#TODO: CUDA Parallelism -> CUDA DCT -> CUDA PHASH -> CUDA Hashgrad ; CUDA Parallelism done, move to DCT.
 #TODO: LPIPS instead of L2
 #TODO: Need to implement some sort of perturbation scaling algo
 
@@ -131,6 +129,8 @@ def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_
 # Main attack function
 def phash_attack():
     NUM_PERTURBATIONS = 3000
+    NUM_CYCLES = 80
+    NUM_PERTURBATION_GENERATIONS = 5
     INPUT_IMAGE_PATH = 'sample_images/peppers.png'
     OUTPUT_IMAGE_PATH = 'output/peppers_attacked.png'
     DCT_DIM = 8
@@ -138,8 +138,7 @@ def phash_attack():
     DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
     SCALE_FACTOR = 6.0
     STEP_SIZE = 0.01
-    MAX_CYCLES = 200
-    HASH_THRESHOLD = 5
+    HASH_THRESHOLD = 3
     SEED_CONST = 0.06
 
 
@@ -150,51 +149,51 @@ def phash_attack():
     initial_hash = generate_phash(grayscale_tensor, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
 
     dim = grayscale_tensor.numel()
-    perturbations = generate_perturbation_vectors(dim, NUM_PERTURBATIONS // 2)
-    current_image = grayscale_tensor.clone()
-    total_delta = torch.zeros_like(current_image)
-    optimal_delta = torch.zeros_like(current_image)
+    optimal_delta = torch.zeros_like(grayscale_tensor)
     min_l2 = 1
 
 
-    seed_flag = True
 
 
-    #TODO: Add seeding
-    for _ in range(MAX_CYCLES):
-        
-        
-        if seed_flag:
-            current_image = grayscale_tensor.clone()
-            current_image.add_(generate_seed_perturbation(dim, SEED_CONST).squeeze(0)).clamp(0.0, 1.0)
-            seed_flag = False
-        
-        
-        gradient = torch.zeros_like(current_image)
-        ph_curr = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
-        
+    for _ in range(NUM_PERTURBATION_GENERATIONS):
+        perturbations = generate_perturbation_vectors(dim, NUM_PERTURBATIONS // 2)
+        current_image = grayscale_tensor.clone()
+        total_delta = torch.zeros_like(current_image)
+        seed_flag = True
 
-        for i in range(NUM_PERTURBATIONS):
-            scaled_pert = perturbations[i] * SCALE_FACTOR
-            h2 = generate_phash(current_image + scaled_pert, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
-            delta_ham = hamming_distance_hex(ph_curr, h2)
-            gradient.add_(delta_ham * scaled_pert)
-        
-        delta = gradient.sign() * STEP_SIZE
-        current_image = (current_image + delta).clamp(0.0, 1.0)
-        total_delta.add_(delta)
-        ham = hamming_distance_hex(generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM), initial_hash)
-        
-        l2 = l2_per_pixel_grayscale_1d(grayscale_tensor, current_image)
-        print(l2, min_l2)
 
-        if ham >= HASH_THRESHOLD:
-            if l2 < min_l2:
-                min_l2 = l2
-                optimal_delta = total_delta.clone()
+        for _ in range(NUM_CYCLES):
+            if seed_flag:
+                current_image = grayscale_tensor.clone()
+                current_image.add_(generate_seed_perturbation(dim, SEED_CONST).squeeze(0)).clamp(0.0, 1.0)
+                seed_flag = False
             
-            total_delta = torch.zeros_like(current_image)
-            seed_flag = True 
+            
+            gradient = torch.zeros_like(current_image)
+            ph_curr = generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+            
+
+            for i in range(NUM_PERTURBATIONS):
+                scaled_pert = perturbations[i] * SCALE_FACTOR
+                h2 = generate_phash(current_image + scaled_pert, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
+                delta_ham = hamming_distance_hex(ph_curr, h2)
+                gradient.add_(delta_ham * scaled_pert)
+            
+            delta = gradient.sign() * STEP_SIZE
+            current_image = (current_image + delta).clamp(0.0, 1.0)
+            total_delta.add_(delta)
+            ham = hamming_distance_hex(generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM), initial_hash)
+            
+            l2 = l2_per_pixel_grayscale_1d(grayscale_tensor, current_image)
+            print(l2, min_l2)
+
+            if ham >= HASH_THRESHOLD:
+                if l2 < min_l2:
+                    min_l2 = l2
+                    optimal_delta = total_delta.clone()
+                
+                total_delta = torch.zeros_like(current_image)
+                seed_flag = True 
                 
 
 
