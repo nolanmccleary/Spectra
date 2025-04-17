@@ -97,7 +97,7 @@ def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_
     scale_factors = torch.linspace(1.0, 0.0, steps=50)
     optimal_delta = rgb_delta.clone()
     optimal_hash = grayscale_hash
-    ham_dist = hash_threshold
+    optimal_ham = hash_threshold
 
     for scale in scale_factors:
         candidate_delta = rgb_delta * scale
@@ -109,13 +109,14 @@ def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_
         ham_dist = hamming_distance_hex(candidate_hash, target_hash)
         if ham_dist >= hash_threshold:
             optimal_delta = candidate_delta
+            optimal_ham = ham_dist
         else:
             break  
     
     optimal_tensor = (rgb_tensor + optimal_delta).clamp(0.0, 1.0)
     optimal_l2 = l2_per_pixel_rgb(rgb_tensor, optimal_tensor)
 
-    return (optimal_tensor, optimal_hash, ham_dist, optimal_l2)
+    return (optimal_tensor, optimal_hash, optimal_ham, optimal_l2)
 
 
 
