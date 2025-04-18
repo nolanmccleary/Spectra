@@ -49,7 +49,7 @@ def generate_seed_perturbation(dim, start_scalar, device):
 
 
 def generate_perturbation_vectors_1d(num_perturbations, half_size, device):
-    base = torch.randn((half_size, num_perturbations), dtype=torch.float32, device=device)
+    base = torch.randn((half_size, num_perturbations), dtype=torch.float32, device=device) #randn implicitly clamps from 0 to 1
     perturbations = torch.cat([base, -base], dim=0)
     return perturbations
 

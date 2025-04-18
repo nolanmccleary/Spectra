@@ -53,10 +53,8 @@ def phash_attack():
                 current_image.add_(utils.generate_seed_perturbation(dim, SEED_CONST, device).squeeze(0)).clamp(0.0, 1.0)
                 seed_flag = False
             
-            
             gradient = torch.zeros_like(current_image)
             ph_curr = utils.utils.generate_phash(current_image, DCT_SIDE_LENGTH, DCT_SIDE_LENGTH, DCT_DIM)
-            
 
             for i in range(NUM_PERTURBATIONS):
                 scaled_pert = perturbations[i] * SCALE_FACTOR
