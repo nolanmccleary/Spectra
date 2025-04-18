@@ -1,1 +1,1 @@
-from .gradient_engine import Grayscale_Engine, RGB_Engine
+from .gradient_engine import make_gradient_engine

@@ -28,11 +28,15 @@ def get_grayscale_tensor(rgb_tensor, grayscale_side_len, grayscale_device):
 
 
 
-def inverse_delta(rgb_tensor, grayscale_delta, eps=1e-6):
+def inverse_delta(rgb_tensor, delta, eps=1e-6):
     C, H, W = rgb_tensor.shape
+
+    if delta.shape == (C, H, W):
+        return delta
+
     rgb_flat = rgb_tensor.view(C, -1)
     rgb_mean = rgb_flat.mean(dim=0, keepdim=True)  # [1, H*W]
-    gd = grayscale_delta.unsqueeze(0)              # [1, H*W]
+    gd = delta.unsqueeze(0)              # [1, H*W]
     # Avoid division by zero
     delta = torch.where(
         gd <= 0,

@@ -24,7 +24,7 @@ def phash_attack():
     DCT_SIDE_LENGTH = DCT_DIM * DCT_HFF
     SCALE_FACTOR = 6.0
     STEP_SIZE = 0.01
-    HASH_THRESHOLD = 5
+    HASH_THRESHOLD = 8
     SEED_CONST = 0.06
 
 
