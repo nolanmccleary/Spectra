@@ -1,7 +1,6 @@
 import torch
 import torch.nn.functional as F
 import numpy as np
-import scipy.fftpack
 
 
 
@@ -57,21 +56,11 @@ def generate_seed_perturbation(dim, start_scalar, device):
 
 
 
-def generate_perturbation_vectors_1d(num_perturbations, half_size, device):
-    base = torch.randn((half_size, num_perturbations), dtype=torch.float32, device=device) #randn implicitly clamps from 0 to 1
+def generate_perturbation_vectors_1d(num_perturbations, size, device):
+    base = torch.randn((num_perturbations // 2, size), dtype=torch.float32, device=device) #randn implicitly clamps from 0 to 1
     perturbations = torch.cat([base, -base], dim=0)
     return perturbations
 
-
-
-def generate_phash(tensor, height, width, dct_dim):
-    pixels_2d = tensor.reshape((height, width)).cpu().numpy()
-    dct = scipy.fftpack.dct(scipy.fftpack.dct(pixels_2d, axis=0), axis=1)
-    dct_kernel = dct[:dct_dim, :dct_dim]
-    avg = np.median(dct_kernel)
-    diff = dct_kernel > avg
-    bitstring = ''.join(['1' if b else '0' for b in diff.flatten()])
-    return hex(int(bitstring, 2))
 
 
 

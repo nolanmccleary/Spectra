@@ -10,27 +10,11 @@ DEFAULT_NUM_PERTURBATIONS = 3000
 
 class Attack_Engine:
 
-    #TODO: Figure out how to handle non-square images
-    def __init__(self, verbose="off"):
-        self.valid_formats = {"grayscale", "rgb"}
-        self.valid_devices = {"cpu", "cuda"}
-        valid_verbosities = {"on", "off"}
-
-        if verbose not in valid_verbosities:
-            raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {valid_verbosities}")
-
-        self.verbose = verbose
+    def __init__(self):
         self.attacks = []
 
-
-    def log(self, msg):
-        if self.verbose == "on":
-            print(msg)
-
-
-    def add_attack(self, image_path, hash: Hash_Wrapper, **kwargs):
-        self.attacks.append(Attack_Object(image_path, hash, **kwargs))
-
+    def add_attack(self, image_path, hash_wrapper: Hash_Wrapper, hamming_threshold, **kwargs):
+        self.attacks.append(Attack_Object(image_path, hash_wrapper, hamming_threshold, **kwargs))
     
     def run_attacks(self):
         for attack in self.attacks:
@@ -40,12 +24,9 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, image_path, hash: Hash_Wrapper, hamming_threshold, attack_cycles=100, device="cpu", verbose="off"):
-        valid_formats = {"grayscale", "rgb"}
+    def __init__(self, image_path, hash_wrapper: Hash_Wrapper, hamming_threshold, attack_cycles=100, device="cpu", verbose="off"):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
-        if format not in valid_formats:
-            raise ValueError(f"Invalid format '{format}'. Expected one of: {valid_formats}")
         if device not in valid_devices:
             raise ValueError(f"Invalid device '{device}'. Expected one of: {valid_devices}")
         if verbose not in valid_verbosities:
@@ -54,10 +35,11 @@ class Attack_Object:
         self.image_path = image_path
         self.device = device
 
-        self.func, self.resize_height, self.resize_width, available_devices = hash.get_info()     
+        self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()     
         if device in available_devices:
             self.func_device = device
         else:
+            self.log(f"Warning, current hash function '{hash_wrapper.get_name()}' does not support the chosen device {device}. Defaulting to CPU for hash function calls; this will add overhead.")
             self.func_device = "cpu"
 
         self.hamming_threshold = hamming_threshold
@@ -103,14 +85,13 @@ class Attack_Object:
             self.tensor = gray
             self.original_hash = self.func(self.tensor.to(self.func_device))  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
-            self.is_staged = True
 
 
     def stage_attack(self):
         self.log("Staging attack...\n")
         self.set_tensor()
         self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS)
-        self.attack_set = True
+        self.is_staged = True
         
 
 
@@ -124,7 +105,7 @@ class Attack_Object:
 
 
         current_delta = torch.zeros_like(self.tensor)
-        optimal_delta = torch.zeros_like(self.tensor)
+        optimal_delta = None
         
         
         #Attack loop
@@ -140,7 +121,7 @@ class Attack_Object:
 
                 if l2_distance < self.output_l2:
                     self.output_l2 = l2_distance
-                    optimal_delta = current_delta
+                    optimal_delta = current_delta.clone()
                 
                 else:   #L2 distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start
                     current_delta.zero_()
@@ -149,7 +130,7 @@ class Attack_Object:
 
 
         #If we broke hamming threshold
-        if optimal_delta != None:
+        if optimal_delta is not None:
             upsampled_delta = optimal_delta
             
             if self.resize_flag:
@@ -188,3 +169,11 @@ class Attack_Object:
             self.attack_success = True
 
         self.is_staged = False
+        
+        return {
+            "success": self.attack_success,
+            "hash": self.output_hash,
+            "hamming": self.output_hamming,
+            "l2": self.output_l2,
+            "tensor": self.output_tensor
+        }

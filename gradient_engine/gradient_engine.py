@@ -3,7 +3,6 @@ from utils import generate_perturbation_vectors_1d
 
 
 
-
 def make_gradient_engine(func, tensor, device, func_device, num_perturbations):
     if tensor.dim() == 1:
         return Grayscale_Engine(func, tensor, device, func_device, num_perturbations)
@@ -12,7 +11,6 @@ def make_gradient_engine(func, tensor, device, func_device, num_perturbations):
         return RGB_Engine(func, tensor, device, num_perturbations)
     else:
         raise ValueError(f"Unsupported tensor shape: {tensor.shape}")
-
 
 
 
@@ -48,14 +46,14 @@ class Gradient_Engine:
 
 class Grayscale_Engine(Gradient_Engine):
 
-    def __init__(self, func, tensor, device, num_perturbations):    #device parameter needs to be the same as the tensor and the func's respective devices
+    def __init__(self, func, tensor, device, func_device, num_perturbations):    #device parameter needs to be the same as the tensor and the func's respective devices
         self.tensor_image_size = tensor.numel()
-        assert self.tensor.dim() == 1, f"Expected 1D tensor, got {self.tensor.dim()}D tensor."
-        super().__init__(func, tensor, device, num_perturbations)
+        assert tensor.dim() == 1, f"Expected 1D tensor, got {self.tensor.dim()}D tensor."
+        super().__init__(func, tensor, device, func_device, num_perturbations)
 
 
     def compute_gradient(self, old_hash, scale_factor):
-        perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size // 2, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
+        perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         batch_pert = perturbations.mul_(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         
         cand_batch = (self.tensor + batch_pert).to(self.func_device) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
@@ -66,7 +64,7 @@ class Grayscale_Engine(Gradient_Engine):
         x = orig_hash ^ new_hashes  #[h_old], [h1, h2, h3] -> [x1, x2, x3]
         hamming_deltas = x.bit_count().to(cand_batch.dtype) #[x1, x2, x3] -> [d1, d2, d3]
 
-        gradient = (hamming_deltas.unsqueeze(1) * batch_pert).sum(dim=0).to(self.device)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
+        gradient = (hamming_deltas.unsqueeze(1) * batch_pert.to(self.device)).sum(dim=0).to(self.device)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
         return gradient
 
 
@@ -81,16 +79,16 @@ class Grayscale_Engine(Gradient_Engine):
 #DUMMY CLASS FOR NOW
 class RGB_Engine(Gradient_Engine):
 
-    def __init__(self, func, tensor, device, num_perturbations):
+    def __init__(self, func, tensor, device, func_device, num_perturbations):
         self.height = tensor.size(1)
         self.width = tensor.size(2)
         self.tensor_image_size = self.height * self.width
         assert self.tensor.dim() == 3, f"Expected 3D tensor, got {self.tensor.dim()}D tensor."
-        super().__init__(func, tensor, device, num_perturbations)
+        super().__init__(func, tensor, device, func_device, num_perturbations)
 
 
     #TODO: Make these RGB-friendly
-    def compute_gradient(self, scale_factor, old_hash):
+    def compute_gradient(self, old_hash, scale_factor):
         print("RGB Gradient compute!")
         perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size // 2, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         batch_pert = perturbations.mul_(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
