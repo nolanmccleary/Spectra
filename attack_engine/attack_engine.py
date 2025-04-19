@@ -1,14 +1,12 @@
-#TODO: Build func wrapper
-
 from gradient_engine import make_gradient_engine
+from hashes import Hash_Wrapper
 from PIL import Image
 from utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize, inverse_delta, l2_per_pixel_rgb
 import torch
-import torch.nn.functional as F
 
 
 DEFAULT_SCALE_FACTOR = 6.0
-
+DEFAULT_NUM_PERTURBATIONS = 3000
 
 class Attack_Engine:
 
@@ -30,8 +28,8 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, func, image_path, **kwargs):
-        self.attacks.append(Attack_Object(func, image_path, **kwargs))
+    def add_attack(self, image_path, hash: Hash_Wrapper, **kwargs):
+        self.attacks.append(Attack_Object(image_path, hash, **kwargs))
 
     
     def run_attacks(self):
@@ -42,7 +40,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, func, image_path, hamming_threshold, attack_cycles=100, resize_height=-1, resize_width=-1, format="grayscale", device="cpu", verbose="off"):
+    def __init__(self, image_path, hash: Hash_Wrapper, hamming_threshold, attack_cycles=100, device="cpu", verbose="off"):
         valid_formats = {"grayscale", "rgb"}
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
@@ -52,15 +50,18 @@ class Attack_Object:
             raise ValueError(f"Invalid device '{device}'. Expected one of: {valid_devices}")
         if verbose not in valid_verbosities:
             raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {valid_verbosities}")
-        
-        self.func = func                #The function provided here must operate on a grayscaled and resized tensor as well as take a device argument
+                
         self.image_path = image_path
+        self.device = device
+
+        self.func, self.resize_height, self.resize_width, available_devices = hash.get_info()     
+        if device in available_devices:
+            self.func_device = device
+        else:
+            self.func_device = "cpu"
+
         self.hamming_threshold = hamming_threshold
         self.attack_cycles = attack_cycles
-        self.resize_height = resize_height
-        self.resize_width = resize_width
-        self.format = format
-        self.device = device
         self.verbose = verbose
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False  #Provide resize parameters if your hash pipeline requires resizing
 
@@ -100,7 +101,7 @@ class Attack_Object:
                 gray = grayscale_resize(gray, self.resize_height, self.resize_width) 
 
             self.tensor = gray
-            self.original_hash = self.func(self.tensor, device=self.device)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
+            self.original_hash = self.func(self.tensor.to(self.func_device))  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
             self.is_staged = True
 
@@ -108,7 +109,7 @@ class Attack_Object:
     def stage_attack(self):
         self.log("Staging attack...\n")
         self.set_tensor()
-        self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device)
+        self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS)
         self.attack_set = True
         
 
@@ -131,7 +132,7 @@ class Attack_Object:
             step = self.gradient_engine.compute_gradient(self.current_hash, DEFAULT_SCALE_FACTOR) * step_size
             current_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
-            self.current_hash = self.func(self.gradient_engine.tensor, device=self.device)
+            self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device))
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
 
             if self.current_hamming >= self.hamming_threshold:
@@ -172,7 +173,7 @@ class Attack_Object:
                 if self.resize_flag:
                     cand_gray = grayscale_resize(cand_gray, self.resize_height, self.resize_width)
 
-                cand_hash = self.func(cand_gray, device=self.device)
+                cand_hash = self.func(cand_gray.to(self.func_device))
                 cand_ham = hamming_distance_hex(cand_hash, self.original_hash)
 
                 if cand_ham >= self.hamming_threshold:
