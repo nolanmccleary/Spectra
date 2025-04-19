@@ -1,5 +1,5 @@
 import torch
-import utils
+from utils import generate_perturbation_vectors_1d
 
 
 
@@ -53,7 +53,7 @@ class Grayscale_Engine(Gradient_Engine):
 
 
     def compute_gradient(self, old_hash, scale_factor=6.0):
-        perturbations = utils.generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size // 2, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
+        perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size // 2, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         batch_pert = perturbations.mul_(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         
         cand_batch = self.tensor + batch_pert #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
@@ -90,7 +90,7 @@ class RGB_Engine(Gradient_Engine):
     #TODO: Make these RGB-friendly
     def compute_gradient(self, scale_factor, old_hash):
         print("RGB Gradient compute!")
-        perturbations = utils.generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size // 2, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
+        perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size // 2, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         batch_pert = perturbations.mul_(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         
         base = self.tensor.view(1, -1)

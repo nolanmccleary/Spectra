@@ -1,6 +1,8 @@
+#TODO: Build func wrapper
+
 from gradient_engine import make_gradient_engine
 from PIL import Image
-from utils import get_rgb_tensor, hamming_distance_hex, inverse_delta, minimize_rgb_l2_preserve_hash
+from utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize, inverse_delta, l2_per_pixel_rgb
 import torch
 import torch.nn.functional as F
 
@@ -38,7 +40,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, func, image_path, attack_cycles=100, resize_height=-1, resize_width=-1, format="grayscale", device="cpu", verbose="off"):
+    def __init__(self, func, image_path, hamming_threshold, attack_cycles=100, resize_height=-1, resize_width=-1, format="grayscale", device="cpu", verbose="off"):
         valid_formats = {"grayscale", "rgb"}
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
@@ -51,27 +53,29 @@ class Attack_Object:
         
         self.func = func                #The function provided here must operate on a grayscaled and resized tensor as well as take a device argument
         self.image_path = image_path
+        self.hamming_threshold = hamming_threshold
         self.attack_cycles = attack_cycles
         self.resize_height = resize_height
         self.resize_width = resize_width
         self.format = format
         self.device = device
         self.verbose = verbose
+        self.resize_flag = True if self.resize_height < 0 and self.resize_width < 0 else False  #Provide resize parameters if your hash pipeline requires resizing
 
         self.rgb_tensor = None
         self.tensor = None
         self.original_hash = None 
         self.current_hash = None
+        self.current_hamming = None
         self.gradient_engine = None 
         self.is_staged = False
-        self.resize_flag = True if (self.resize_height > 0 and self.resize_width > 0) else False
-        self.original_height = None
-        self.original_width = None
+        self.original_height = self.rgb_tensor.size(1)
+        self.original_width = self.rgb_tensor.size(2)
 
         self.output_tensor = None 
         self.output_hash = None 
         self.output_hamming = None 
-        self.output_l2 = None
+        self.output_l2 = 1
 
 
 
@@ -85,25 +89,14 @@ class Attack_Object:
     def set_tensor(self):
         with Image.open(self.image_path) as img:
             self.rgb_tensor = get_rgb_tensor(img, self.device) #[C, H, W]
-            
             self.log("Setting grayscale image tensor")
-
-            gray = self.rgb_tensor.mean(dim=0, keepdim=True)  #[1, H, W]
-            gray = gray.unsqueeze(0)  #[1, 1, H, W]
+            gray = rgb_to_grayscale(self.rgb_tensor)
 
             if self.resize_flag:
-                self.original_height = self.rgb_tensor.size(1)
-                self.original_width = self.rgb_tensor.size(2)
+                gray = grayscale_resize(gray, self.resize_height, self.resize_width) 
 
-                gray = F.interpolate(   #[1, 1, H_r, W_r]   TODO: Package this into a function
-                    gray,
-                    size=(self.resize_height, self.resize_width),
-                    mode='bilinear',
-                    align_corners=False
-                )
-
-            self.tensor = gray.view(-1).to(self.device)      #[H x W] or [H_r x W_r]
-
+            self.tensor = gray
+                
             self.original_hash = self.func(self.tensor, device=self.device)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
     
@@ -118,56 +111,73 @@ class Attack_Object:
 
 
     #For now we'll just use simple attack logic
-    def run_attack(self, hamming_threshold):
+    def run_attack(self, step_size = 0.01):
         if self.is_staged == False:
             self.stage_attack()
 
         self.log("Running attack...\n")
 
-        STEP_SIZE = 0.01
-        min_l2 = 1
-
         optimal_delta = None
         total_delta = torch.zeros_like(self.tensor)
         
+        #Attack loop
         for _ in range(self.attack_cycles):
-            step = self.gradient_engine.compute_gradient(self.current_hash) * STEP_SIZE
+            step = self.gradient_engine.compute_gradient(self.current_hash) * step_size
             total_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
             self.current_hash = self.func(self.gradient_engine.tensor, device=self.device)
-            ham = hamming_distance_hex(self.original_hash, self.current_hash)
+            self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
 
-            if ham >= hamming_threshold:
+            if self.current_hamming >= self.hamming_threshold:
                 l2_distance = self.gradient_engine.l2_per_pixel(self.tensor)
 
-                if l2_distance < min_l2:
-                    min_l2 = l2_distance
+                if l2_distance < self.output_l2:
+                    self.output_l2 = l2_distance
                     optimal_delta = total_delta
-                    total_delta = torch.zeros_like(optimal_delta.clone())
                 
                 else:   #L2 distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start
                     self.gradient_engine.tensor = self.tensor.clone()
+                    total_delta = torch.zeros_like(self.tensor)
 
 
-
+        #If we broke hamming threshold
         if optimal_delta != None:
+            upsampled_delta = optimal_delta
+            
             if self.resize_flag:
-                small_delta = optimal_delta.unsqueeze(0)
-
-                upsampled_delta = F.interpolate(
-                    small_delta,
-                    size=(self.original_height, self.original_width),
-                    mode='bilinear',
-                    align_corners=False
-                ).view(-1)
+                upsampled_delta = grayscale_resize(optimal_delta, self.original_height, self.original_width)
 
             rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
-            self.output_tensor, self.output_hash, self.output_hamming, self.output_l2 = minimize_rgb_l2_preserve_hash(self.rgb_tensor, rgb_delta, )
 
+            #Backwards pass to optimize RGB L2 delta within hamming threshold constraints
+            scale_factors = torch.linspace(0.0, 1.0, steps=50)
             
-                
+            self.output_tensor = (self.rgb_tensor + rgb_delta)
+            self.output_hash = self.current_hash
+            self.output_hamming = self.current_hamming
 
+            for scale in scale_factors:
+                cand_delta  = rgb_delta * scale
+                cand_tensor = (self.rgb_tensor + cand_delta).clamp(0.0, 1.0)
+
+                cand_gray = rgb_to_grayscale(cand_tensor)
+                
+                if self.resize_flag:
+                    cand_gray = grayscale_resize(cand_gray, self.resize_height, self.resize_width)
+
+                cand_hash = self.func(cand_gray, device=self.device)
+                cand_ham = hamming_distance_hex(cand_hash, self.original_hash)
+
+                if cand_ham >= self.hamming_threshold:
+                    self.output_tensor = cand_tensor
+                    self.output_hamming = cand_ham
+                    self.output_hash = cand_hash
+                    break
+                else:
+                    continue
+
+            self.output_l2 = l2_per_pixel_rgb(self.rgb_tensor, self.output_tensor)
 
 
         self.is_staged = False
