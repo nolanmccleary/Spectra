@@ -13,14 +13,14 @@ def get_rgb_tensor(image_object, rgb_device):
 
 
 
-def get_grayscale_tensor(rgb_tensor, grayscale_side_len, grayscale_device):
+def get_grayscale_tensor(rgb_tensor, height, width, grayscale_device):
     C, H, W = rgb_tensor.shape
     # Mean over channels
     gray = rgb_tensor.mean(dim=0, keepdim=True)    # [1, H, W]
     gray = gray.unsqueeze(0)                       # [1, 1, H, W]
     gray_resized = Func.interpolate(
         gray,
-        size=(grayscale_side_len, grayscale_side_len),
+        size=(height, width),
         mode='bilinear',
         align_corners=False
     )
@@ -89,8 +89,8 @@ def hamming_distance_hex(hash1, hash2):
     return bin(xor).count('1')
 
 
-
-def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_hash, dct_side_length, dct_dim, hash_threshold, device):
+'''
+def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_hash, height, width, dct_dim, hash_threshold, device):
     scale_factors = torch.linspace(0.0, 1.0, steps=50)
     optimal_delta = rgb_delta.clone()
     optimal_hash = grayscale_hash
@@ -100,8 +100,37 @@ def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_
         candidate_delta = rgb_delta * scale
         candidate_output = (rgb_tensor + candidate_delta).clamp(0.0, 1.0)
         
-        candidate_gray = get_grayscale_tensor(candidate_output, dct_side_length, device)
-        candidate_hash = generate_phash(candidate_gray, dct_side_length, dct_side_length, dct_dim)
+        candidate_gray = get_grayscale_tensor(candidate_output, height, width, device)
+        candidate_hash = generate_phash(candidate_gray, height, width, dct_dim)
+        
+        ham_dist = hamming_distance_hex(candidate_hash, target_hash)
+        if ham_dist >= hash_threshold:
+            optimal_delta = candidate_delta
+            optimal_ham = ham_dist
+            optimal_hash = candidate_hash
+            break
+        else:
+            continue  
+    
+    optimal_tensor = (rgb_tensor + optimal_delta).clamp(0.0, 1.0)
+    optimal_l2 = l2_per_pixel_rgb(rgb_tensor, optimal_tensor)
+
+    return (optimal_tensor, optimal_hash, optimal_ham, optimal_l2)
+'''
+
+
+def minimize_rgb_l2_preserve_hash(rgb_tensor, rgb_delta, target_hash, grayscale_hash, height, width, dct_dim, hash_threshold, device):
+    scale_factors = torch.linspace(0.0, 1.0, steps=50)
+    optimal_delta = rgb_delta.clone()
+    optimal_hash = grayscale_hash
+    optimal_ham = hash_threshold
+
+    for scale in scale_factors:
+        candidate_delta = rgb_delta * scale
+        candidate_output = (rgb_tensor + candidate_delta).clamp(0.0, 1.0)
+        
+        candidate_gray = get_grayscale_tensor(candidate_output, height, width, device)
+        candidate_hash = generate_phash(candidate_gray, height, width, dct_dim)
         
         ham_dist = hamming_distance_hex(candidate_hash, target_hash)
         if ham_dist >= hash_threshold:

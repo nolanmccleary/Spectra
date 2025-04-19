@@ -1,6 +1,6 @@
 from gradient_engine import make_gradient_engine
 from PIL import Image
-from utils import get_rgb_tensor, hamming_distance_hex, inverse_delta
+from utils import get_rgb_tensor, hamming_distance_hex, inverse_delta, minimize_rgb_l2_preserve_hash
 import torch
 import torch.nn.functional as F
 
@@ -49,7 +49,7 @@ class Attack_Object:
         if verbose not in valid_verbosities:
             raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {valid_verbosities}")
         
-        self.func = func
+        self.func = func                #The function provided here must operate on a grayscaled and resized tensor as well as take a device argument
         self.image_path = image_path
         self.attack_cycles = attack_cycles
         self.resize_height = resize_height
@@ -58,8 +58,8 @@ class Attack_Object:
         self.device = device
         self.verbose = verbose
 
-        self.tensor = None
         self.rgb_tensor = None
+        self.tensor = None
         self.original_hash = None 
         self.current_hash = None
         self.gradient_engine = None 
@@ -86,45 +86,25 @@ class Attack_Object:
         with Image.open(self.image_path) as img:
             self.rgb_tensor = get_rgb_tensor(img, self.device) #[C, H, W]
             
-            if self.format == "grayscale":
-                self.log("Setting grayscale image tensor")
+            self.log("Setting grayscale image tensor")
 
-                gray = self.rgb_tensor.mean(dim=0, keepdim=True)  #[1, H, W]
-                gray = gray.unsqueeze(0)  #[1, 1, H, W]
+            gray = self.rgb_tensor.mean(dim=0, keepdim=True)  #[1, H, W]
+            gray = gray.unsqueeze(0)  #[1, 1, H, W]
 
-                if self.resize_flag:
-                    self.original_height = self.rgb_tensor.size(1)
-                    self.original_width = self.rgb_tensor.size(2)
+            if self.resize_flag:
+                self.original_height = self.rgb_tensor.size(1)
+                self.original_width = self.rgb_tensor.size(2)
 
-                    gray = F.interpolate(   #[1, 1, H_r, W_r]
-                        gray,
-                        size=(self.resize_height, self.resize_width),
-                        mode='bilinear',
-                        align_corners=False
-                    )
+                gray = F.interpolate(   #[1, 1, H_r, W_r]   TODO: Package this into a function
+                    gray,
+                    size=(self.resize_height, self.resize_width),
+                    mode='bilinear',
+                    align_corners=False
+                )
 
-                self.tensor = gray.view(-1).to(self.device)      #[H x W] or [H_r x W_r]
+            self.tensor = gray.view(-1).to(self.device)      #[H x W] or [H_r x W_r]
 
-
-            else:
-                self.log("Setting RGB image tensor")
-
-                if self.resize_flag:
-                    self.original_height = self.rgb_tensor.size(1)
-                    self.original_width = self.rgb_tensor.size(2)
-                    
-                    unsqueezed_rgb_tensor = self.rgb_tensor.unsqueeze(0) #[1, C, H, W]
-
-                    rgb_resized = F.interpolate(
-                        unsqueezed_rgb_tensor,
-                        size=(self.resize_height, self.resize_width),
-                        mode='bilinear',
-                        align_corners=False
-                    )
-                
-                self.tensor = rgb_resized.squeeze(0).to(self.device) #[C, H_r, W_r] or [C, H, W]
-
-            self.original_hash = self.func(self.tensor)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
+            self.original_hash = self.func(self.tensor, device=self.device)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
     
 
@@ -154,7 +134,8 @@ class Attack_Object:
             step = self.gradient_engine.compute_gradient(self.current_hash) * STEP_SIZE
             total_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
-            ham = hamming_distance_hex(self.original_hash, self.func(self.gradient_engine.tensor))
+            self.current_hash = self.func(self.gradient_engine.tensor, device=self.device)
+            ham = hamming_distance_hex(self.original_hash, self.current_hash)
 
             if ham >= hamming_threshold:
                 l2_distance = self.gradient_engine.l2_per_pixel(self.tensor)
@@ -169,8 +150,6 @@ class Attack_Object:
 
 
 
-
-
         if optimal_delta != None:
             if self.resize_flag:
                 small_delta = optimal_delta.unsqueeze(0)
@@ -181,8 +160,10 @@ class Attack_Object:
                     mode='bilinear',
                     align_corners=False
                 ).view(-1)
+
             rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
+            self.output_tensor, self.output_hash, self.output_hamming, self.output_l2 = minimize_rgb_l2_preserve_hash(self.rgb_tensor, rgb_delta, )
 
             
                 

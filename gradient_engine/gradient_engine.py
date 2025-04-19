@@ -76,7 +76,7 @@ class Grayscale_Engine(Gradient_Engine):
 
 
 
-#TODO: Build this out
+#DUMMY CLASS FOR NOW
 class RGB_Engine(Gradient_Engine):
 
     def __init__(self, func, tensor, device, num_perturbations):
