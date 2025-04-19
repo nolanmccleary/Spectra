@@ -8,6 +8,7 @@ def make_gradient_engine(func, tensor, device, num_perturbations=3000):
     if tensor.dim() == 1:
         return Grayscale_Engine(func, tensor, device, num_perturbations)
     elif tensor.dim() == 3:
+        print("Warning! RGB gradient calculation not yet supported")
         return RGB_Engine(func, tensor, device, num_perturbations)
     else:
         raise ValueError(f"Unsupported tensor shape: {tensor.shape}")
@@ -25,7 +26,7 @@ class Gradient_Engine:
         self.gradient = torch.zeros_like(self.tensor)
 
 
-    def compute_gradient(self, scale_factor, old_hash):
+    def compute_gradient(self, old_hash, scale_factor):
         raise NotImplementedError("Subclasses must override gradient compute ops")
 
 
@@ -38,7 +39,7 @@ class Gradient_Engine:
         self.tensor = tensor.clone().to(self.device)
 
 
-    def l2_per_pixel(self, tensor):
+    def l2_delta_from_engine_tensor(self, tensor):
         raise NotImplementedError("Subclasses must override gradient compute ops")
 
 
@@ -52,7 +53,7 @@ class Grayscale_Engine(Gradient_Engine):
         super().__init__(func, tensor, device, num_perturbations)
 
 
-    def compute_gradient(self, old_hash, scale_factor=6.0):
+    def compute_gradient(self, old_hash, scale_factor):
         perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size // 2, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         batch_pert = perturbations.mul_(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         
@@ -68,7 +69,7 @@ class Grayscale_Engine(Gradient_Engine):
         return gradient
 
 
-    def l2_per_pixel(self, tensor):
+    def l2_delta_from_engine_tensor(self, tensor):
         diff = self.tensor - tensor
         return torch.linalg.vector_norm(diff, ord=2).item() / diff.numel()
 
@@ -106,7 +107,7 @@ class RGB_Engine(Gradient_Engine):
         return gradient
 
 
-    def l2_per_pixel(self, tensor):
+    def l2_delta_from_engine_tensor(self, tensor):
         C, H, W = tensor.shape
         diff = (tensor - self.tensor).view(C, -1) #Flatten each color's matrix to 1-d array
         return torch.norm(diff, p=2, dim=0).mean().item() #Convert 3xN arrays to 3N array
