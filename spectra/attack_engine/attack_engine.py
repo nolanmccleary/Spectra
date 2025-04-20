@@ -41,6 +41,7 @@ class Attack_Object:
             raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {valid_verbosities}")
                 
         self.device = device
+        self.verbose = verbose
 
         self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()     
         if device in available_devices:
@@ -51,7 +52,6 @@ class Attack_Object:
 
         self.hamming_threshold = hamming_threshold
         self.attack_cycles = attack_cycles
-        self.verbose = verbose
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False  #Provide resize parameters if your hash pipeline requires resizing
 
         self.rgb_tensor = None
