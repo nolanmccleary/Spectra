@@ -124,7 +124,8 @@ class Attack_Object:
         
         #Attack loop
         for _ in range(self.attack_cycles):
-            step = self.gradient_engine.compute_gradient(self.current_hash, DEFAULT_SCALE_FACTOR, self.height, self.width) * step_size
+            last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.uint64, device=self.device) # h_old -> [h_old]
+            step = self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR, self.height, self.width) * step_size
             current_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
             self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)

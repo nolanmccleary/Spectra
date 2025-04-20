@@ -79,3 +79,10 @@ def hamming_distance_hex(hash1, hash2):
 
 
 
+def bit_tensor_sum(packed_tensor):
+    count = packed_tensor
+    count = (count - ((count >> 1) & 0x5555555555555555))
+    count = (count & 0x3333333333333333) + ((count >> 2) & 0x3333333333333333)
+    count = (count + (count >> 4)) & 0x0F0F0F0F0F0F0F0F
+    count = (count * 0x0101010101010101) >> 56
+    return torch.sum(count).item()

@@ -10,4 +10,4 @@ def generate_phash(tensor, height: int, width: int):
     avg = np.median(dct_kernel)
     diff = dct_kernel > avg
     bitstring = ''.join(['1' if b else '0' for b in diff.flatten()])
-    return hex(int(bitstring, 2))
+    return int(bitstring, 2)
