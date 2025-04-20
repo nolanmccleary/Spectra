@@ -1,6 +1,6 @@
 class Hash_Wrapper:
     
-    def __init__(self, name: str, func: function, resize_height: int=-1, resize_width: int=-1, available_devices: set[str]={"cpu"}):
+    def __init__(self, name: str, func, resize_height: int=-1, resize_width: int=-1, available_devices: set[str]={"cpu"}):
         self.name = name
         self.func = func
         self.resize_height = resize_height

@@ -1,8 +1,10 @@
-from gradient_engine import make_gradient_engine
-from hashes import Hash_Wrapper
+from spectra.gradient_engine import make_gradient_engine
+from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize, inverse_delta, l2_per_pixel_rgb
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize, inverse_delta, l2_per_pixel_rgb
 import torch
+from torchvision.transforms import ToPILImage
+
 
 
 DEFAULT_SCALE_FACTOR = 6.0
@@ -12,19 +14,25 @@ class Attack_Engine:
 
     def __init__(self):
         self.attacks = []
+        self.image_batch = []
 
-    def add_attack(self, image_path, hash_wrapper: Hash_Wrapper, hamming_threshold, **kwargs):
-        self.attacks.append(Attack_Object(image_path, hash_wrapper, hamming_threshold, **kwargs))
-    
+
+    def add_attack(self, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, attack_cycles: int, device: str, **kwargs):
+        self.attacks.append(Attack_Object(hash_wrapper, hamming_threshold, attack_cycles, device, **kwargs))
+        self.image_batch = image_batch
+
+
+
     def run_attacks(self):
         for attack in self.attacks:
-            attack.run_attack()
+            for image in self.image_batch:
+                attack.run_attack(image[0], image[1])
 
 
 
 class Attack_Object:
 
-    def __init__(self, image_path, hash_wrapper: Hash_Wrapper, hamming_threshold, attack_cycles=100, device="cpu", verbose="off"):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, attack_cycles, device, verbose="off"):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -32,7 +40,6 @@ class Attack_Object:
         if verbose not in valid_verbosities:
             raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {valid_verbosities}")
                 
-        self.image_path = image_path
         self.device = device
 
         self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()     
@@ -59,7 +66,7 @@ class Attack_Object:
 
         self.output_tensor = None 
         self.output_hash = None 
-        self.output_hamming = None 
+        self.output_hamming = 0
         self.output_l2 = 1
         self.attack_success = None
 
@@ -71,8 +78,8 @@ class Attack_Object:
 
 
 
-    def set_tensor(self):
-        with Image.open(self.image_path) as img:
+    def set_tensor(self, input_image_path):
+        with Image.open(input_image_path) as img:
             self.rgb_tensor = get_rgb_tensor(img, self.device) #[C, H, W]
             self.original_height = self.rgb_tensor.size(1)
             self.original_width = self.rgb_tensor.size(2)
@@ -81,25 +88,32 @@ class Attack_Object:
 
             if self.resize_flag:
                 gray = grayscale_resize(gray, self.resize_height, self.resize_width) 
+                self.height = self.resize_height
+                self.width = self.resize_width
+
+            else:
+                self.height = self.original_height
+                self.width = self.original_width
+            
 
             self.tensor = gray
-            self.original_hash = self.func(self.tensor.to(self.func_device))  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
+            self.original_hash = self.func(self.tensor.to(self.func_device), self.height, self.width)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
 
 
-    def stage_attack(self):
+    def stage_attack(self, input_image_path):
         self.log("Staging attack...\n")
-        self.set_tensor()
+        self.set_tensor(input_image_path)
         self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS)
         self.is_staged = True
         
 
 
     #For now we'll just use simple attack logic
-    def run_attack(self, step_size = 0.01):
+    def run_attack(self, input_image_path, output_image_path, step_size = 0.01):
         self.attack_success = False
         if self.is_staged == False:
-            self.stage_attack()
+            self.stage_attack(input_image_path)
 
         self.log("Running attack...\n")
 
@@ -110,10 +124,10 @@ class Attack_Object:
         
         #Attack loop
         for _ in range(self.attack_cycles):
-            step = self.gradient_engine.compute_gradient(self.current_hash, DEFAULT_SCALE_FACTOR) * step_size
+            step = self.gradient_engine.compute_gradient(self.current_hash, DEFAULT_SCALE_FACTOR, self.height, self.width) * step_size
             current_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
-            self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device))
+            self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
 
             if self.current_hamming >= self.hamming_threshold:
@@ -154,7 +168,7 @@ class Attack_Object:
                 if self.resize_flag:
                     cand_gray = grayscale_resize(cand_gray, self.resize_height, self.resize_width)
 
-                cand_hash = self.func(cand_gray.to(self.func_device))
+                cand_hash = self.func(cand_gray.to(self.func_device), self.height, self.width)
                 cand_ham = hamming_distance_hex(cand_hash, self.original_hash)
 
                 if cand_ham >= self.hamming_threshold:
@@ -170,6 +184,20 @@ class Attack_Object:
 
         self.is_staged = False
         
+
+        out = self.output_tensor.detach().cpu()
+        output_image = ToPILImage()(out)
+        output_image.save(output_image_path)
+        self.log(f"Saved attacked image to {output_image_path}")
+
+
+        self.log(f"Success status: {self.attack_success}")
+        self.log(f"Original hash: {self.original_hash}")
+        self.log(f"Current hash: {self.output_hash}")
+        self.log(f"Final hash hamming distance: {self.output_hamming}")
+        self.log(f"Final L2 distance: {self.output_l2}")
+
+
         return {
             "success": self.attack_success,
             "hash": self.output_hash,
