@@ -7,7 +7,7 @@ from torchvision.transforms import ToPILImage
 
 
 
-DEFAULT_SCALE_FACTOR = 2.0
+DEFAULT_SCALE_FACTOR = 6
 DEFAULT_NUM_PERTURBATIONS = 3000
 
 class Attack_Engine:
@@ -125,23 +125,32 @@ class Attack_Object:
         #Attack loop
         for _ in range(self.attack_cycles):
             last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.uint64, device=self.device) # h_old -> [h_old]
-            step = self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR, self.height, self.width) * step_size
+            step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR, self.height, self.width)) * step_size #Might be better to just get signed gradient 
+            
+            #print("GRADIENT POST SCALE: " + str(step))
+            
             current_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
             self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
             
-            print(self.original_hash)
-            print(self.current_hash)
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
+
+            #print(self.current_hamming)
+            #print(self.gradient_engine.l2_delta_from_engine_tensor(self.tensor))
+
+            print(self.gradient_engine.tensor)
 
             if self.current_hamming >= self.hamming_threshold:
                 l2_distance = self.gradient_engine.l2_delta_from_engine_tensor(self.tensor)
 
                 if l2_distance < self.output_l2:
                     self.output_l2 = l2_distance
+                    print(self.output_l2)
                     optimal_delta = current_delta.clone()
+                    print(optimal_delta)
                 
-                else:   #L2 distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start
+                else:   #L2 distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
+                    print("RESTART")
                     current_delta.zero_()
                     self.gradient_engine.tensor = self.tensor.clone()
                     
@@ -149,11 +158,19 @@ class Attack_Object:
 
         #If we broke hamming threshold
         if optimal_delta is not None:
+            
             upsampled_delta = optimal_delta
             
             if self.resize_flag:
+                
+                optimal_delta = optimal_delta.view(1, self.height, self.width)
+
+                print(optimal_delta.shape) #must convert to 3d tensor before grayscale resize
+
+
                 upsampled_delta = grayscale_resize(optimal_delta, self.original_height, self.original_width)
 
+            print("NOW AT RGB DELTA")
             rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
             #Backwards pass to optimize RGB L2 delta within hamming threshold constraints

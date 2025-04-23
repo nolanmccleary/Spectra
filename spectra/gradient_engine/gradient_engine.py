@@ -58,22 +58,30 @@ class Grayscale_Engine(Gradient_Engine):
         batch_pert = perturbations.mul_(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]    
 
         
-        print(self.tensor)
+        #print("IMAGE: " + str(self.tensor))
+        #print("PERTS: " + str(batch_pert[0]))
+
+
         cand_batch = (self.tensor + batch_pert).to(self.func_device) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
-        #print(cand_batch)
+        
+        #print("CAND: " + str(cand_batch[0]))
+
         new_hashes = torch.tensor([to_signed_int64(self.func(v, height, width)) for v in cand_batch], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]
         
         x = last_hash ^ new_hashes  #[h_old], [h1, h2, h3] -> [x1, x2, x3]
         hamming_deltas = popcoint(x).to(cand_batch.dtype) #[x1, x2, x3] -> [d1, d2, d3]; convert to cand_batch dtype to force a system fail if the pertubation batch is not aligned
 
         gradient = (hamming_deltas.unsqueeze(1) * batch_pert.to(self.device)).sum(dim=0).to(self.device)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
+        
+        #print("GRADIENT PRE SCALE: " + str(gradient))
+
         return gradient
 
 
     def l2_delta_from_engine_tensor(self, tensor):
         diff = self.tensor - tensor
-        return torch.linalg.vector_norm(diff, ord=2).item() / diff.numel()
-
+        norm = torch.mean(diff**2).sqrt().item() 
+        return norm
 
 
 

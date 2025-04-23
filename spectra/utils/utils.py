@@ -20,8 +20,8 @@ def rgb_to_grayscale(rgb_tensor):
 
 
 def grayscale_resize(grayscale_tensor, height, width):
-    grayscale_tensor = grayscale_tensor.clone().unsqueeze(0)
-    gray_resized = F.interpolate(
+    grayscale_tensor = grayscale_tensor.clone().unsqueeze(1)
+    gray_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
         grayscale_tensor,
         size=(height, width),
         mode='bilinear',
@@ -113,7 +113,7 @@ def popcoint(packed_tensor):
     count = (count & 0x3333333333333333) + ((count >> 2) & 0x3333333333333333) #Sum pairwise sums into nibbles; each 4-bit slot now has b_i +...+ b_{i+3}
     count = (count + (count >> 4)) & 0x0F0F0F0F0F0F0F0F #Sum top nibbles into bytes; each 8-bit slot now has b_i +...+ b_{i+7}
     count = (count * 0x0101010101010101) >> 56 #Sum byte values into top byte then right-shift to get popc(oin)ount; byte7 = byte0 +...+byte7 = popc(oin)ount << 56
-    print("POPCOINT")
-    print(count)
+    #print("POPCOINT")
+    #print(count)
     return count
 
