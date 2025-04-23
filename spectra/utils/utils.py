@@ -74,28 +74,7 @@ def l2_per_pixel_rgb(img1, img2):
 
 
 def hamming_distance_hex(a, b):
-    # turn a into a plain Python int
-    if isinstance(a, str):
-        ai = int(a, 16)
-        print("STRING")
-    elif torch.is_tensor(a):
-        ai = int(a.item())
-        print("TENSOR")
-    else:
-        ai = int(a)
-
-    # same for b
-    if isinstance(b, str):
-        bi = int(b, 16)
-        print("STRING")
-    elif torch.is_tensor(b):
-        bi = int(b.item())
-        print("TENSOR")
-    else:
-        bi = int(b)
-
-    # now just XOR and count bits
-    return (ai ^ bi).bit_count()
+    return (a ^ b).bit_count()
 
 
 MASK64 = (1 << 64) - 1 #0xFFFFFFFFFFFFFFFF
@@ -113,7 +92,5 @@ def popcoint(packed_tensor):
     count = (count & 0x3333333333333333) + ((count >> 2) & 0x3333333333333333) #Sum pairwise sums into nibbles; each 4-bit slot now has b_i +...+ b_{i+3}
     count = (count + (count >> 4)) & 0x0F0F0F0F0F0F0F0F #Sum top nibbles into bytes; each 8-bit slot now has b_i +...+ b_{i+7}
     count = (count * 0x0101010101010101) >> 56 #Sum byte values into top byte then right-shift to get popc(oin)ount; byte7 = byte0 +...+byte7 = popc(oin)ount << 56
-    #print("POPCOINT")
-    #print(count)
     return count
 

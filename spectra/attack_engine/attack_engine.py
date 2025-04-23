@@ -127,7 +127,6 @@ class Attack_Object:
             last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.uint64, device=self.device) # h_old -> [h_old]
             step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR, self.height, self.width)) * step_size #Might be better to just get signed gradient 
             
-            #print("GRADIENT POST SCALE: " + str(step))
             
             current_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
@@ -135,22 +134,17 @@ class Attack_Object:
             
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
 
-            #print(self.current_hamming)
-            #print(self.gradient_engine.l2_delta_from_engine_tensor(self.tensor))
-
-            print(self.gradient_engine.tensor)
 
             if self.current_hamming >= self.hamming_threshold:
                 l2_distance = self.gradient_engine.l2_delta_from_engine_tensor(self.tensor)
 
                 if l2_distance < self.output_l2:
-                    self.output_l2 = l2_distance
-                    print(self.output_l2)
                     optimal_delta = current_delta.clone()
-                    print(optimal_delta)
+                    self.output_l2 = l2_distance
+                    self.output_hamming = self.current_hamming
+                    self.output_hash = self.current_hash
                 
                 else:   #L2 distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
-                    print("RESTART")
                     current_delta.zero_()
                     self.gradient_engine.tensor = self.tensor.clone()
                     
@@ -161,24 +155,15 @@ class Attack_Object:
             
             upsampled_delta = optimal_delta
             
-            if self.resize_flag:
-                
+            if self.resize_flag:               
                 optimal_delta = optimal_delta.view(1, self.height, self.width)
-
-                print(optimal_delta.shape) #must convert to 3d tensor before grayscale resize
-
-
                 upsampled_delta = grayscale_resize(optimal_delta, self.original_height, self.original_width)
 
-            print("NOW AT RGB DELTA")
             rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
             #Backwards pass to optimize RGB L2 delta within hamming threshold constraints
             scale_factors = torch.linspace(0.0, 1.0, steps=50)
-            
             self.output_tensor = (self.rgb_tensor + rgb_delta)
-            self.output_hash = self.current_hash
-            self.output_hamming = self.current_hamming
 
             for scale in scale_factors:
                 cand_delta  = rgb_delta * scale
@@ -196,6 +181,7 @@ class Attack_Object:
                     self.output_tensor = cand_tensor
                     self.output_hamming = cand_ham
                     self.output_hash = cand_hash
+                    
                     break
                 else:
                     continue
