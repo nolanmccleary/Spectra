@@ -57,10 +57,12 @@ def generate_seed_perturbation(dim, start_scalar, device):
 
 
 def generate_perturbation_vectors_1d(num_perturbations, size, device):
-    base = torch.randn((num_perturbations // 2, size), dtype=torch.float32, device=device) #randn implicitly clamps from 0 to 1
-    perturbations = torch.cat([base, -base], dim=0)
-    return perturbations
-
+    base = torch.randn((num_perturbations // 2, size), dtype=torch.float32, device=device) 
+    absmax = base.abs().amax(dim=1, keepdim=True)
+    scale = torch.where(absmax > 0, 1.0 / absmax, torch.tensor(1.0, device = device)) #scale tensor to get max val of each generated perturbation so that we can normalize
+    base = base * scale
+    return torch.cat([base, -base], dim=0) #Mirror to preserve distribution
+    
 
 
 
@@ -71,18 +73,47 @@ def l2_per_pixel_rgb(img1, img2):
 
 
 
-def hamming_distance_hex(hash1, hash2):
-    int1 = int(hash1, 16)
-    int2 = int(hash2, 16)
-    xor = int1 ^ int2
-    return bin(xor).count('1')
+def hamming_distance_hex(a, b):
+    # turn a into a plain Python int
+    if isinstance(a, str):
+        ai = int(a, 16)
+        print("STRING")
+    elif torch.is_tensor(a):
+        ai = int(a.item())
+        print("TENSOR")
+    else:
+        ai = int(a)
+
+    # same for b
+    if isinstance(b, str):
+        bi = int(b, 16)
+        print("STRING")
+    elif torch.is_tensor(b):
+        bi = int(b.item())
+        print("TENSOR")
+    else:
+        bi = int(b)
+
+    # now just XOR and count bits
+    return (ai ^ bi).bit_count()
+
+
+MASK64 = (1 << 64) - 1 #0xFFFFFFFFFFFFFFFF
+SIGN_BIT = 1 << 63
+OFFSET64 = 1 << 64
+def to_signed_int64(u64):
+    u64 &= MASK64
+    return u64 if u64 < SIGN_BIT else u64 - OFFSET64    #If > 2^63-1 
 
 
 
-def bit_tensor_sum(packed_tensor):
+def popcoint(packed_tensor):
     count = packed_tensor
-    count = (count - ((count >> 1) & 0x5555555555555555))
-    count = (count & 0x3333333333333333) + ((count >> 2) & 0x3333333333333333)
-    count = (count + (count >> 4)) & 0x0F0F0F0F0F0F0F0F
-    count = (count * 0x0101010101010101) >> 56
-    return torch.sum(count).item()
+    count = (count - ((count >> 1) & 0x5555555555555555)) #Paiwise sums; each 2-bit slot now holds b_i + b_{i+1}
+    count = (count & 0x3333333333333333) + ((count >> 2) & 0x3333333333333333) #Sum pairwise sums into nibbles; each 4-bit slot now has b_i +...+ b_{i+3}
+    count = (count + (count >> 4)) & 0x0F0F0F0F0F0F0F0F #Sum top nibbles into bytes; each 8-bit slot now has b_i +...+ b_{i+7}
+    count = (count * 0x0101010101010101) >> 56 #Sum byte values into top byte then right-shift to get popc(oin)ount; byte7 = byte0 +...+byte7 = popc(oin)ount << 56
+    print("POPCOINT")
+    print(count)
+    return count
+

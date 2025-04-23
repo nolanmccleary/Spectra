@@ -7,7 +7,7 @@ from torchvision.transforms import ToPILImage
 
 
 
-DEFAULT_SCALE_FACTOR = 6.0
+DEFAULT_SCALE_FACTOR = 2.0
 DEFAULT_NUM_PERTURBATIONS = 3000
 
 class Attack_Engine:
@@ -129,6 +129,9 @@ class Attack_Object:
             current_delta.add_(step)
             self.gradient_engine.tensor.add_(step)
             self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
+            
+            print(self.original_hash)
+            print(self.current_hash)
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
 
             if self.current_hamming >= self.hamming_threshold:
