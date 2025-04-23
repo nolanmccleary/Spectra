@@ -19,8 +19,8 @@ def rgb_to_grayscale(rgb_tensor):
 
 
 
-def grayscale_resize(grayscale_tensor, height, width):
-    grayscale_tensor = grayscale_tensor.clone().unsqueeze(1)
+def grayscale_resize_and_flatten(grayscale_tensor, height, width):
+    grayscale_tensor = grayscale_tensor.clone().unsqueeze(0)
     gray_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
         grayscale_tensor,
         size=(height, width),
@@ -77,6 +77,7 @@ def hamming_distance_hex(a, b):
     return (a ^ b).bit_count()
 
 
+
 MASK64 = (1 << 64) - 1 #0xFFFFFFFFFFFFFFFF
 SIGN_BIT = 1 << 63
 OFFSET64 = 1 << 64
@@ -87,10 +88,10 @@ def to_signed_int64(u64):
 
 
 def popcoint(packed_tensor):
-    count = packed_tensor
-    count = (count - ((count >> 1) & 0x5555555555555555)) #Paiwise sums; each 2-bit slot now holds b_i + b_{i+1}
-    count = (count & 0x3333333333333333) + ((count >> 2) & 0x3333333333333333) #Sum pairwise sums into nibbles; each 4-bit slot now has b_i +...+ b_{i+3}
-    count = (count + (count >> 4)) & 0x0F0F0F0F0F0F0F0F #Sum top nibbles into bytes; each 8-bit slot now has b_i +...+ b_{i+7}
-    count = (count * 0x0101010101010101) >> 56 #Sum byte values into top byte then right-shift to get popc(oin)ount; byte7 = byte0 +...+byte7 = popc(oin)ount << 56
-    return count
+    coint = packed_tensor
+    coint = (coint - ((coint >> 1) & 0x5555555555555555)) #Paiwise sums; each 2-bit slot now holds b_i + b_{i+1}
+    coint = (coint & 0x3333333333333333) + ((coint >> 2) & 0x3333333333333333) #Sum pairwise sums into nibbles; each 4-bit slot now has b_i +...+ b_{i+3}
+    coint = (coint + (coint >> 4)) & 0x0F0F0F0F0F0F0F0F #Sum top nibbles into bytes; each 8-bit slot now has b_i +...+ b_{i+7}
+    coint = (coint * 0x0101010101010101) >> 56 #Sum byte values into top byte then right-shift to get popc(oin)ount; byte7 = byte0 +...+byte7 = popc(oin)ount << 56
+    return coint
 

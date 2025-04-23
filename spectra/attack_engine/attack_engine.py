@@ -1,7 +1,7 @@
 from spectra.gradient_engine import make_gradient_engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize, inverse_delta, l2_per_pixel_rgb
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize_and_flatten, inverse_delta, l2_per_pixel_rgb
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -87,7 +87,7 @@ class Attack_Object:
             gray = rgb_to_grayscale(self.rgb_tensor)
 
             if self.resize_flag:
-                gray = grayscale_resize(gray, self.resize_height, self.resize_width) 
+                gray = grayscale_resize_and_flatten(gray, self.resize_height, self.resize_width) 
                 self.height = self.resize_height
                 self.width = self.resize_width
 
@@ -129,7 +129,7 @@ class Attack_Object:
             
             
             current_delta.add_(step)
-            self.gradient_engine.tensor.add_(step)
+            self.gradient_engine.tensor.add_(step).clamp_(0.0, 1.0)
             self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
             
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
@@ -157,7 +157,7 @@ class Attack_Object:
             
             if self.resize_flag:               
                 optimal_delta = optimal_delta.view(1, self.height, self.width)
-                upsampled_delta = grayscale_resize(optimal_delta, self.original_height, self.original_width)
+                upsampled_delta = grayscale_resize_and_flatten(optimal_delta, self.original_height, self.original_width)
 
             rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
@@ -172,7 +172,7 @@ class Attack_Object:
                 cand_gray = rgb_to_grayscale(cand_tensor)
                 
                 if self.resize_flag:
-                    cand_gray = grayscale_resize(cand_gray, self.resize_height, self.resize_width)
+                    cand_gray = grayscale_resize_and_flatten(cand_gray, self.resize_height, self.resize_width)
 
                 cand_hash = self.func(cand_gray.to(self.func_device), self.height, self.width)
                 cand_ham = hamming_distance_hex(cand_hash, self.original_hash)
@@ -188,27 +188,29 @@ class Attack_Object:
 
             self.output_l2 = l2_per_pixel_rgb(self.rgb_tensor, self.output_tensor)
             self.attack_success = True
-
+            out = self.output_tensor.detach().cpu()
+            output_image = ToPILImage()(out)
+            output_image.save(output_image_path)
+            self.log(f"Saved attacked image to {output_image_path}")
+        
+        
         self.is_staged = False
         
 
-        out = self.output_tensor.detach().cpu()
-        output_image = ToPILImage()(out)
-        output_image.save(output_image_path)
-        self.log(f"Saved attacked image to {output_image_path}")
-
 
         self.log(f"Success status: {self.attack_success}")
-        self.log(f"Original hash: {self.original_hash}")
-        self.log(f"Current hash: {self.output_hash}")
-        self.log(f"Final hash hamming distance: {self.output_hamming}")
-        self.log(f"Final L2 distance: {self.output_l2}")
+        
+        if self.attack_success:
+            self.log(f"Original hash: {hex(self.original_hash)}")
+            self.log(f"Current hash: {hex(self.output_hash)}")
+            self.log(f"Final hash hamming distance: {self.output_hamming}")
+            self.log(f"Final L2 distance: {self.output_l2}")
 
 
         return {
             "success": self.attack_success,
-            "hash": self.output_hash,
-            "hamming": self.output_hamming,
-            "l2": self.output_l2,
-            "tensor": self.output_tensor
+            "original_hash" : hex(self.original_hash),
+            "output_hash": hex(self.output_hash) if self.output_hash is not None else None,
+            "hamming_distance": self.output_hamming,
+            "l2_per_pixel": self.output_l2,
         }

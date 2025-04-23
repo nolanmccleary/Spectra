@@ -61,7 +61,7 @@ class Grayscale_Engine(Gradient_Engine):
         new_hashes = torch.tensor([to_signed_int64(self.func(v, height, width)) for v in cand_batch], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]
         
         x = last_hash ^ new_hashes  #[h_old], [h1, h2, h3] -> [x1, x2, x3]
-        hamming_deltas = popcoint(x).to(cand_batch.dtype) #[x1, x2, x3] -> [d1, d2, d3]; convert to cand_batch dtype to force a system fail if the pertubation batch is not aligned
+        hamming_deltas = popcoint(x).to(cand_batch.dtype) #[x1, x2, x3] -> [d1, d2, d3]
 
         gradient = (hamming_deltas.unsqueeze(1) * batch_pert.to(self.device)).sum(dim=0).to(self.device)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
 
