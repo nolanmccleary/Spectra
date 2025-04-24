@@ -65,7 +65,6 @@ def generate_perturbation_vectors_1d(num_perturbations, size, device):
     
 
 
-
 def l2_per_pixel_rgb(img1, img2):
     C, H, W = img1.shape
     diff = (img1 - img2).view(C, -1) #Flatten each color's matrix to 1-d array

@@ -22,7 +22,6 @@ class Attack_Engine:
         self.image_batch = image_batch
 
 
-
     def run_attacks(self):
         for attack in self.attacks:
             for image in self.image_batch:
@@ -99,6 +98,7 @@ class Attack_Object:
             self.tensor = gray
             self.original_hash = self.func(self.tensor.to(self.func_device), self.height, self.width)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
+
 
 
     def stage_attack(self, input_image_path):
@@ -196,7 +196,6 @@ class Attack_Object:
         
         self.is_staged = False
         
-
 
         self.log(f"Success status: {self.attack_success}")
         
