@@ -55,8 +55,9 @@ class Grayscale_Engine(Gradient_Engine):
     def compute_gradient(self, last_hash, scale_factor, height, width):
         perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         
-        batch_pert = perturbations.mul_(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]    
-        cand_batch = (self.tensor + batch_pert).to(self.func_device) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
+        batch_pert = perturbations.mul(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]    
+        
+        cand_batch = (self.tensor + batch_pert).to(self.func_device).clamp(0.0, 1.0) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
 
         new_hashes = torch.tensor([to_signed_int64(self.func(v, height, width)) for v in cand_batch], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]
         
