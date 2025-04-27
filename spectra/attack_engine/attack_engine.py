@@ -12,9 +12,15 @@ DEFAULT_NUM_PERTURBATIONS = 3000
 
 class Attack_Engine:
 
-    def __init__(self):
+    def __init__(self, verbose):
         self.attacks = []
         self.image_batch = []
+        self.verbose = verbose
+
+
+    def log(self, msg):
+        if self.verbose == "on":
+            print(msg)
 
 
     def add_attack(self, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, attack_cycles: int, device: str, **kwargs):
@@ -25,7 +31,7 @@ class Attack_Engine:
     def run_attacks(self):
         for attack in self.attacks:
             for image in self.image_batch:
-                attack.run_attack(image[0], image[1])
+                self.log(attack.run_attack(image[0], image[1]))
 
 
 
@@ -164,12 +170,29 @@ class Attack_Object:
 
             for scale in scale_factors:
                 cand_delta  = rgb_delta * scale
-                cand_tensor = (self.rgb_tensor + cand_delta).clamp(0.0, 1.0)
+                cand_tensor = (self.rgb_tensor + cand_delta)
+
+                eps = 1e-6
+                pos_scale = torch.where(
+                    cand_delta > 0,
+                   (1.0 - self.rgb_tensor) / (cand_delta + eps),
+                   torch.tensor(1.0, device=self.device),
+                )
+                neg_scale = torch.where(
+                    cand_delta < 0,
+                    (0.0 - self.rgb_tensor) / (cand_delta - eps),
+                    torch.tensor(1.0, device=self.device),
+                )
+                safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
+                safe_delta = cand_delta * safe_scale
+                cand_tensor = self.rgb_tensor + safe_delta
+
 
                 cand_gray = rgb_to_grayscale(cand_tensor)
                 
                 if self.resize_flag:
                     cand_gray = grayscale_resize_and_flatten(cand_gray, self.resize_height, self.resize_width)
+
 
                 cand_hash = self.func(cand_gray.to(self.func_device), self.height, self.width)
                 cand_ham = hamming_distance_hex(cand_hash, self.original_hash)
@@ -178,7 +201,6 @@ class Attack_Object:
                     self.output_tensor = cand_tensor
                     self.output_hamming = cand_ham
                     self.output_hash = cand_hash
-                    
                     break
                 else:
                     continue

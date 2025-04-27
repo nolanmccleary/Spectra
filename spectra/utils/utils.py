@@ -40,7 +40,7 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     if delta.shape == (C, H, W):
         return delta
 
-    '''
+    
     rgb_flat = rgb_tensor.view(C, -1)
     rgb_mean = rgb_flat.mean(dim=0, keepdim=True)  # [1, H*W]
     gd = delta.unsqueeze(0)              # [1, H*W]
@@ -52,9 +52,9 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     )
 
     return delta.view(C, H, W)
+    
+    
     '''
-    
-    
     luma = torch.tensor([0.299, 0.587, 0.114], device=rgb_tensor.device).view(3,1)   
     norm2 = (luma**2).sum()                           
 
@@ -62,10 +62,10 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     rgb_delta_flat = (luma * d) / norm2               
     rgb_delta = rgb_delta_flat.view(3, H, W)        
     return rgb_delta
+    '''
     
     
-
-
+    
 
 
 
