@@ -1,3 +1,4 @@
+import lpips
 from PIL import Image
 from spectra.utils import get_rgb_tensor, l2_per_pixel_rgb, rgb_to_grayscale, grayscale_resize_and_flatten, hamming_distance_hex
 from spectra.hashes import Hash_Wrapper
@@ -26,7 +27,7 @@ class Image_Validator:
         with Image.open(image_pair[1]) as img:
             output_image = get_rgb_tensor(img, self.device)
         
-        l2_per_pixel = l2_per_pixel_rgb(input_image, output_image)
+        l2_per_pixel = l2_per_pixel_rgb(input_image, output_image, lpips.LPIPS(net='alex').to(self.device))
         
         
         grayscale = rgb_to_grayscale(input_image) #(1, H, W)

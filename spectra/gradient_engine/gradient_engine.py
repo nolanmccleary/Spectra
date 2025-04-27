@@ -1,11 +1,13 @@
+import math
+import lpips
 import torch
-from spectra.utils import generate_perturbation_vectors_1d, to_signed_int64, popcoint
+from spectra.utils import generate_perturbation_vectors_1d, to_signed_int64, popcoint, grayscale_to_rgb
 
 
 
-def make_gradient_engine(func, tensor, device, func_device, num_perturbations):
+def make_gradient_engine(func, tensor, device, func_device, num_perturbations, height, width, loss_func):
     if tensor.dim() == 1:
-        return Grayscale_Engine(func, tensor, device, func_device, num_perturbations)
+        return Grayscale_Engine(func, tensor, device, func_device, num_perturbations, height, width, loss_func)
     elif tensor.dim() == 3:
         print("Warning! RGB gradient calculation not yet supported")
         return RGB_Engine(func, tensor, device, num_perturbations)
@@ -16,12 +18,15 @@ def make_gradient_engine(func, tensor, device, func_device, num_perturbations):
 
 class Gradient_Engine:
 
-    def __init__(self, func, tensor, device, func_device, num_perturbations):    #device parameter needs to be the same as the tensor and the func's respective devices
+    def __init__(self, func, tensor, device, func_device, num_perturbations, height, width, loss_func):    #device parameter needs to be the same as the tensor and the func's respective devices
         self.func = func
         self.tensor = tensor.clone().to(device)
         self.device = device
         self.func_device = func_device
         self.num_perturbations = num_perturbations
+        self.height = height
+        self.width = width
+        self.loss_func = loss_func
         self.gradient = torch.zeros_like(self.tensor)
 
 
@@ -46,20 +51,21 @@ class Gradient_Engine:
 
 class Grayscale_Engine(Gradient_Engine):
 
-    def __init__(self, func, tensor, device, func_device, num_perturbations):    #device parameter needs to be the same as the tensor and the func's respective devices
+    def __init__(self, func, tensor, device, func_device, num_perturbations, height, width, loss_func):    #device parameter needs to be the same as the tensor and the func's respective devices
         self.tensor_image_size = tensor.numel()
         assert tensor.dim() == 1, f"Expected 1D tensor, got {self.tensor.dim()}D tensor."
-        super().__init__(func, tensor, device, func_device, num_perturbations)
+        super().__init__(func, tensor, device, func_device, num_perturbations, height, width, loss_func)
 
 
-    def compute_gradient(self, last_hash, scale_factor, height, width):
+
+    def compute_gradient(self, last_hash, scale_factor):
         perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         
         batch_pert = perturbations.mul(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]    
         
         cand_batch = (self.tensor + batch_pert).to(self.func_device).clamp(0.0, 1.0) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
 
-        new_hashes = torch.tensor([to_signed_int64(self.func(v, height, width)) for v in cand_batch], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]
+        new_hashes = torch.tensor([to_signed_int64(self.func(v, self.height, self.width)) for v in cand_batch], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]
         
         x = last_hash ^ new_hashes  #[h_old], [h1, h2, h3] -> [x1, x2, x3]
         hamming_deltas = popcoint(x).to(cand_batch.dtype) #[x1, x2, x3] -> [d1, d2, d3]
@@ -69,15 +75,12 @@ class Grayscale_Engine(Gradient_Engine):
         return gradient
 
 
-    def l2_delta_from_engine_tensor(self, tensor):
-        diff = self.tensor - tensor
-        norm = torch.mean(diff**2).sqrt().item() 
-        return norm
 
-
-
-
-
+    def l2_delta_from_engine_tensor(self, new_tensor):
+        rgb_old = grayscale_to_rgb(self.tensor).view(1, 3, self.height, self.width) * 2.0 - 1.0 #convert to rgb and project over [-1, 1] as per what LPIPS expects
+        rgb_new = grayscale_to_rgb(new_tensor).view(1, 3, self.height, self.width) * 2.0 - 1.0
+        return self.loss_func(rgb_old, rgb_new)
+        
 
 
 

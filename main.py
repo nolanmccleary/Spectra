@@ -6,7 +6,7 @@ def phash_attack():
     engine = Attack_Engine(verbose="on")
     validator = Image_Validator("cpu")
     images = [('sample_images/peppers.png', 'output/peppers_attacked.png')]
-    engine.add_attack(images, PHASH, 15, 100, "cpu", verbose="off")
+    engine.add_attack(images, PHASH, 16, 200, "cpu", verbose="off")
     engine.run_attacks()
 
     for image_pair in images:

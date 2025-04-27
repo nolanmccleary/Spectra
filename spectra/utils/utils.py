@@ -1,6 +1,7 @@
+import numpy as np
 import torch
 import torch.nn.functional as F
-import numpy as np
+
 
 
 
@@ -13,12 +14,24 @@ def get_rgb_tensor(image_object, rgb_device):
 
 
 
-def rgb_to_grayscale(rgb_tensor): #input: [C, H, W]
-    #gray = rgb_tensor.mean(dim=0, keepdim=True)    # [1, H, W]
-    #return gray
+
+def rgb_to_grayscale(rgb_tensor): #[C, H, W] -> [1, H, W]
     r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
     gray = 0.299*r + 0.587*g + 0.114*b
     return gray.unsqueeze(0)
+
+
+
+
+def grayscale_to_rgb(grayscale_tensor): # [HxW] -> [C, HxW]
+    luma = torch.tensor([0.299, 0.587, 0.114], device=grayscale_tensor.device).view(3,1)   
+    norm2 = (luma**2).sum()                           
+    rgb_unit = luma / norm2
+    rgb_out = rgb_unit * grayscale_tensor.unsqueeze(0)
+    return rgb_out
+
+
+
 
 
 
@@ -40,10 +53,10 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     if delta.shape == (C, H, W):
         return delta
 
-    
     rgb_flat = rgb_tensor.view(C, -1)
     rgb_mean = rgb_flat.mean(dim=0, keepdim=True)  # [1, H*W]
     gd = delta.unsqueeze(0)              # [1, H*W]
+    
     # Avoid division by zero
     delta = torch.where(
         gd <= 0,
@@ -64,13 +77,6 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     return rgb_delta
     '''
     
-    
-    
-
-
-
-
-
 
 
 
@@ -88,10 +94,14 @@ def generate_perturbation_vectors_1d(num_perturbations, size, device):
     
 
 
-def l2_per_pixel_rgb(img1, img2):
-    C, H, W = img1.shape
-    diff = (img1 - img2).view(C, -1) #Flatten each color's matrix to 1-d array
-    return torch.norm(diff, p=2, dim=0).mean().item() #Convert 3xN arrays to 3N array
+def l2_per_pixel_rgb(img1, img2, loss_func):
+    #C, H, W = img1.shape
+    #diff = (img1 - img2).view(C, -1) #Flatten each color's matrix to 1-d array
+    #return torch.norm(diff, p=2, dim=0).mean().item() #Convert 3xN arrays to 3N array
+    a = img1.unsqueeze(0) * 2.0 - 1.0   #[1, C, H, W] over [-1, 1]
+    b = img2.unsqueeze(0) * 2.0 - 1.0
+    return loss_func(a, b).item()
+
 
 
 

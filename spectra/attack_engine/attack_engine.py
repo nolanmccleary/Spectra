@@ -1,3 +1,4 @@
+import lpips
 from spectra.gradient_engine import make_gradient_engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
@@ -75,6 +76,8 @@ class Attack_Object:
         self.output_l2 = 1
         self.attack_success = None
 
+        self.loss_func = lpips.LPIPS(net='alex').to(self.device)
+
 
 
     def log(self, msg):
@@ -108,7 +111,7 @@ class Attack_Object:
     def stage_attack(self, input_image_path):
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
-        self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS)
+        self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS, self.height, self.width, self.loss_func)
         self.is_staged = True
         
 
@@ -128,7 +131,7 @@ class Attack_Object:
         #Attack loop
         for _ in range(self.attack_cycles):
             last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.uint64, device=self.device) # h_old -> [h_old]
-            step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR, self.height, self.width)) * step_size #Might be better to just get signed gradient 
+            step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR)) * step_size #Might be better to just get signed gradient 
             
             
             current_delta.add_(step)
@@ -205,7 +208,7 @@ class Attack_Object:
                 else:
                     continue
 
-            self.output_l2 = l2_per_pixel_rgb(self.rgb_tensor, self.output_tensor)
+            self.output_l2 = l2_per_pixel_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
             self.attack_success = True
             out = self.output_tensor.detach().cpu()
             output_image = ToPILImage()(out)
