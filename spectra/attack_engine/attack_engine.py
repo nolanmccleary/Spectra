@@ -117,7 +117,7 @@ class Attack_Object:
 
 
     #For now we'll just use simple attack logic
-    def run_attack(self, input_image_path, output_image_path, step_size = 0.01):
+    def run_attack(self, input_image_path, output_image_path, step_size = 0.005):
         self.attack_success = False
         if self.is_staged == False:
             self.stage_attack(input_image_path)
@@ -127,17 +127,34 @@ class Attack_Object:
         current_delta = torch.zeros_like(self.tensor)
         optimal_delta = None
         
-        
+        eps = 1e-6
+
         #Attack loop
         for _ in range(self.attack_cycles):
             last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.uint64, device=self.device) # h_old -> [h_old]
             step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR)) * step_size #Might be better to just get signed gradient 
             
-            
-            current_delta.add_(step)
-            self.gradient_engine.tensor.add_(step).clamp_(0.0, 1.0)
+            #Adaptively scale step to avoid disrupting image composition via clipping
+            pos_scale = torch.where(
+                step > 0,
+                (1.0 - self.gradient_engine.tensor) / (step + eps),
+                torch.tensor(1.0, device=self.device),
+            )
+            neg_scale = torch.where(
+                step < 0,
+                (0.0 - self.gradient_engine.tensor) / (step - eps),
+                torch.tensor(1.0, device=self.device),
+            )
+
+            safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
+            safe_step = step * safe_scale
+
+
+            current_delta.add_(safe_step)
+            self.gradient_engine.tensor.add_(safe_step)#.clamp_(0.0, 1.0)
+              
+
             self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
-            
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
 
 
@@ -175,7 +192,6 @@ class Attack_Object:
                 cand_delta  = rgb_delta * scale
                 cand_tensor = (self.rgb_tensor + cand_delta)
 
-                eps = 1e-6
                 pos_scale = torch.where(
                     cand_delta > 0,
                    (1.0 - self.rgb_tensor) / (cand_delta + eps),
@@ -186,10 +202,10 @@ class Attack_Object:
                     (0.0 - self.rgb_tensor) / (cand_delta - eps),
                     torch.tensor(1.0, device=self.device),
                 )
+                
                 safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
                 safe_delta = cand_delta * safe_scale
                 cand_tensor = self.rgb_tensor + safe_delta
-
 
                 cand_gray = rgb_to_grayscale(cand_tensor)
                 
