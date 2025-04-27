@@ -5,8 +5,8 @@ from validation import Image_Validator, phash_compare
 def phash_attack():
     engine = Attack_Engine()
     validator = Image_Validator("cpu")
-    images = [('sample_images/peppers.png', 'output/peppers_attacked.png'), ('sample_images/imagehash.png', 'output/imagehash_attacked.png')]
-    engine.add_attack(images, PHASH, 6, 200, "cpu", verbose="on")
+    images = [('sample_images/peppers.png', 'output/peppers_attacked.png')]
+    engine.add_attack(images, PHASH, 15, 500, "cpu", verbose="on")
     engine.run_attacks()
 
     for image_pair in images:

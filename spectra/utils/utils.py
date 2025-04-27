@@ -13,9 +13,12 @@ def get_rgb_tensor(image_object, rgb_device):
 
 
 
-def rgb_to_grayscale(rgb_tensor):
-    gray = rgb_tensor.mean(dim=0, keepdim=True)    # [1, H, W]
-    return gray
+def rgb_to_grayscale(rgb_tensor): #input: [C, H, W]
+    #gray = rgb_tensor.mean(dim=0, keepdim=True)    # [1, H, W]
+    #return gray
+    r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
+    gray = 0.299*r + 0.587*g + 0.114*b
+    return gray.unsqueeze(0)
 
 
 
@@ -37,6 +40,7 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     if delta.shape == (C, H, W):
         return delta
 
+    '''
     rgb_flat = rgb_tensor.view(C, -1)
     rgb_mean = rgb_flat.mean(dim=0, keepdim=True)  # [1, H*W]
     gd = delta.unsqueeze(0)              # [1, H*W]
@@ -48,6 +52,25 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     )
 
     return delta.view(C, H, W)
+    '''
+    
+    
+    luma = torch.tensor([0.299, 0.587, 0.114], device=rgb_tensor.device).view(3,1)   
+    norm2 = (luma**2).sum()                           
+
+    d = delta.unsqueeze(0)                          
+    rgb_delta_flat = (luma * d) / norm2               
+    rgb_delta = rgb_delta_flat.view(3, H, W)        
+    return rgb_delta
+    
+    
+
+
+
+
+
+
+
 
 
 

@@ -94,11 +94,9 @@ class Attack_Object:
                 self.height = self.original_height
                 self.width = self.original_width
             
-
             self.tensor = gray
             self.original_hash = self.func(self.tensor.to(self.func_device), self.height, self.width)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
-
 
 
     def stage_attack(self, input_image_path):
@@ -114,9 +112,8 @@ class Attack_Object:
         self.attack_success = False
         if self.is_staged == False:
             self.stage_attack(input_image_path)
-
+        
         self.log("Running attack...\n")
-
 
         current_delta = torch.zeros_like(self.tensor)
         optimal_delta = None
