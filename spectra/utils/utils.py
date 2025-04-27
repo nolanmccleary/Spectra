@@ -14,12 +14,10 @@ def get_rgb_tensor(image_object, rgb_device):
 
 
 
-
 def rgb_to_grayscale(rgb_tensor): #[C, H, W] -> [1, H, W]
     r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
     gray = 0.299*r + 0.587*g + 0.114*b
     return gray.unsqueeze(0)
-
 
 
 
@@ -29,9 +27,6 @@ def grayscale_to_rgb(grayscale_tensor): # [HxW] -> [C, HxW]
     rgb_unit = luma / norm2
     rgb_out = rgb_unit * grayscale_tensor.unsqueeze(0)
     return rgb_out
-
-
-
 
 
 
@@ -94,10 +89,7 @@ def generate_perturbation_vectors_1d(num_perturbations, size, device):
     
 
 
-def l2_per_pixel_rgb(img1, img2, loss_func):
-    #C, H, W = img1.shape
-    #diff = (img1 - img2).view(C, -1) #Flatten each color's matrix to 1-d array
-    #return torch.norm(diff, p=2, dim=0).mean().item() #Convert 3xN arrays to 3N array
+def lpips_per_pixel_rgb(img1, img2, loss_func):
     a = img1.unsqueeze(0) * 2.0 - 1.0   #[1, C, H, W] over [-1, 1]
     b = img2.unsqueeze(0) * 2.0 - 1.0
     return loss_func(a, b).item()

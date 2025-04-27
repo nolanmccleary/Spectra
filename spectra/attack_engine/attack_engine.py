@@ -2,7 +2,7 @@ import lpips
 from spectra.gradient_engine import make_gradient_engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize_and_flatten, inverse_delta, l2_per_pixel_rgb
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize_and_flatten, inverse_delta, lpips_per_pixel_rgb
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -73,7 +73,7 @@ class Attack_Object:
         self.output_tensor = None 
         self.output_hash = None 
         self.output_hamming = 0
-        self.output_l2 = 1
+        self.output_lpips = 1
         self.attack_success = None
 
         self.loss_func = lpips.LPIPS(net='alex').to(self.device)
@@ -142,15 +142,15 @@ class Attack_Object:
 
 
             if self.current_hamming >= self.hamming_threshold:
-                l2_distance = self.gradient_engine.l2_delta_from_engine_tensor(self.tensor)
+                lpips_distance = self.gradient_engine.lpips_delta_from_engine_tensor(self.tensor)
 
-                if l2_distance < self.output_l2:
+                if lpips_distance < self.output_lpips:
                     optimal_delta = current_delta.clone()
-                    self.output_l2 = l2_distance
+                    self.output_lpips = lpips_distance
                     self.output_hamming = self.current_hamming
                     self.output_hash = self.current_hash
                 
-                else:   #L2 distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
+                else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
                     current_delta.zero_()
                     self.gradient_engine.tensor = self.tensor.clone()
                     
@@ -167,7 +167,7 @@ class Attack_Object:
 
             rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
-            #Backwards pass to optimize RGB L2 delta within hamming threshold constraints
+            #Backwards pass to optimize RGB Lpips delta within hamming threshold constraints
             scale_factors = torch.linspace(0.0, 1.0, steps=50)
             self.output_tensor = (self.rgb_tensor + rgb_delta)
 
@@ -208,7 +208,7 @@ class Attack_Object:
                 else:
                     continue
 
-            self.output_l2 = l2_per_pixel_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
+            self.output_lpips = lpips_per_pixel_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
             self.attack_success = True
             out = self.output_tensor.detach().cpu()
             output_image = ToPILImage()(out)
@@ -225,7 +225,7 @@ class Attack_Object:
             self.log(f"Original hash: {hex(self.original_hash)}")
             self.log(f"Current hash: {hex(self.output_hash)}")
             self.log(f"Final hash hamming distance: {self.output_hamming}")
-            self.log(f"Final L2 distance: {self.output_l2}")
+            self.log(f"Final Lpips distance: {self.output_lpips}")
 
 
         return {
@@ -233,5 +233,5 @@ class Attack_Object:
             "original_hash" : hex(self.original_hash),
             "output_hash": hex(self.output_hash) if self.output_hash is not None else None,
             "hamming_distance": self.output_hamming,
-            "l2_per_pixel": self.output_l2,
+            "lpips_per_pixel": self.output_lpips,
         }

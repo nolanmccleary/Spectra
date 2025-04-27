@@ -1,7 +1,7 @@
 import math
 import lpips
 import torch
-from spectra.utils import generate_perturbation_vectors_1d, to_signed_int64, popcoint, grayscale_to_rgb
+from spectra.utils import generate_perturbation_vectors_1d, to_signed_int64, popcoint
 
 
 
@@ -43,7 +43,7 @@ class Gradient_Engine:
         self.tensor = tensor.clone().to(self.device)
 
 
-    def l2_delta_from_engine_tensor(self, tensor):
+    def lpips_delta_from_engine_tensor(self, tensor):
         raise NotImplementedError("Subclasses must override gradient compute ops")
 
 
@@ -76,21 +76,19 @@ class Grayscale_Engine(Gradient_Engine):
 
 
 
-    def l2_delta_from_engine_tensor(self, new_tensor):
-        rgb_old = grayscale_to_rgb(self.tensor).view(1, 3, self.height, self.width) * 2.0 - 1.0 #convert to rgb and project over [-1, 1] as per what LPIPS expects
-        rgb_new = grayscale_to_rgb(new_tensor).view(1, 3, self.height, self.width) * 2.0 - 1.0
-        return self.loss_func(rgb_old, rgb_new)
+    def lpips_delta_from_engine_tensor(self, new_tensor):
+
+        a = self.tensor.view(1, 1, self.height, self.width) * 2.0 - 1.0
+        b = new_tensor.view(1, 1, self.height, self.width) * 2.0 - 1.0
+
+        a3 = a.repeat(1, 3, 1, 1)
+        b3 = b.repeat(1, 3, 1, 1)
+
+        return self.loss_func(a3, b3).item()
+            
         
 
-
-
-
-
-
-
-
-
-
+        
 
 
 #DUMMY CLASS FOR NOW
@@ -125,7 +123,7 @@ class RGB_Engine(Gradient_Engine):
         return
 
 #DO NOT EDIT!
-    def l2_delta_from_engine_tensor(self, tensor):
+    def lpips_delta_from_engine_tensor(self, tensor):
         '''C, H, W = tensor.shape
         diff = (tensor - self.tensor).view(C, -1) #Flatten each color's matrix to 1-d array
         return torch.norm(diff, p=2, dim=0).mean().item() #Convert 3xN arrays to 3N array'''
