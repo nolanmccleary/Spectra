@@ -9,7 +9,9 @@ from torchvision.transforms import ToPILImage
 
 
 DEFAULT_SCALE_FACTOR = 6
-DEFAULT_NUM_PERTURBATIONS = 3000
+DEFAULT_NUM_PERTURBATIONS = 2000
+BETA = 0.85 #Hah, Beta.
+
 
 class Attack_Engine:
 
@@ -76,6 +78,8 @@ class Attack_Object:
         self.output_lpips = 1
         self.attack_success = None
 
+        self.prev_step = None
+
         self.loss_func = lpips.LPIPS(net='alex').to(self.device)
 
 
@@ -132,8 +136,12 @@ class Attack_Object:
         #Attack loop
         for _ in range(self.attack_cycles):
             last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.uint64, device=self.device) # h_old -> [h_old]
-            step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR)) * step_size #Might be better to just get signed gradient 
+            step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR)) * step_size * BETA #Might be better to just get signed gradient 
             
+            if self.prev_step is not None:
+                step.add_((1 - BETA) * self.prev_step)
+            
+
             #Adaptively scale step to avoid disrupting image composition via clipping
             pos_scale = torch.where(
                 step > 0,
@@ -147,12 +155,13 @@ class Attack_Object:
             )
 
             safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
-            safe_step = step * safe_scale
 
+            delta_step = step * safe_scale
+            self.prev_step = delta_step
 
-            current_delta.add_(safe_step)
-            self.gradient_engine.tensor.add_(safe_step)#.clamp_(0.0, 1.0)
-              
+            current_delta.add_(delta_step)
+            self.gradient_engine.tensor.add_(delta_step)#.clamp_(0.0, 1.0)
+
 
             self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
             self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)

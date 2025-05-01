@@ -1,9 +1,7 @@
-import math
-import lpips
 import torch
 from spectra.utils import generate_perturbation_vectors_1d, to_signed_int64, popcoint
 
-
+EPS = 1e-6
 
 def make_gradient_engine(func, tensor, device, func_device, num_perturbations, height, width, loss_func):
     if tensor.dim() == 1:
@@ -63,12 +61,27 @@ class Grayscale_Engine(Gradient_Engine):
         
         batch_pert = perturbations.mul(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]    
         
-        cand_batch = (self.tensor + batch_pert).to(self.func_device).clamp(0.0, 1.0) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
+        pos_scale = torch.where(
+            batch_pert > 0,
+            (1.0 - self.tensor) / (batch_pert + EPS),
+            torch.tensor(1.0, device=self.device),
+        )
+        neg_scale = torch.where(
+            batch_pert < 0,
+            (0.0 - self.tensor) / (batch_pert - EPS),
+            torch.tensor(1.0, device=self.device),
+        )
 
-        new_hashes = torch.tensor([to_signed_int64(self.func(v, self.height, self.width)) for v in cand_batch], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]
+        safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
+        batch_pert.mul(safe_scale)
+
+        cand_batch = (self.tensor + batch_pert).to(self.func_device).clamp(0.0, 1.0) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
+        quant = torch.round(cand_batch * 255.0) / 255.0
+
+        new_hashes = torch.tensor([to_signed_int64(self.func(v, self.height, self.width)) for v in quant], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]
         
         x = last_hash ^ new_hashes  #[h_old], [h1, h2, h3] -> [x1, x2, x3]
-        hamming_deltas = popcoint(x).to(cand_batch.dtype) #[x1, x2, x3] -> [d1, d2, d3]
+        hamming_deltas = popcoint(x).to(quant.dtype) #[x1, x2, x3] -> [d1, d2, d3]
 
         gradient = (hamming_deltas.unsqueeze(1) * batch_pert.to(self.device)).sum(dim=0).to(self.device)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
 
