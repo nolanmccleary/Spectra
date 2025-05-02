@@ -135,7 +135,7 @@ class Attack_Object:
 
         #Attack loop
         for _ in range(self.attack_cycles):
-            last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.uint64, device=self.device) # h_old -> [h_old]
+            last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.bool, device=self.device) # h_old -> [h_old]
             step = torch.sign(self.gradient_engine.compute_gradient(last_tensor_hash, DEFAULT_SCALE_FACTOR)) * step_size * BETA #Might be better to just get signed gradient 
             
             if self.prev_step is not None:
@@ -164,7 +164,7 @@ class Attack_Object:
 
 
             self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
-            self.current_hamming = hamming_distance_hex(self.original_hash, self.current_hash)
+            self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
 
 
             if self.current_hamming >= self.hamming_threshold:
@@ -179,7 +179,6 @@ class Attack_Object:
                 else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
                     current_delta.zero_()
                     self.gradient_engine.tensor = self.tensor.clone()
-                    
 
 
         #If we broke hamming threshold
@@ -223,7 +222,7 @@ class Attack_Object:
 
 
                 cand_hash = self.func(cand_gray.to(self.func_device), self.height, self.width)
-                cand_ham = hamming_distance_hex(cand_hash, self.original_hash)
+                cand_ham = cand_hash.ne(self.original_hash).sum().item()
 
                 if cand_ham >= self.hamming_threshold:
                     self.output_tensor = cand_tensor
@@ -247,16 +246,16 @@ class Attack_Object:
         self.log(f"Success status: {self.attack_success}")
         
         if self.attack_success:
-            self.log(f"Original hash: {hex(self.original_hash)}")
-            self.log(f"Current hash: {hex(self.output_hash)}")
+            self.log(f"Original hash: {self.original_hash}")
+            self.log(f"Current hash: {self.output_hash}")
             self.log(f"Final hash hamming distance: {self.output_hamming}")
             self.log(f"Final Lpips distance: {self.output_lpips}")
 
 
         return {
             "success": self.attack_success,
-            "original_hash" : hex(self.original_hash),
-            "output_hash": hex(self.output_hash) if self.output_hash is not None else None,
+            "original_hash" : self.original_hash,
+            "output_hash": self.output_hash if self.output_hash is not None else None,
             "hamming_distance": self.output_hamming,
             "lpips_per_pixel": self.output_lpips,
         }

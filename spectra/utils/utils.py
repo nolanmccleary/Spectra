@@ -95,6 +95,11 @@ def lpips_per_pixel_rgb(img1, img2, loss_func):
     return loss_func(a, b).item()
 
 
+#CAN DELETE THESE
+def hamming_distance_bits(a, b):
+    return 
+
+
 
 
 def hamming_distance_hex(a, b):
@@ -118,4 +123,5 @@ def popcoint(packed_tensor):
     coint = (coint + (coint >> 4)) & 0x0F0F0F0F0F0F0F0F #Sum top nibbles into bytes; each 8-bit slot now has b_i +...+ b_{i+7}
     coint = (coint * 0x0101010101010101) >> 56 #Sum byte values into top byte then right-shift to get popc(oin)ount; byte7 = byte0 +...+byte7 = popc(oin)ount << 56
     return coint
+
 
