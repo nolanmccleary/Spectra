@@ -9,9 +9,9 @@ def phash_attack():
     engine.add_attack(images, PHASH, 16, 100, "cpu", verbose="off")
     engine.run_attacks()
 
-    #for image_pair in images:
-    #    print(validator.compare(image_pair, PHASH))
-    #    print(phash_compare(image_pair[0], image_pair[1]))
+    for image_pair in images:
+        print(validator.compare(image_pair, PHASH))
+        print(phash_compare(image_pair[0], image_pair[1]))
 
 
 

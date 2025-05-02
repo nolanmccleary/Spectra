@@ -1,5 +1,5 @@
 import torch
-from spectra.utils import generate_perturbation_vectors_1d, to_signed_int64, popcoint
+from spectra.utils import generate_perturbation_vectors_1d
 
 EPS = 1e-6
 
@@ -78,12 +78,8 @@ class Grayscale_Engine(Gradient_Engine):
         cand_batch = (self.tensor + batch_pert).to(self.func_device).clamp(0.0, 1.0) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
         quant = torch.round(cand_batch * 255.0) / 255.0
 
-        #new_hashes = torch.tensor([self.func(v, self.height, self.width) for v in quant], dtype=torch.int64, device=self.device)     #[f[c11, c12, c13], f[c21, c22, c23], f[c31, c32, c33]] -> [h1, h2, h3]        
-        #x = last_hash ^ new_hashes  #[h_old], [h1, h2, h3] -> [x1, x2, x3]
-        #hamming_deltas = popcoint(x).to(quant.dtype) #[x1, x2, x3] -> [d1, d2, d3]
 
-
-        new_hashes = torch.stack([self.func(v, self.height, self.width) for v in quant], dim=0) #[NUM_PERTURBATIONS, N_BITS]
+        new_hashes = torch.stack([self.func(v, self.height, self.width) for v in quant], dim=0).to(self.device) #[NUM_PERTURBATIONS, N_BITS]
         diffs = new_hashes.ne(last_hash)
         hamming_deltas = diffs.sum(dim=1).to(self.tensor.dtype)
 

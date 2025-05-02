@@ -1,6 +1,6 @@
 import lpips
 from PIL import Image
-from spectra.utils import get_rgb_tensor, lpips_per_pixel_rgb, rgb_to_grayscale, grayscale_resize_and_flatten, hamming_distance_hex
+from spectra.utils import get_rgb_tensor, lpips_per_pixel_rgb, rgb_to_grayscale, grayscale_resize_and_flatten
 from spectra.hashes import Hash_Wrapper
 
 
@@ -38,11 +38,11 @@ class Image_Validator:
         grayscale_resized = grayscale_resize_and_flatten(grayscale, resize_height, resize_width)
         output_hash = func(grayscale_resized, resize_height, resize_width)
 
-        hamming_distance = hamming_distance_hex(original_hash, output_hash)
+        hamming_distance = original_hash.ne(output_hash).sum().item()
 
         return {
-            "original_hash" : hex(original_hash),
-            "output_hash": hex(output_hash),
+            "original_hash" : hex(original_hash.sum().item()),
+            "output_hash": hex(output_hash.sum().item()),
             "hamming_distance": hamming_distance,
             "lpips_per_pixel": lpips_per_pixel
         }

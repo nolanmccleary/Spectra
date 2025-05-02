@@ -2,7 +2,7 @@ import lpips
 from spectra.gradient_engine import make_gradient_engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, hamming_distance_hex, grayscale_resize_and_flatten, inverse_delta, lpips_per_pixel_rgb
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, grayscale_resize_and_flatten, inverse_delta, lpips_per_pixel_rgb
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -254,8 +254,8 @@ class Attack_Object:
 
         return {
             "success": self.attack_success,
-            "original_hash" : self.original_hash,
-            "output_hash": self.output_hash if self.output_hash is not None else None,
+            "original_hash" : hex(self.original_hash.sum().item()),
+            "output_hash": hex(self.output_hash.sum().item()) if self.output_hash is not None else None,
             "hamming_distance": self.output_hamming,
             "lpips_per_pixel": self.output_lpips,
         }
