@@ -55,11 +55,18 @@ class Gradient_Engine:
 
 
     def lpips_delta_from_engine_tensor(self, new_tensor):
+        a3 = None
+        b3 = None
 
-        a = self.tensor.view(1, 1, self.height, self.width) * 2.0 - 1.0
-        b = new_tensor.view(1, 1, self.height, self.width) * 2.0 - 1.0
+        if self.num_channels == 1:
+            a = self.tensor.view(1, 1, self.height, self.width) * 2.0 - 1.0
+            b = new_tensor.view(1, 1, self.height, self.width) * 2.0 - 1.0
 
-        a3 = a.repeat(1, 3, 1, 1)
-        b3 = b.repeat(1, 3, 1, 1)
+            a3 = a.repeat(1, 3, 1, 1)
+            b3 = b.repeat(1, 3, 1, 1)
 
+        else:
+            a3 = self.tensor.unsqueeze(0)
+            b3 = new_tensor.unsqueeze(0)
+        
         return self.loss_func(a3, b3).item()

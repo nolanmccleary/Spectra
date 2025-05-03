@@ -198,11 +198,17 @@ class Attack_Object:
                 optimal_delta = optimal_delta.view(1, self.height, self.width)
                 upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
 
-            rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
+            rgb_delta = upsampled_delta
+
+
+            if self.grayscale:
+                rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
+
 
             #Backwards pass to optimize RGB Lpips delta within hamming threshold constraints
             scale_factors = torch.linspace(0.0, 1.0, steps=50)
             self.output_tensor = (self.rgb_tensor + rgb_delta)
+
 
             for scale in scale_factors:
                 cand_delta  = rgb_delta * scale
@@ -210,8 +216,8 @@ class Attack_Object:
 
                 pos_scale = torch.where(
                     cand_delta > 0,
-                   (1.0 - self.rgb_tensor) / (cand_delta + eps),
-                   torch.tensor(1.0, device=self.device),
+                (1.0 - self.rgb_tensor) / (cand_delta + eps),
+                torch.tensor(1.0, device=self.device),
                 )
                 neg_scale = torch.where(
                     cand_delta < 0,
@@ -223,13 +229,15 @@ class Attack_Object:
                 safe_delta = cand_delta * safe_scale
                 cand_tensor = self.rgb_tensor + safe_delta
 
-                cand_gray = rgb_to_grayscale(cand_tensor)
+                cand_targ = cand_tensor
+                if self.grayscale:
+                    cand_targ = rgb_to_grayscale(cand_tensor)
                 
                 if self.resize_flag:
-                    cand_gray = tensor_resize(cand_gray, self.resize_height, self.resize_width)
+                    cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
 
-                cand_hash = self.func(cand_gray.to(self.func_device))
+                cand_hash = self.func(cand_targ.to(self.func_device))
                 cand_ham = cand_hash.ne(self.original_hash).sum().item()
 
                 if cand_ham >= self.hamming_threshold:
@@ -239,6 +247,8 @@ class Attack_Object:
                     break
                 else:
                     continue
+
+
 
             self.output_lpips = lpips_per_pixel_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
             self.attack_success = True

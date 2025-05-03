@@ -30,22 +30,6 @@ def grayscale_to_rgb(grayscale_tensor): # [HxW] -> [C, HxW]
 
 
 
-
-'''
-def grayscale_resize_and_flatten(grayscale_tensor, height, width):
-    grayscale_tensor = grayscale_tensor.clone().unsqueeze(0)
-    gray_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
-        grayscale_tensor,
-        size=(height, width),
-        mode='bilinear',
-        align_corners=False
-    )
-    return gray_resized.view(-1)
-'''
-
-
-
-
 def tensor_resize(input_tensor, height, width):
     tensor = input_tensor.clone().unsqueeze(0) #[{3,1}, H, W] -> [1, {3, 1}, H, W]
     tensor_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
@@ -55,9 +39,6 @@ def tensor_resize(input_tensor, height, width):
         align_corners=False
     )
     return tensor_resized.squeeze(0) #[1, {3, 1}, H, W] -> [{3,1}, H, W]
-
-
-
 
 
 
@@ -78,18 +59,6 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     )
 
     return delta.view(C, H, W)
-    
-    
-    '''
-    luma = torch.tensor([0.299, 0.587, 0.114], device=rgb_tensor.device).view(3,1)   
-    norm2 = (luma**2).sum()                           
-
-    d = delta.unsqueeze(0)                          
-    rgb_delta_flat = (luma * d) / norm2               
-    rgb_delta = rgb_delta_flat.view(3, H, W)        
-    return rgb_delta
-    '''
-    
 
 
 
