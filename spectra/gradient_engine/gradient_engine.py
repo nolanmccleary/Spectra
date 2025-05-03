@@ -49,7 +49,7 @@ class Gradient_Engine:
         diffs = new_hashes.ne(last_hash)
         hamming_deltas = diffs.sum(dim=1).to(self.tensor.dtype).view(self.num_perturbations, 1, 1, 1)
 
-        gradient = (hamming_deltas * batch_pert.to(self.device)).sum(dim=0).to(self.device).view(1, self.height, self.width)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
+        gradient = (hamming_deltas * batch_pert.to(self.device)).sum(dim=0).to(self.device).view(self.num_channels, self.height, self.width)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
         return gradient
 
 

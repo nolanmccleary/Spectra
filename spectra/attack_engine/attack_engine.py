@@ -195,7 +195,7 @@ class Attack_Object:
             upsampled_delta = optimal_delta
             
             if self.resize_flag:               
-                optimal_delta = optimal_delta.view(1, self.height, self.width)
+                optimal_delta = optimal_delta.view(1 if self.grayscale else 3, self.height, self.width)
                 upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
 
             rgb_delta = upsampled_delta

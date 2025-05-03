@@ -1,4 +1,4 @@
-from spectra import Attack_Engine, PHASH
+from spectra import Attack_Engine, PHASH, PHASH_RGB
 from validation import phash_compare 
 
 
