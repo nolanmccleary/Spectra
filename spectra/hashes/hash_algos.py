@@ -4,8 +4,10 @@ import torch
 
 
 def generate_phash(tensor, height, width):
+    
     DCT_DIM = 8
-    arr = (tensor.detach().cpu().numpy() * 255).round().astype(np.uint8).reshape((height, width))
+    view = tensor.squeeze(0)
+    arr = (view.detach().cpu().numpy() * 255).round().astype(np.uint8).reshape((height, width))
     dct = scipy.fftpack.dct(scipy.fftpack.dct(arr, axis=0), axis=1)
     dct_kernel = dct[:DCT_DIM, :DCT_DIM]
     

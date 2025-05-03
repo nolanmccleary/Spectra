@@ -1,5 +1,5 @@
 import lpips
-from spectra.gradient_engine import make_gradient_engine
+from spectra.gradient_engine import Gradient_Engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
 from spectra.utils import get_rgb_tensor, rgb_to_grayscale, tensor_resize, inverse_delta, lpips_per_pixel_rgb
@@ -85,8 +85,6 @@ class Attack_Object:
 
         self.loss_func = lpips.LPIPS(net='alex').to(self.device)
 
-        self.num_channels = 0 #MAY BE ABLE TO GET RID OF THIS
-
 
 
     def log(self, msg):
@@ -102,13 +100,10 @@ class Attack_Object:
             self.original_width = self.rgb_tensor.size(2)
             self.log("Setting grayscale image tensor")
             
-            
             self.tensor = self.rgb_tensor
-            self.num_channels = RGB_CHANNEL_COUNT
 
             if self.grayscale:
                 self.tensor = rgb_to_grayscale(self.rgb_tensor)
-                self.num_channels = GRAYSCALE_CHANNEL_COUNT
 
             if self.resize_flag:
                 self.tensor = tensor_resize(self.tensor, self.resize_height, self.resize_width) 
@@ -128,7 +123,7 @@ class Attack_Object:
     def stage_attack(self, input_image_path):
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
-        self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS, self.height, self.width, self.loss_func, self.grayscale)
+        self.gradient_engine = Gradient_Engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS, self.height, self.width, self.loss_func)
         self.is_staged = True
         
 
