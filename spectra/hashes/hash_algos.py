@@ -3,21 +3,12 @@ import scipy.fftpack
 import torch
 
 
-def generate_phash(tensor, height, width):
-    
+def generate_phash(tensor): #[1, H, W] -> [64]
     DCT_DIM = 8
     view = tensor.squeeze(0)
-    arr = (view.detach().cpu().numpy() * 255).round().astype(np.uint8).reshape((height, width))
+    arr = (view.detach().cpu().numpy() * 255).round().astype(np.uint8)
     dct = scipy.fftpack.dct(scipy.fftpack.dct(arr, axis=0), axis=1)
     dct_kernel = dct[:DCT_DIM, :DCT_DIM]
     
     bits = (dct_kernel > np.median(dct_kernel)).astype(np.uint8).flatten()
     return torch.from_numpy(bits).to(tensor.device).to(torch.bool)
-    
-    
-    '''
-    avg = np.median(dct_kernel)
-    diff = dct_kernel > avg
-    bitstring = ''.join(['1' if b else '0' for b in diff.flatten()])
-    return int(bitstring, 2)
-    '''

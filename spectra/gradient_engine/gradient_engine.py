@@ -22,12 +22,10 @@ class Gradient_Engine:
         
 
 
-
     def compute_gradient(self, last_hash, scale_factor):
-        perturbations = generate_perturbation_vectors(self.num_perturbations, self.height, self.width, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
+        perturbations = generate_perturbation_vectors(self.num_perturbations, self.num_channels, self.height, self.width, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         batch_pert = perturbations.mul(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]    
         
-
         pos_scale = torch.where(
             batch_pert > 0,
             (1.0 - self.tensor) / (batch_pert + EPS),
@@ -39,22 +37,19 @@ class Gradient_Engine:
             torch.tensor(1.0, device=self.device),
         )
 
-
         safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
         batch_pert.mul(safe_scale)
 
         cand_batch = (self.tensor + batch_pert).to(self.func_device).clamp(0.0, 1.0) #[t1, t2, t3] + [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] -> [[c11, c12, c13], [c21, c22, c23], [c31, c32, c33]] where cxy = t[y] + p[x,y]
         
-
         quant = torch.round(cand_batch * 255.0) / 255.0
 
-
-        new_hashes = torch.stack([self.func(v, self.height, self.width) for v in quant], dim=0).to(self.device) #[NUM_PERTURBATIONS, N_BITS]
+        new_hashes = torch.stack([self.func(v) for v in quant], dim=0).to(self.device) #[NUM_PERTURBATIONS, N_BITS]
+        
         diffs = new_hashes.ne(last_hash)
-        hamming_deltas = diffs.sum(dim=1).to(self.tensor.dtype)
+        hamming_deltas = diffs.sum(dim=1).to(self.tensor.dtype).view(self.num_perturbations, 1, 1, 1)
 
-
-        gradient = (hamming_deltas.view(self.num_perturbations, 1, 1) * batch_pert.to(self.device)).sum(dim=0).to(self.device).view(1, self.height, self.width)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
+        gradient = (hamming_deltas * batch_pert.to(self.device)).sum(dim=0).to(self.device).view(1, self.height, self.width)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
         return gradient
 
 

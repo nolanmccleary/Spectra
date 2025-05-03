@@ -2,7 +2,7 @@ import lpips
 from spectra.gradient_engine import Gradient_Engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, tensor_resize, inverse_delta, lpips_per_pixel_rgb
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, tensor_resize, inverse_delta, lpips_per_pixel_rgb, to_hex
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -114,9 +114,8 @@ class Attack_Object:
                 self.width = self.original_width
 
 
-            self.original_hash = self.func(self.tensor.to(self.func_device), self.height, self.width)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
+            self.original_hash = self.func(self.tensor.to(self.func_device))  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
-
 
 
 
@@ -172,7 +171,7 @@ class Attack_Object:
             self.gradient_engine.tensor.add_(delta_step)#.clamp_(0.0, 1.0)
 
 
-            self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device), self.height, self.width)
+            self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device))
             self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
 
 
@@ -230,7 +229,7 @@ class Attack_Object:
                     cand_gray = tensor_resize(cand_gray, self.resize_height, self.resize_width)
 
 
-                cand_hash = self.func(cand_gray.to(self.func_device), self.height, self.width)
+                cand_hash = self.func(cand_gray.to(self.func_device))
                 cand_ham = cand_hash.ne(self.original_hash).sum().item()
 
                 if cand_ham >= self.hamming_threshold:
@@ -255,16 +254,16 @@ class Attack_Object:
         self.log(f"Success status: {self.attack_success}")
         
         if self.attack_success:
-            self.log(f"Original hash: {self.original_hash}")
-            self.log(f"Current hash: {self.output_hash}")
+            self.log(f"Original hash: {to_hex(self.original_hash)}")
+            self.log(f"Current hash: {to_hex(self.output_hash)}")
             self.log(f"Final hash hamming distance: {self.output_hamming}")
             self.log(f"Final Lpips distance: {self.output_lpips}")
 
 
         return {
             "success": self.attack_success,
-            "original_hash" : hex(self.original_hash.sum().item()),
-            "output_hash": hex(self.output_hash.sum().item()) if self.output_hash is not None else None,
+            "original_hash" : to_hex(self.original_hash),
+            "output_hash": to_hex(self.output_hash) if self.output_hash is not None else None,
             "hamming_distance": self.output_hamming,
             "lpips_per_pixel": self.output_lpips,
         }
