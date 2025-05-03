@@ -30,6 +30,8 @@ def grayscale_to_rgb(grayscale_tensor): # [HxW] -> [C, HxW]
 
 
 
+
+'''
 def grayscale_resize_and_flatten(grayscale_tensor, height, width):
     grayscale_tensor = grayscale_tensor.clone().unsqueeze(0)
     gray_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
@@ -39,6 +41,23 @@ def grayscale_resize_and_flatten(grayscale_tensor, height, width):
         align_corners=False
     )
     return gray_resized.view(-1)
+'''
+
+
+
+
+def tensor_resize(input_tensor, height, width):
+    tensor = input_tensor.clone().unsqueeze(0) #[{3,1}, H, W] -> [1, {3, 1}, H, W]
+    tensor_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
+        tensor,
+        size=(height, width),
+        mode='bilinear',
+        align_corners=False
+    )
+    return tensor_resized.squeeze(0) #[1, {3, 1}, H, W] -> [{3,1}, H, W]
+
+
+
 
 
 
@@ -48,15 +67,14 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
     if delta.shape == (C, H, W):
         return delta
 
-    rgb_flat = rgb_tensor.view(C, -1)
-    rgb_mean = rgb_flat.mean(dim=0, keepdim=True)  # [1, H*W]
-    gd = delta.unsqueeze(0)              # [1, H*W]
+    rgb_mean = rgb_tensor.mean()  # [1, H, W]
+    gd = delta.unsqueeze(0)              # [1, H, W]
     
     # Avoid division by zero
     delta = torch.where(
         gd <= 0,
-        gd * rgb_flat / (rgb_mean + eps),
-        gd * (1 - rgb_flat) / ((1 - rgb_mean) + eps)
+        gd * rgb_tensor / (rgb_mean + eps),
+        gd * (1 - rgb_tensor) / ((1 - rgb_mean) + eps)
     )
 
     return delta.view(C, H, W)
@@ -80,8 +98,8 @@ def generate_seed_perturbation(dim, start_scalar, device):
 
 
 
-def generate_perturbation_vectors_1d(num_perturbations, size, device):
-    base = torch.randn((num_perturbations // 2, size), dtype=torch.float32, device=device) 
+def generate_perturbation_vectors_1d(num_perturbations, height, width, device):
+    base = torch.randn((num_perturbations // 2, height, width), dtype=torch.float32, device=device) 
     absmax = base.abs().amax(dim=1, keepdim=True)
     scale = torch.where(absmax > 0, 1.0 / absmax, torch.tensor(1.0, device = device)) #scale tensor to get max val of each generated perturbation so that we can normalize
     base = base * scale

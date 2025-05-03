@@ -3,29 +3,26 @@ from spectra.utils import generate_perturbation_vectors_1d
 
 EPS = 1e-6
 
-def make_gradient_engine(func, tensor, device, func_device, num_perturbations, height, width, loss_func):
-    if tensor.dim() == 1:
+def make_gradient_engine(func, tensor, device, func_device, num_perturbations, height, width, loss_func, is_grayscale=True):
+    if is_grayscale:
         return Grayscale_Engine(func, tensor, device, func_device, num_perturbations, height, width, loss_func)
-    elif tensor.dim() == 3:
+    else:
         print("Warning! RGB gradient calculation not yet supported")
         return RGB_Engine(func, tensor, device, num_perturbations)
-    else:
-        raise ValueError(f"Unsupported tensor shape: {tensor.shape}")
-
 
 
 class Gradient_Engine:
 
     def __init__(self, func, tensor, device, func_device, num_perturbations, height, width, loss_func):    #device parameter needs to be the same as the tensor and the func's respective devices
         self.func = func
-        self.tensor = tensor.clone().to(device)
         self.device = device
+        #self.tensor = tensor.clone().to(self.device)
         self.func_device = func_device
         self.num_perturbations = num_perturbations
         self.height = height
         self.width = width
         self.loss_func = loss_func
-        self.gradient = torch.zeros_like(self.tensor)
+        #self.gradient = torch.zeros_like(self.tensor)
 
 
     def compute_gradient(self, old_hash, scale_factor):
@@ -37,30 +34,35 @@ class Gradient_Engine:
 
 
     def set_tensor(self, tensor):
-        assert tensor.dim() == self.tensor.dim(), f"Error: Input tensor dimensionality {tensor.dim()} does not match engine tensor dimensionality {self.tensor.dim()}"
-        self.tensor = tensor.clone().to(self.device)
+        raise NotImplementedError("Subclasses must override tensor setting")
 
 
     def lpips_delta_from_engine_tensor(self, tensor):
-        raise NotImplementedError("Subclasses must override gradient compute ops")
+        raise NotImplementedError("Subclasses must override LPIPS delta compute")
 
 
 
 
 class Grayscale_Engine(Gradient_Engine):
 
+
+
     def __init__(self, func, tensor, device, func_device, num_perturbations, height, width, loss_func):    #device parameter needs to be the same as the tensor and the func's respective devices
-        self.tensor_image_size = tensor.numel()
-        assert tensor.dim() == 1, f"Expected 1D tensor, got {self.tensor.dim()}D tensor."
+        
         super().__init__(func, tensor, device, func_device, num_perturbations, height, width, loss_func)
+        
+        self.tensor = tensor.to(self.device)
+        self.gradient = torch.zeros_like(self.tensor)
+        self.tensor_image_size = self.tensor.numel()
 
 
 
     def compute_gradient(self, last_hash, scale_factor):
-        perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.tensor_image_size, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
+        perturbations = generate_perturbation_vectors_1d(self.num_perturbations, self.height, self.width, self.device) #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]
         
         batch_pert = perturbations.mul(scale_factor)   #[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]] = c[[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]    
         
+
         pos_scale = torch.where(
             batch_pert > 0,
             (1.0 - self.tensor) / (batch_pert + EPS),
@@ -71,6 +73,7 @@ class Grayscale_Engine(Gradient_Engine):
             (0.0 - self.tensor) / (batch_pert - EPS),
             torch.tensor(1.0, device=self.device),
         )
+
 
         safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
         batch_pert.mul(safe_scale)
@@ -84,8 +87,7 @@ class Grayscale_Engine(Gradient_Engine):
         hamming_deltas = diffs.sum(dim=1).to(self.tensor.dtype)
 
 
-        gradient = (hamming_deltas.unsqueeze(1) * batch_pert.to(self.device)).sum(dim=0).to(self.device)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
-
+        gradient = (hamming_deltas.view(self.num_perturbations, 1, 1) * batch_pert.to(self.device)).sum(dim=0).to(self.device).view(1, self.height, self.width)  #[d1, d2, d3] -> VecSum([[d1], [d2], [d3]] * [[p11, p12, p13], [p21, p22, p23], [p31, p32, p33]]) -> [g1, g2, g3] where gx = [dx] * [px1, px2, px3]
         return gradient
 
 

@@ -2,7 +2,7 @@ import lpips
 from spectra.gradient_engine import make_gradient_engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, grayscale_resize_and_flatten, inverse_delta, lpips_per_pixel_rgb
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, tensor_resize, inverse_delta, lpips_per_pixel_rgb
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -11,6 +11,9 @@ from torchvision.transforms import ToPILImage
 DEFAULT_SCALE_FACTOR = 6
 DEFAULT_NUM_PERTURBATIONS = 2000
 BETA = 0.85 #Hah, Beta.
+
+RGB_CHANNEL_COUNT = 3
+GRAYSCALE_CHANNEL_COUNT = 1
 
 
 class Attack_Engine:
@@ -51,7 +54,7 @@ class Attack_Object:
         self.device = device
         self.verbose = verbose
 
-        self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()     
+        self.func, self.resize_height, self.resize_width, available_devices, self.grayscale = hash_wrapper.get_info()     
         if device in available_devices:
             self.func_device = device
         else:
@@ -82,6 +85,8 @@ class Attack_Object:
 
         self.loss_func = lpips.LPIPS(net='alex').to(self.device)
 
+        self.num_channels = 0 #MAY BE ABLE TO GET RID OF THIS
+
 
 
     def log(self, msg):
@@ -92,30 +97,38 @@ class Attack_Object:
 
     def set_tensor(self, input_image_path):
         with Image.open(input_image_path) as img:
-            self.rgb_tensor = get_rgb_tensor(img, self.device) #[C, H, W]
+            self.rgb_tensor = get_rgb_tensor(img, self.device) #[C, H, W]; R - [0.0, 1.0]
             self.original_height = self.rgb_tensor.size(1)
             self.original_width = self.rgb_tensor.size(2)
             self.log("Setting grayscale image tensor")
-            gray = rgb_to_grayscale(self.rgb_tensor)
+            
+            
+            self.tensor = self.rgb_tensor
+            self.num_channels = RGB_CHANNEL_COUNT
+
+            if self.grayscale:
+                self.tensor = rgb_to_grayscale(self.rgb_tensor)
+                self.num_channels = GRAYSCALE_CHANNEL_COUNT
 
             if self.resize_flag:
-                gray = grayscale_resize_and_flatten(gray, self.resize_height, self.resize_width) 
+                self.tensor = tensor_resize(self.tensor, self.resize_height, self.resize_width) 
                 self.height = self.resize_height
                 self.width = self.resize_width
-
             else:
                 self.height = self.original_height
                 self.width = self.original_width
-            
-            self.tensor = gray
+
+
             self.original_hash = self.func(self.tensor.to(self.func_device), self.height, self.width)  #If the hash func resizes/grayscales, we allow the option of an upfront conversion to save compute on every function call during the attack
             self.current_hash = self.original_hash
+
+
 
 
     def stage_attack(self, input_image_path):
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
-        self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS, self.height, self.width, self.loss_func)
+        self.gradient_engine = make_gradient_engine(self.func, self.tensor, self.device, self.func_device, DEFAULT_NUM_PERTURBATIONS, self.height, self.width, self.loss_func, self.grayscale)
         self.is_staged = True
         
 
@@ -159,6 +172,7 @@ class Attack_Object:
             delta_step = step * safe_scale
             self.prev_step = delta_step
 
+
             current_delta.add_(delta_step)
             self.gradient_engine.tensor.add_(delta_step)#.clamp_(0.0, 1.0)
 
@@ -188,7 +202,7 @@ class Attack_Object:
             
             if self.resize_flag:               
                 optimal_delta = optimal_delta.view(1, self.height, self.width)
-                upsampled_delta = grayscale_resize_and_flatten(optimal_delta, self.original_height, self.original_width)
+                upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
 
             rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
@@ -218,7 +232,7 @@ class Attack_Object:
                 cand_gray = rgb_to_grayscale(cand_tensor)
                 
                 if self.resize_flag:
-                    cand_gray = grayscale_resize_and_flatten(cand_gray, self.resize_height, self.resize_width)
+                    cand_gray = tensor_resize(cand_gray, self.resize_height, self.resize_width)
 
 
                 cand_hash = self.func(cand_gray.to(self.func_device), self.height, self.width)

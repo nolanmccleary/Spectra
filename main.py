@@ -1,16 +1,16 @@
 from spectra import Attack_Engine, PHASH
-from validation import Image_Validator, phash_compare
+from validation import phash_compare 
 
 
 def phash_attack():
     engine = Attack_Engine(verbose="on")
-    validator = Image_Validator("cpu")
+    #validator = Image_Validator("cpu")
     images = [('sample_images/peppers.png', 'output/peppers_attacked.png'), ('sample_images/peppers.jpeg', 'output/peppers_attacked.jpeg')]
-    engine.add_attack(images, PHASH, 16, 100, "cpu", verbose="off")
+    engine.add_attack(images, PHASH, 10, 1000, "cpu", verbose="off")
     engine.run_attacks()
 
     for image_pair in images:
-        print(validator.compare(image_pair, PHASH))
+        #print(validator.compare(image_pair, PHASH))
         print(phash_compare(image_pair[0], image_pair[1]))
 
 
