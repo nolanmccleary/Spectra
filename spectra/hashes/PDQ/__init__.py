@@ -1,1 +1,1 @@
-from pdqhashing import Hash256
+from .pdqhashing import Hash256, PDQHasher
