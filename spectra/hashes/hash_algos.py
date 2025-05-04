@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.fftpack
 import torch
-from spectra.utils import rgb_to_grayscale
+from spectra.utils import rgb_to_grayscale, rgb_to_luma
 
 
 def generate_phash(tensor): #[1, H, W] -> [64]

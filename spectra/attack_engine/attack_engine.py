@@ -2,7 +2,7 @@ import lpips
 from spectra.gradient_engine import Gradient_Engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, tensor_resize, inverse_delta, lpips_per_pixel_rgb, to_hex
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -11,9 +11,6 @@ from torchvision.transforms import ToPILImage
 DEFAULT_SCALE_FACTOR = 6
 DEFAULT_NUM_PERTURBATIONS = 3000
 BETA = 0.85 #Hah, Beta.
-
-RGB_CHANNEL_COUNT = 3
-GRAYSCALE_CHANNEL_COUNT = 1
 
 
 
@@ -57,7 +54,7 @@ class Attack_Object:
         self.device = device
         self.verbose = verbose
 
-        self.func, self.resize_height, self.resize_width, available_devices, self.grayscale = hash_wrapper.get_info()     
+        self.func, self.resize_height, self.resize_width, available_devices, self.colormode = hash_wrapper.get_info()     
         if device in available_devices:
             self.func_device = device
         else:
@@ -105,8 +102,11 @@ class Attack_Object:
             
             self.tensor = self.rgb_tensor
 
-            if self.grayscale:
+            if self.colormode == "grayscale":
                 self.tensor = rgb_to_grayscale(self.rgb_tensor)
+
+            elif self.colormode == "luma":
+                self.tensor = rgb_to_luma(self.rgb_tensor)
 
             if self.resize_flag:
                 self.tensor = tensor_resize(self.tensor, self.resize_height, self.resize_width) 
@@ -198,14 +198,15 @@ class Attack_Object:
             upsampled_delta = optimal_delta
             
             if self.resize_flag:               
-                optimal_delta = optimal_delta.view(1 if self.grayscale else 3, self.height, self.width)
+                optimal_delta = optimal_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
                 upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
 
             rgb_delta = upsampled_delta
 
 
-            if self.grayscale:
+            if self.colormode == "grayscale" or self.colormode == "luma":
                 rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
+
 
 
             #Backwards pass to optimize RGB Lpips delta within hamming threshold constraints
@@ -233,9 +234,12 @@ class Attack_Object:
                 cand_tensor = self.rgb_tensor + safe_delta
 
                 cand_targ = cand_tensor
-                if self.grayscale:
+                if self.colormode == "grayscale":
                     cand_targ = rgb_to_grayscale(cand_tensor)
                 
+                elif self.colormode == "luma":
+                    cand_targ = rgb_to_luma(cand_tensor)
+
                 if self.resize_flag:
                     cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
@@ -253,7 +257,7 @@ class Attack_Object:
 
 
 
-            self.output_lpips = lpips_per_pixel_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
+            self.output_lpips = lpips_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
             self.attack_success = True
             out = self.output_tensor.detach()#.cpu()
             output_image = ToPILImage()(out)
@@ -278,5 +282,5 @@ class Attack_Object:
             "original_hash" : to_hex(self.original_hash),
             "output_hash": to_hex(self.output_hash) if self.output_hash is not None else None,
             "hamming_distance": self.output_hamming,
-            "lpips_per_pixel": self.output_lpips,
+            "lpips": self.output_lpips,
         }
