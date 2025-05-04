@@ -1,0 +1,1 @@
+from pdqhashing.types.hash256 import Hash256
