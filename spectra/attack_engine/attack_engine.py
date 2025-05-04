@@ -9,12 +9,15 @@ from torchvision.transforms import ToPILImage
 
 
 DEFAULT_SCALE_FACTOR = 6
-DEFAULT_NUM_PERTURBATIONS = 2000
+DEFAULT_NUM_PERTURBATIONS = 3000
 BETA = 0.85 #Hah, Beta.
 
 RGB_CHANNEL_COUNT = 3
 GRAYSCALE_CHANNEL_COUNT = 1
 
+
+
+torch.set_default_dtype(torch.float64)
 
 class Attack_Engine:
 
@@ -252,7 +255,7 @@ class Attack_Object:
 
             self.output_lpips = lpips_per_pixel_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
             self.attack_success = True
-            out = self.output_tensor.detach().cpu()
+            out = self.output_tensor.detach()#.cpu()
             output_image = ToPILImage()(out)
             output_image.save(output_image_path)
             self.log(f"Saved attacked image to {output_image_path}")
