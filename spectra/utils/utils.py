@@ -64,13 +64,13 @@ def generate_seed_perturbation(dim, start_scalar, device):
 
 
 
-def generate_perturbation_vectors(num_perturbations, num_channels, height, width, device):
-    base = torch.randn((num_perturbations // 2, num_channels, height, width), dtype=torch.float32, device=device) 
+def generate_perturbation_vectors(num_perturbations, shape, device):
+    base = torch.randn((num_perturbations // 2, *shape), dtype=torch.float32, device=device) 
     absmax = base.abs().amax(dim=1, keepdim=True)
     scale = torch.where(absmax > 0, 1.0 / absmax, torch.tensor(1.0, device = device)) #scale tensor to get max val of each generated perturbation so that we can normalize
     base = base * scale
     return torch.cat([base, -base], dim=0) #Mirror to preserve distribution
-    
+
 
 
 def lpips_rgb(img1, img2, loss_func):
@@ -84,3 +84,10 @@ def to_hex(hash):
     arr = hash.view(-1).cpu().numpy().astype(np.uint8)
     hash_int = int(np.packbits(arr).view('>u8')[0])  
     return hex(hash_int)
+
+def bool_tensor_delta(a, b):
+    return a.ne(b)
+
+
+def byte_quantize(tensor):
+    return torch.round(tensor * 255.0) / (255.0)
