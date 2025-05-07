@@ -14,7 +14,6 @@ class Gradient_Engine:
         self.num_perturbations = num_perturbations
         self.tensor = tensor.to(self.device)
         self.gradient = torch.zeros_like(self.tensor)
-        self.tensor_image_size = self.tensor.numel()
         
 
 
@@ -57,22 +56,3 @@ class Gradient_Engine:
         return gradient
 
 
-
-    def lpips_delta_from_engine_tensor(self, new_tensor, loss_func):
-        a3 = None
-        b3 = None
-
-        C, H, W = self.tensor.shape
-
-        if C == 1:
-            a = self.tensor.view(1, 1, H, W) * 2.0 - 1.0
-            b = new_tensor.view(1, 1, H, W) * 2.0 - 1.0
-
-            a3 = a.repeat(1, 3, 1, 1)
-            b3 = b.repeat(1, 3, 1, 1)
-
-        else:
-            a3 = self.tensor.unsqueeze(0)
-            b3 = new_tensor.unsqueeze(0)
-        
-        return loss_func(a3, b3).item()

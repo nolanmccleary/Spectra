@@ -2,7 +2,7 @@ import lpips
 from spectra.gradient_engine import Gradient_Engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, lpips_delta_from_engine_tensor
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -187,7 +187,7 @@ class Attack_Object:
 
 
             if self.current_hamming >= self.hamming_threshold:
-                lpips_distance = self.gradient_engine.lpips_delta_from_engine_tensor(self.tensor, self.loss_func)
+                lpips_distance = lpips_delta_from_engine_tensor(self.tensor, self.gradient_engine.tensor, self.loss_func)
 
                 if lpips_distance < self.output_lpips:
                     optimal_delta = current_delta.clone()

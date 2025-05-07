@@ -85,9 +85,33 @@ def to_hex(hash):
     hash_int = int(np.packbits(arr).view('>u8')[0])  
     return hex(hash_int)
 
+
+
 def bool_tensor_delta(a, b):
     return a.ne(b)
 
 
+
 def byte_quantize(tensor):
     return torch.round(tensor * 255.0) / (255.0)
+
+
+
+def lpips_delta_from_engine_tensor(old_tensor, new_tensor, loss_func):
+        a3 = None
+        b3 = None
+
+        C, H, W = old_tensor.shape
+
+        if C == 1:
+            a = old_tensor.view(1, 1, H, W) * 2.0 - 1.0
+            b = new_tensor.view(1, 1, H, W) * 2.0 - 1.0
+
+            a3 = a.repeat(1, 3, 1, 1)
+            b3 = b.repeat(1, 3, 1, 1)
+
+        else:
+            a3 = old_tensor.unsqueeze(0)
+            b3 = new_tensor.unsqueeze(0)
+        
+        return loss_func(a3, b3).item()
