@@ -4,6 +4,17 @@ import torch
 from spectra.utils import rgb_to_grayscale, rgb_to_luma
 
 
+
+def generate_phash_batched(batched_tensor):
+    return torch.stack([generate_phash(v) for v in batched_tensor], dim=0)
+
+
+
+def generate_phash_rgb_batched(batched_tensor):
+    return torch.stack([generate_phash_rgb(v) for v in batched_tensor], dim=0)
+
+
+
 def generate_phash(tensor): #[1, H, W] -> [64]
     DCT_DIM = 8
     view = tensor.squeeze(0)
@@ -13,6 +24,7 @@ def generate_phash(tensor): #[1, H, W] -> [64]
     
     bits = (dct_kernel > np.median(dct_kernel)).astype(np.uint8).flatten()
     return torch.from_numpy(bits).to(tensor.device).to(torch.bool)
+
 
 
 def generate_phash_rgb(tensor): #[1, H, W] -> [64]
