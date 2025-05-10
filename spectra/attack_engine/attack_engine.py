@@ -1,5 +1,5 @@
 import lpips
-from spectra.deltagrad import Gradient_Engine
+from spectra.deltagrad import NES_Engine
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
 from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, lpips_delta_from_engine_tensor
@@ -124,7 +124,9 @@ class Attack_Object:
     def stage_attack(self, input_image_path):
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
-        self.gradient_engine = Gradient_Engine(
+        
+        '''
+        self.gradient_engine = NES_Engine(
             func=self.func, 
             tensor=self.tensor, 
             device=self.device, 
@@ -132,7 +134,16 @@ class Attack_Object:
             num_perturbations=DEFAULT_NUM_PERTURBATIONS, 
             delta_func=bool_tensor_delta,
             quant_func=byte_quantize)
-       
+        '''
+
+        self.gradient_engine = NES_Engine(
+            func=self.func, 
+            loss_func=bool_tensor_delta,
+            quant_func=byte_quantize,
+            func_device=self.func_device, 
+            loss_func_device=self.device,
+            quant_func_device=self.device,
+            tensor=self.tensor)
        
         self.is_staged = True
         
@@ -154,7 +165,7 @@ class Attack_Object:
         #Attack loop
         for _ in range(self.attack_cycles):
             last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.bool, device=self.device) # h_old -> [h_old]
-            step = torch.sign(self.gradient_engine.compute_gradient(DEFAULT_SCALE_FACTOR, 0.0, 1.0)) * step_size * BETA #Might be better to just get signed gradient 
+            step = torch.sign(self.gradient_engine.compute_gradient(DEFAULT_SCALE_FACTOR, DEFAULT_NUM_PERTURBATIONS, 0.0, 1.0)) * step_size * BETA #Might be better to just get signed gradient 
             
             if self.prev_step is not None:
                 step.add_((1 - BETA) * self.prev_step)
