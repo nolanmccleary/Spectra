@@ -97,7 +97,7 @@ def byte_quantize(tensor):
 
 
 
-def lpips_delta_from_engine_tensor(old_tensor, new_tensor, loss_func):
+def lpips_delta(old_tensor, new_tensor, lpips_func):
         a3 = None
         b3 = None
 
@@ -114,4 +114,4 @@ def lpips_delta_from_engine_tensor(old_tensor, new_tensor, loss_func):
             a3 = old_tensor.unsqueeze(0)
             b3 = new_tensor.unsqueeze(0)
         
-        return loss_func(a3, b3).item()
+        return lpips_func(a3, b3).item()

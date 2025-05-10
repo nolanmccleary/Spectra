@@ -1,12 +1,15 @@
+import os
+import sys
 from spectra import Attack_Engine, PHASH, PHASH_RGB
 from validation import phash_compare, PDQ_compare
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
 
 def phash_attack():
     engine = Attack_Engine(verbose="on")
     #validator = Image_Validator("cpu")
     images = [('sample_images/peppers.png', 'output/peppers_attacked.png'), ('sample_images/peppers.jpeg', 'output/peppers_attacked.jpeg')]
-    engine.add_attack(images, PHASH, 18, 100, "cpu", verbose="off")
+    engine.add_attack(images, PHASH, 16, 70, "cpu", verbose="off")
     engine.run_attacks()
 
     for image_pair in images:

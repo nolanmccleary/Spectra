@@ -1,8 +1,8 @@
 import lpips
-from spectra.deltagrad import NES_Engine
+from spectra.deltagrad import NES_Signed_Optimizer
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, lpips_delta_from_engine_tensor
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, lpips_delta
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -11,7 +11,7 @@ from torchvision.transforms import ToPILImage
 DEFAULT_SCALE_FACTOR = 6
 DEFAULT_NUM_PERTURBATIONS = 3000
 BETA = 0.85 #Hah, Beta.
-
+STEP_COEFF = 0.005
 
 
 torch.set_default_dtype(torch.float64)
@@ -70,7 +70,8 @@ class Attack_Object:
         self.original_hash = None 
         self.current_hash = None
         self.current_hamming = None
-        self.gradient_engine = None 
+        #self.gradient_engine = None 
+        self.optimizer = None
         self.is_staged = False
         self.original_height = None
         self.original_width = None
@@ -83,7 +84,11 @@ class Attack_Object:
 
         self.prev_step = None
 
-        self.loss_func = lpips.LPIPS(net='alex').to(self.device)
+        self.lpips_func = lpips.LPIPS(net='alex').to(self.device)
+
+        self.func_package = (self.func, bool_tensor_delta, byte_quantize)
+        self.device_package = (self.func_device, self.device, self.device)
+
 
 
 
@@ -125,26 +130,7 @@ class Attack_Object:
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
         
-        '''
-        self.gradient_engine = NES_Engine(
-            func=self.func, 
-            tensor=self.tensor, 
-            device=self.device, 
-            func_device=self.func_device, 
-            num_perturbations=DEFAULT_NUM_PERTURBATIONS, 
-            delta_func=bool_tensor_delta,
-            quant_func=byte_quantize)
-        '''
-
-        self.gradient_engine = NES_Engine(
-            func=self.func, 
-            loss_func=bool_tensor_delta,
-            quant_func=byte_quantize,
-            func_device=self.func_device, 
-            loss_func_device=self.device,
-            quant_func_device=self.device,
-            tensor=self.tensor)
-       
+        self.optimizer = NES_Signed_Optimizer(func_package=self.func_package, device_package=self.device_package, tensor=self.tensor, vecMin=0.0, vecMax=1.0)
         self.is_staged = True
         
 
@@ -160,55 +146,36 @@ class Attack_Object:
         current_delta = torch.zeros_like(self.tensor)
         optimal_delta = None
         
-        eps = 1e-6
-
-        #Attack loop
-        for _ in range(self.attack_cycles):
-            last_tensor_hash = torch.tensor(self.current_hash, dtype=torch.bool, device=self.device) # h_old -> [h_old]
-            step = torch.sign(self.gradient_engine.compute_gradient(DEFAULT_SCALE_FACTOR, DEFAULT_NUM_PERTURBATIONS, 0.0, 1.0)) * step_size * BETA #Might be better to just get signed gradient 
-            
-            if self.prev_step is not None:
-                step.add_((1 - BETA) * self.prev_step)
-            
-
-            #Adaptively scale step to avoid disrupting image composition via clipping
-            pos_scale = torch.where(
-                step > 0,
-                (1.0 - self.gradient_engine.tensor) / (step + eps),
-                torch.tensor(1.0, device=self.device),
-            )
-            neg_scale = torch.where(
-                step < 0,
-                (0.0 - self.gradient_engine.tensor) / (step - eps),
-                torch.tensor(1.0, device=self.device),
-            )
-
-            safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
-
-            delta_step = step * safe_scale
-            self.prev_step = delta_step
 
 
-            current_delta.add_(delta_step)
-            self.gradient_engine.tensor.add_(delta_step)#.clamp_(0.0, 1.0)
-
-
-            self.current_hash = self.func(self.gradient_engine.tensor.to(self.func_device))
+        def acceptance_func(tensor, delta):
+            self.current_hash = self.func(tensor.to(self.func_device))
             self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
 
-
             if self.current_hamming >= self.hamming_threshold:
-                lpips_distance = lpips_delta_from_engine_tensor(self.tensor, self.gradient_engine.tensor, self.loss_func)
+                lpips_distance = lpips_delta(self.tensor, tensor, self.lpips_func)
 
                 if lpips_distance < self.output_lpips:
-                    optimal_delta = current_delta.clone()
                     self.output_lpips = lpips_distance
                     self.output_hamming = self.current_hamming
                     self.output_hash = self.current_hash
+                    return True
                 
                 else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
-                    current_delta.zero_()
-                    self.gradient_engine.tensor = self.tensor.clone()
+                    delta.zero_()
+                    tensor = self.tensor.clone()
+            
+            return False
+
+
+
+        optimal_delta = self.optimizer.get_delta(
+            step_coeff=STEP_COEFF, 
+            num_steps=self.attack_cycles, 
+            perturbation_scale_factor=DEFAULT_SCALE_FACTOR, 
+            num_perturbations=DEFAULT_NUM_PERTURBATIONS, 
+            beta=BETA, acceptance_func=acceptance_func)
+
 
 
         #If we broke hamming threshold
@@ -232,19 +199,19 @@ class Attack_Object:
             scale_factors = torch.linspace(0.0, 1.0, steps=50)
             self.output_tensor = (self.rgb_tensor + rgb_delta)
 
-
+            EPS = 1e-6
             for scale in scale_factors:
                 cand_delta  = rgb_delta * scale
                 cand_tensor = (self.rgb_tensor + cand_delta)
 
                 pos_scale = torch.where(
                     cand_delta > 0,
-                (1.0 - self.rgb_tensor) / (cand_delta + eps),
+                (1.0 - self.rgb_tensor) / (cand_delta + EPS),
                 torch.tensor(1.0, device=self.device),
                 )
                 neg_scale = torch.where(
                     cand_delta < 0,
-                    (0.0 - self.rgb_tensor) / (cand_delta - eps),
+                    (0.0 - self.rgb_tensor) / (cand_delta - EPS),
                     torch.tensor(1.0, device=self.device),
                 )
                 
@@ -276,7 +243,7 @@ class Attack_Object:
 
 
 
-            self.output_lpips = lpips_rgb(self.rgb_tensor, self.output_tensor, self.loss_func)
+            self.output_lpips = lpips_rgb(self.rgb_tensor, self.output_tensor, self.lpips_func)
             self.attack_success = True
             out = self.output_tensor.detach()#.cpu()
             output_image = ToPILImage()(out)
