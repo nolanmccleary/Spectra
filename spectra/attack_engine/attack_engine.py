@@ -66,6 +66,14 @@ class Attack_Object:
         self.attack_cycles = attack_cycles
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False  #Provide resize parameters if your hash pipeline requires resizing
 
+        
+
+        self.lpips_func = lpips.LPIPS(net='alex').to(self.device)
+
+        self.func_package = (self.func, bool_tensor_delta, byte_quantize)
+        self.device_package = (self.func_device, self.device, self.device)
+
+
         self.rgb_tensor = None
         self.tensor = None
         self.original_hash = None 
@@ -84,12 +92,6 @@ class Attack_Object:
         self.attack_success = None
 
         self.prev_step = None
-
-        self.lpips_func = lpips.LPIPS(net='alex').to(self.device)
-
-        self.func_package = (self.func, bool_tensor_delta, byte_quantize)
-        self.device_package = (self.func_device, self.device, self.device)
-
 
 
 
@@ -128,6 +130,26 @@ class Attack_Object:
 
 
     def stage_attack(self, input_image_path):
+        self.rgb_tensor = None
+        self.tensor = None
+        self.original_hash = None       #Yes I know this is Satanic
+        self.current_hash = None
+        self.current_hamming = None
+        #self.gradient_engine = None 
+        self.optimizer = None
+        self.is_staged = False
+        self.original_height = None
+        self.original_width = None
+
+        self.output_tensor = None 
+        self.output_hash = None 
+        self.output_hamming = 0
+        self.output_lpips = 1
+        self.attack_success = None
+
+        self.prev_step = None
+        
+        
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
         
@@ -265,11 +287,11 @@ class Attack_Object:
 
         self.log(f"Success status: {self.attack_success}")
         
-        #if self.attack_success:
-        #    self.log(f"Original hash: {to_hex(self.original_hash)}")
-        #    self.log(f"Current hash: {to_hex(self.output_hash)}")
-        #    self.log(f"Final hash hamming distance: {self.output_hamming}")
-        #    self.log(f"Final Lpips distance: {self.output_lpips}")
+        if self.attack_success:
+            self.log(f"Original hash: {to_hex(self.original_hash)}")
+            self.log(f"Current hash: {to_hex(self.output_hash)}")
+            self.log(f"Final hash hamming distance: {self.output_hamming}")
+            self.log(f"Final Lpips distance: {self.output_lpips}")
 
 
         return {
