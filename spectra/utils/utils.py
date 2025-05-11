@@ -97,6 +97,11 @@ def byte_quantize(tensor):
 
 
 
+def l2_delta(a, b):
+    return torch.sqrt(torch.mean((a - b).pow(2))).item()
+
+
+
 def lpips_delta(old_tensor, new_tensor, lpips_func):
         a3 = None
         b3 = None

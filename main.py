@@ -13,8 +13,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
 def phash_attack():
     engine = Attack_Engine(verbose="on")
     #validator = Image_Validator("cpu")
-    images = [('sample_images/peppers.png', 'output/peppers_attacked.png'), ('sample_images/peppers.jpeg', 'output/peppers_attacked.jpeg')]
-    engine.add_attack(images, PHASH, 20, 100, "cpu", verbose="off")
+    images = [('sample_images/peppers.png', 'output/peppers_attacked.png'), ('sample_images/peppers.jpeg', 'output/peppers_attacked.jpeg'), ('sample_images/imagehash.png', 'output/imagehash_attacked.png')]
+    engine.add_attack(images, PHASH, 24, 40, "cpu", verbose="off")
     engine.run_attacks()
 
     for image_pair in images:

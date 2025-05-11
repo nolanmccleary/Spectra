@@ -2,17 +2,16 @@ import lpips
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, lpips_delta
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, lpips_delta, l2_delta
 import torch
 from torchvision.transforms import ToPILImage
 
 #TODO: Handle fail mode tracking better
 
 DEFAULT_SCALE_FACTOR = 6
-DEFAULT_GRADIENT_SCALE_FACTOR = 1.5
 DEFAULT_NUM_PERTURBATIONS = 3000
-BETA = 0.85 #Hah, Beta.
-STEP_COEFF = 0.005
+BETA = 0.9 #Hah, Beta.
+STEP_COEFF = 0.008
 
 
 torch.set_default_dtype(torch.float64)
@@ -145,6 +144,7 @@ class Attack_Object:
         self.output_hash = None 
         self.output_hamming = 0
         self.output_lpips = 1
+        self.output_l2 = 1
         self.attack_success = None
 
         self.prev_step = None
@@ -204,7 +204,6 @@ class Attack_Object:
             step_coeff=STEP_COEFF, 
             num_steps=self.attack_cycles, 
             perturbation_scale_factor=DEFAULT_SCALE_FACTOR,
-            gradient_scale_factor= DEFAULT_GRADIENT_SCALE_FACTOR,
             num_perturbations=DEFAULT_NUM_PERTURBATIONS, 
             beta=BETA, acceptance_func=acceptance_func)
 
@@ -276,6 +275,7 @@ class Attack_Object:
 
 
             self.output_lpips = lpips_rgb(self.rgb_tensor, self.output_tensor, self.lpips_func)
+            self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
             self.attack_success = True
             out = self.output_tensor.detach()#.cpu()
             output_image = ToPILImage()(out)
@@ -287,12 +287,15 @@ class Attack_Object:
 
         self.log(f"Success status: {self.attack_success}")
         
+
+        '''
         if self.attack_success:
             self.log(f"Original hash: {to_hex(self.original_hash)}")
             self.log(f"Current hash: {to_hex(self.output_hash)}")
             self.log(f"Final hash hamming distance: {self.output_hamming}")
             self.log(f"Final Lpips distance: {self.output_lpips}")
-
+        '''
+        
 
         return {
             "success": self.attack_success,
@@ -300,4 +303,5 @@ class Attack_Object:
             "output_hash": to_hex(self.output_hash) if self.output_hash is not None else None,
             "hamming_distance": self.output_hamming,
             "lpips": self.output_lpips,
+            "l2" : self.output_l2,
         }
