@@ -4,7 +4,6 @@ import torch.nn.functional as F
 
 
 
-
 def get_rgb_tensor(image_object, rgb_device):
     if image_object.mode == 'RGBA':
         image_object = image_object.convert('RGB')
@@ -120,3 +119,56 @@ def lpips_delta(old_tensor, new_tensor, lpips_func):
             b3 = new_tensor.unsqueeze(0)
         
         return lpips_func(a3, b3).item()
+
+
+
+
+def make_acceptance_func(self, acceptance_str):
+    def lpips_acceptance_func(tensor, delta):
+        self.current_hash = self.func(tensor.to(self.func_device))
+        self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
+
+        if self.current_hamming >= self.hamming_threshold:
+            lpips_distance = lpips_delta(self.tensor, tensor, self.lpips_func)
+
+            if lpips_distance < self.output_lpips:
+                self.output_lpips = lpips_distance
+                self.output_hamming = self.current_hamming
+                self.output_hash = self.current_hash
+                return True
+            
+            else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
+                delta.zero_()
+                tensor = self.tensor.clone()
+        return False
+    
+
+    def l2_acceptance_func(tensor, delta):
+        self.current_hash = self.func(tensor.to(self.func_device))
+        self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
+
+        if self.current_hamming >= self.hamming_threshold:
+            l2_distance = l2_delta(self.tensor, tensor)
+
+            if l2_distance < self.output_l2:
+                self.output_l2 = l2_distance
+                self.output_hamming = self.current_hamming
+                self.output_hash = self.current_hash
+                return True
+            
+            else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
+                delta.zero_()
+                tensor = self.tensor.clone()
+        
+        return False
+
+
+    if acceptance_str == "lpips":
+        return lpips_acceptance_func
+    
+    elif acceptance_str == "l2":
+        return l2_acceptance_func
+    
+
+    else:
+        return None

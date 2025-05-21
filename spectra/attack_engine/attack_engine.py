@@ -2,7 +2,7 @@ import lpips
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, lpips_delta, l2_delta
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, l2_delta, make_acceptance_func
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -29,8 +29,8 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, attack_cycles: int, device: str, **kwargs):
-        self.attacks.append(Attack_Object(hash_wrapper, hamming_threshold, attack_cycles, device, **kwargs))
+    def add_attack(self, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, **kwargs):
+        self.attacks.append(Attack_Object(hash_wrapper, hamming_threshold, acceptance_func, attack_cycles, device, **kwargs))
         self.image_batch = image_batch
 
 
@@ -43,7 +43,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, attack_cycles, device, verbose="off"):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, acceptance_func, attack_cycles, device, verbose="off"):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -62,6 +62,7 @@ class Attack_Object:
             self.func_device = "cpu"
 
         self.hamming_threshold = hamming_threshold
+        self.acceptance_func = make_acceptance_func(self, acceptance_func)
         self.attack_cycles = attack_cycles
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False  #Provide resize parameters if your hash pipeline requires resizing
 
@@ -73,24 +74,8 @@ class Attack_Object:
         self.device_package = (self.func_device, self.device, self.device)
 
 
-        self.rgb_tensor = None
-        self.tensor = None
-        self.original_hash = None 
-        self.current_hash = None
-        self.current_hamming = None
-        #self.gradient_engine = None 
-        self.optimizer = None
         self.is_staged = False
-        self.original_height = None
-        self.original_width = None
-
-        self.output_tensor = None 
-        self.output_hash = None 
-        self.output_hamming = 0
-        self.output_lpips = 1
-        self.attack_success = None
-
-        self.prev_step = None
+        
 
 
 
@@ -134,7 +119,6 @@ class Attack_Object:
         self.original_hash = None       #Yes I know this is Satanic
         self.current_hash = None
         self.current_hamming = None
-        #self.gradient_engine = None 
         self.optimizer = None
         self.is_staged = False
         self.original_height = None
@@ -170,34 +154,6 @@ class Attack_Object:
 
         optimal_delta = None
 
-        def acceptance_func(tensor, delta):
-            self.current_hash = self.func(tensor.to(self.func_device))
-            self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
-
-            if self.current_hamming >= self.hamming_threshold:
-                lpips_distance = lpips_delta(self.tensor, tensor, self.lpips_func)
-
-                if lpips_distance < self.output_lpips:
-                    self.output_lpips = lpips_distance
-                    self.output_hamming = self.current_hamming
-                    self.output_hash = self.current_hash
-                    return True
-                
-                else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
-                    delta.zero_()
-                    tensor = self.tensor.clone()
-            
-            return False
-
-
-        '''
-        optimal_delta = self.optimizer.get_delta(
-            step_coeff=STEP_COEFF, 
-            num_steps=self.attack_cycles, 
-            perturbation_scale_factor=DEFAULT_SCALE_FACTOR,
-            num_perturbations=DEFAULT_NUM_PERTURBATIONS, 
-            beta=BETA, acceptance_func=acceptance_func)
-        '''
 
 
         optimal_delta = self.optimizer.get_delta(
@@ -205,7 +161,7 @@ class Attack_Object:
             num_steps=self.attack_cycles, 
             perturbation_scale_factor=DEFAULT_SCALE_FACTOR,
             num_perturbations=DEFAULT_NUM_PERTURBATIONS, 
-            beta=BETA, acceptance_func=acceptance_func)
+            beta=BETA, acceptance_func=self.acceptance_func)
 
 
 
@@ -288,14 +244,6 @@ class Attack_Object:
         self.log(f"Success status: {self.attack_success}")
         
 
-        '''
-        if self.attack_success:
-            self.log(f"Original hash: {to_hex(self.original_hash)}")
-            self.log(f"Current hash: {to_hex(self.output_hash)}")
-            self.log(f"Final hash hamming distance: {self.output_hamming}")
-            self.log(f"Final Lpips distance: {self.output_lpips}")
-        '''
-        
 
         return {
             "success": self.attack_success,

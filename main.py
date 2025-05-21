@@ -5,6 +5,7 @@ from spectra import Attack_Engine, PHASH, PHASH_RGB
 from validation import phash_compare, PDQ_compare
 
 
+
 torch.set_default_dtype(torch.float64)
 
 
@@ -14,7 +15,7 @@ def phash_attack():
     engine = Attack_Engine(verbose="on")
     #validator = Image_Validator("cpu")
     images = [('sample_images/peppers.png', 'output/peppers_attacked.png'), ('sample_images/peppers.jpeg', 'output/peppers_attacked.jpeg'), ('sample_images/imagehash.png', 'output/imagehash_attacked.png')]
-    engine.add_attack(images, PHASH, 24, 40, "cpu", verbose="off")
+    engine.add_attack(images, PHASH, 24, "lpips", 40, "cpu", verbose="off")
     engine.run_attacks()
 
     for image_pair in images:
