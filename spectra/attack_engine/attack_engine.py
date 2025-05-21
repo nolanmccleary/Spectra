@@ -9,7 +9,8 @@ from torchvision.transforms import ToPILImage
 #TODO: Handle fail mode tracking better
 
 DEFAULT_SCALE_FACTOR = 6
-DEFAULT_NUM_PERTURBATIONS = 3000
+#DEFAULT_NUM_PERTURBATIONS = 3000
+ALPHA = 2.9
 BETA = 0.9 #Hah, Beta.
 STEP_COEFF = 0.008
 
@@ -66,8 +67,6 @@ class Attack_Object:
         self.attack_cycles = attack_cycles
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False  #Provide resize parameters if your hash pipeline requires resizing
 
-        
-
         self.lpips_func = lpips.LPIPS(net='alex').to(self.device)
 
         self.func_package = (self.func, bool_tensor_delta, byte_quantize)
@@ -76,7 +75,6 @@ class Attack_Object:
 
         self.is_staged = False
         
-
 
 
     def log(self, msg):
@@ -125,8 +123,8 @@ class Attack_Object:
         self.original_width = None
 
         self.output_tensor = None 
-        self.output_hash = None 
-        self.output_hamming = 0
+        self.output_hash = self.current_hash
+        self.output_hamming = self.current_hamming
         self.output_lpips = 1
         self.output_l2 = 1
         self.attack_success = None
@@ -139,6 +137,13 @@ class Attack_Object:
         
         #self.optimizer = NES_Signed_Optimizer(func_package=self.func_package, device_package=self.device_package, tensor=self.tensor, vecMin=0.0, vecMax=1.0)
         self.optimizer = NES_Optimizer(func_package=self.func_package, device_package=self.device_package, tensor=self.tensor, vecMin=0.0, vecMax=1.0)
+
+        self.num_pertubations = ALPHA
+        for k in self.tensor.shape:
+            self.num_pertubations *= k
+        self.num_pertubations = (int(self.num_pertubations) // 2) * 2
+
+        print(self.num_pertubations)
 
         self.is_staged = True
         
@@ -160,7 +165,7 @@ class Attack_Object:
             step_coeff=STEP_COEFF, 
             num_steps=self.attack_cycles, 
             perturbation_scale_factor=DEFAULT_SCALE_FACTOR,
-            num_perturbations=DEFAULT_NUM_PERTURBATIONS, 
+            num_perturbations=self.num_pertubations, 
             beta=BETA, acceptance_func=self.acceptance_func)
 
 

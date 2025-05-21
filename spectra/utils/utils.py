@@ -124,6 +124,7 @@ def lpips_delta(old_tensor, new_tensor, lpips_func):
 
 
 def make_acceptance_func(self, acceptance_str):
+    
     def lpips_acceptance_func(tensor, delta):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
@@ -133,8 +134,6 @@ def make_acceptance_func(self, acceptance_str):
 
             if lpips_distance < self.output_lpips:
                 self.output_lpips = lpips_distance
-                self.output_hamming = self.current_hamming
-                self.output_hash = self.current_hash
                 return True
             
             else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
@@ -152,8 +151,6 @@ def make_acceptance_func(self, acceptance_str):
 
             if l2_distance < self.output_l2:
                 self.output_l2 = l2_distance
-                self.output_hamming = self.current_hamming
-                self.output_hash = self.current_hash
                 return True
             
             else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
@@ -168,7 +165,6 @@ def make_acceptance_func(self, acceptance_str):
     
     elif acceptance_str == "l2":
         return l2_acceptance_func
-    
 
     else:
         return None
