@@ -1,5 +1,6 @@
 import lpips
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
+from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from PIL import Image
 from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, l2_delta, make_acceptance_func
@@ -72,7 +73,6 @@ class Attack_Object:
         self.func_package = (self.func, bool_tensor_delta, byte_quantize)
         self.device_package = (self.func_device, self.device, self.device)
 
-
         self.is_staged = False
         
 
@@ -131,7 +131,6 @@ class Attack_Object:
 
         self.prev_step = None
         
-        
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
         
@@ -142,8 +141,6 @@ class Attack_Object:
         for k in self.tensor.shape:
             self.num_pertubations *= k
         self.num_pertubations = (int(self.num_pertubations) // 2) * 2
-
-        print(self.num_pertubations)
 
         self.is_staged = True
         
@@ -195,19 +192,9 @@ class Attack_Object:
             for scale in scale_factors:
                 cand_delta  = rgb_delta * scale
                 cand_tensor = (self.rgb_tensor + cand_delta)
-
-                pos_scale = torch.where(
-                    cand_delta > 0,
-                (1.0 - self.rgb_tensor) / (cand_delta + EPS),
-                torch.tensor(1.0, device=self.device),
-                )
-                neg_scale = torch.where(
-                    cand_delta < 0,
-                    (0.0 - self.rgb_tensor) / (cand_delta - EPS),
-                    torch.tensor(1.0, device=self.device),
-                )
                 
-                safe_scale = torch.min(pos_scale, neg_scale).clamp(max=1.0)
+                safe_scale = anal_clamp(self.rgb_tensor, cand_delta, 0.0, 1.0)
+                
                 safe_delta = cand_delta * safe_scale
                 cand_tensor = self.rgb_tensor + safe_delta
 
@@ -247,7 +234,6 @@ class Attack_Object:
         self.is_staged = False
 
         self.log(f"Success status: {self.attack_success}")
-        
 
 
         return {
