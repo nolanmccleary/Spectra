@@ -2,6 +2,7 @@ import lpips
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
 from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
+from spectra.validation import image_compare
 from PIL import Image
 from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, l2_delta, make_acceptance_func
 import torch
@@ -21,8 +22,8 @@ torch.set_default_dtype(torch.float64)
 class Attack_Engine:
 
     def __init__(self, verbose):
-        self.attacks = []
-        self.image_batch = []
+        self.attacks = {}
+        self.attack_log = {}
         self.verbose = verbose
 
 
@@ -31,15 +32,17 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, **kwargs):
-        self.attacks.append(Attack_Object(hash_wrapper, hamming_threshold, acceptance_func, attack_cycles, device, **kwargs))
-        self.image_batch = image_batch
+    def add_attack(self, attack_tag, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, **kwargs):
+        print(attack_tag)
+        self.attacks[attack_tag] = (image_batch, Attack_Object(hash_wrapper, hamming_threshold, acceptance_func, attack_cycles, device, **kwargs))
 
 
     def run_attacks(self):
-        for attack in self.attacks:
-            for image in self.image_batch:
-                self.log(attack.run_attack(image[0], image[1]))
+        for attack_tag in self.attacks.keys():
+            self.attack_log[attack_tag] = {}
+            for image_pair in self.attacks[attack_tag][0]:
+                self.attack_log[attack_tag][image_pair[0]] = self.attacks[attack_tag][1].run_attack(image_pair[0], image_pair[1])
+        print(self.attack_log)
 
 
 
@@ -72,8 +75,6 @@ class Attack_Object:
 
         self.func_package = (self.func, bool_tensor_delta, byte_quantize)
         self.device_package = (self.func_device, self.device, self.device)
-
-        self.is_staged = False
         
 
 
@@ -142,20 +143,16 @@ class Attack_Object:
             self.num_pertubations *= k
         self.num_pertubations = (int(self.num_pertubations) // 2) * 2
 
-        self.is_staged = True
         
 
 
     #For now we'll just use simple attack logic
     def run_attack(self, input_image_path, output_image_path):
         self.attack_success = False
-        if self.is_staged == False:
-            self.stage_attack(input_image_path)
-        
+        self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
         optimal_delta = None
-
 
 
         optimal_delta = self.optimizer.get_delta(
@@ -221,7 +218,6 @@ class Attack_Object:
                     continue
 
 
-
             self.output_lpips = lpips_rgb(self.rgb_tensor, self.output_tensor, self.lpips_func)
             self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
             self.attack_success = True
@@ -230,17 +226,17 @@ class Attack_Object:
             output_image.save(output_image_path)
             self.log(f"Saved attacked image to {output_image_path}")
         
-        
-        self.is_staged = False
 
         self.log(f"Success status: {self.attack_success}")
 
 
         return {
-            "success": self.attack_success,
-            "original_hash" : to_hex(self.original_hash),
-            "output_hash": to_hex(self.output_hash) if self.output_hash is not None else None,
-            "hamming_distance": self.output_hamming,
-            "lpips": self.output_lpips,
-            "l2" : self.output_l2,
+            "pre_validation" : {"success": self.attack_success,
+                                "original_hash" : to_hex(self.original_hash),
+                                "output_hash": to_hex(self.output_hash) if self.output_hash is not None else None,
+                                "hamming_distance": self.output_hamming,
+                                "lpips": self.output_lpips,
+                                "l2" : self.output_l2},
+
+            "post_validation" : image_compare((input_image_path, output_image_path), self.device)
         }
