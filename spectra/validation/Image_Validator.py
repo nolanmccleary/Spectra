@@ -2,7 +2,7 @@ import lpips
 from PIL import Image
 from spectra.utils import get_rgb_tensor, lpips_rgb
 from spectra.hashes import Hash_Wrapper
-from .third_party_validation import phash_compare, PDQ_compare
+from .third_party_validation import ahash_compare, phash_compare, PDQ_compare
 
 
 
@@ -21,11 +21,14 @@ def image_compare(image_pair: tuple[str], device="cpu"):
     lpips_score = lpips_rgb(input_image, output_image, lpips.LPIPS(net='alex').to(device))
     
     img1, img2 = image_pair
+
+    ahash_delta = ahash_compare(img1, img2)["hamming"]
     phash_delta = phash_compare(img1, img2)["hamming"]
     pdq_delta = PDQ_compare(img1, img2)["hamming"]
 
     return {
         "lpips" : str(lpips_score),
+        "ahash_hamming" : str(ahash_delta),
         "phash_hamming" : str(phash_delta),
         "pdq_hamming" : str(pdq_delta)
     }
