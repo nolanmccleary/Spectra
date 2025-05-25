@@ -33,6 +33,30 @@ def _generate_ahash_rgb(tensor):
     return diff.to(torch.bool).view(-1)
 
 
+###################################### DHASH ##########################################
+
+def generate_dhash_batched(batched_tensor):
+    return torch.stack([_generate_dhash(v) for v in batched_tensor], dim=0)
+
+
+
+def generate_dhash_rgb_batched(batched_tensor):
+    if batched_tensor.dim() == 3:
+        batched_tensor = batched_tensor.unsqueeze(0)
+    return torch.stack([_generate_dhash_rgb(v) for v in batched_tensor], dim=0)
+
+
+def _generate_dhash(tensor):
+    diff = tensor[:, 1:] > tensor[:, :-1]
+    return diff.to(torch.bool).view(-1)
+
+
+def _generate_dhash_rgb(tensor):
+    gray = rgb_to_grayscale(tensor)
+    diff = gray[:, 1:] > gray[:, :-1]
+    return diff.to(torch.bool).view(-1)
+
+
 
 ###################################### PHASH ##########################################
 

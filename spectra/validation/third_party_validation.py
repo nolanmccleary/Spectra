@@ -9,6 +9,12 @@ def ahash_compare(img1, img2):
     return {"original" : str(hash1), "output" : str(hash2), "hamming" : str(hash1 - hash2)}
 
 
+def dhash_compare(img1, img2):
+    hash1 = imagehash.phash(Image.open(img1))
+    hash2 = imagehash.phash(Image.open(img2))
+    return {"original" : str(hash1), "output" : str(hash2), "hamming" : str(hash1 - hash2)}
+
+
 def phash_compare(img1, img2):
     hash1 = imagehash.phash(Image.open(img1))
     hash2 = imagehash.phash(Image.open(img2))

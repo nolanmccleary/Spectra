@@ -23,12 +23,14 @@ def image_compare(image_pair: tuple[str], device="cpu"):
     img1, img2 = image_pair
 
     ahash_delta = ahash_compare(img1, img2)["hamming"]
+    dhash_delta = ahash_compare(img1, img2)["hamming"]
     phash_delta = phash_compare(img1, img2)["hamming"]
     pdq_delta = PDQ_compare(img1, img2)["hamming"]
 
     return {
         "lpips" : str(lpips_score),
         "ahash_hamming" : str(ahash_delta),
+        "dhash_hamming" : str(dhash_delta),
         "phash_hamming" : str(phash_delta),
         "pdq_hamming" : str(pdq_delta)
     }

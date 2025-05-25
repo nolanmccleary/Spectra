@@ -11,7 +11,7 @@ from torchvision.transforms import ToPILImage
 
 # TODO: Handle fail mode tracking better
 
-DEFAULT_SCALE_FACTOR = 6
+DEFAULT_SCALE_FACTOR = 6 #DEFAULTS OPTIMIZED FOR PHASH
 DEFAULT_ALPHA = 2.9
 DEFAULT_BETA = 0.9  # Hah, Beta.
 DEFAULT_STEP_COEFF = 0.008
@@ -141,7 +141,7 @@ class Attack_Object:
         self.output_hamming = None
         self.output_lpips = 1
         self.output_l2 = 1
-        self.attack_success = None
+        self.attack_success = False
         self.prev_step = None
 
         self.log("Staging attack...\n")
@@ -158,7 +158,6 @@ class Attack_Object:
 
 
     def run_attack(self, input_image_path, output_image_path):
-        self.attack_success = False
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
@@ -201,6 +200,7 @@ class Attack_Object:
                 cand_hash = self.func(cand_targ.to(self.func_device))
                 cand_ham = cand_hash.ne(self.original_hash).sum().item()
                 if cand_ham >= self.hamming_threshold:
+                    self.attack_success = True
                     self.output_tensor = cand_tensor
                     self.output_hamming = cand_ham
                     self.output_hash = cand_hash
@@ -208,7 +208,6 @@ class Attack_Object:
 
             self.output_lpips = lpips_rgb(self.rgb_tensor, self.output_tensor, self.lpips_func)
             self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
-            self.attack_success = True
             out = self.output_tensor.detach()
             output_image = ToPILImage()(out)
             output_image.save(output_image_path)

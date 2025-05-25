@@ -73,10 +73,11 @@ def generate_perturbation_vectors(num_perturbations, shape, device):
 
 
 
-def to_hex(hash):
-    arr = hash.view(-1).cpu().numpy().astype(np.uint8)
-    hash_int = int(np.packbits(arr).view('>u8')[0])  
-    return hex(hash_int)
+def to_hex(hash_bool):
+    arr = hash_bool.view(-1).cpu().numpy().astype(np.uint8)
+    packed = np.packbits(arr)  #Convert to byte array
+    return '0x' + ''.join(f'{b:02x}' for b in packed.tolist()) #Format to hex
+
 
 
 
