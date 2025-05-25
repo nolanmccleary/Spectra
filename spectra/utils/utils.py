@@ -72,12 +72,6 @@ def generate_perturbation_vectors(num_perturbations, shape, device):
 
 
 
-def lpips_rgb(img1, img2, loss_func):
-    a = img1.unsqueeze(0) * 2.0 - 1.0   #[1, C, H, W] over [-1, 1]
-    b = img2.unsqueeze(0) * 2.0 - 1.0
-    return loss_func(a, b).item()
-
-
 
 def to_hex(hash):
     arr = hash.view(-1).cpu().numpy().astype(np.uint8)
@@ -98,6 +92,14 @@ def byte_quantize(tensor):
 
 def l2_delta(a, b):
     return torch.sqrt(torch.mean((a - b).pow(2))).item()
+
+
+
+def lpips_rgb(img1, img2, loss_func):
+    a = img1.unsqueeze(0) * 2.0 - 1.0   #[1, C, H, W] over [-1, 1]
+    b = img2.unsqueeze(0) * 2.0 - 1.0
+    return loss_func(a, b).item()
+
 
 
 

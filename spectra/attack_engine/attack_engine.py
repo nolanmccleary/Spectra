@@ -17,7 +17,7 @@ ALPHA = 2.9
 BETA = 0.9  # Hah, Beta.
 STEP_COEFF = 0.008
 
-torch.set_default_dtype(torch.float64)
+
 
 class Attack_Engine:
 
@@ -33,7 +33,6 @@ class Attack_Engine:
 
 
     def add_attack(self, attack_tag, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, **kwargs):
-        print(attack_tag)
         self.attacks[attack_tag] = (image_batch, Attack_Object(hash_wrapper, hamming_threshold, acceptance_func, attack_cycles, device, **kwargs))
 
 
@@ -54,7 +53,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, acceptance_func, attack_cycles, device, verbose="off"):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func, verbose="off"):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -77,7 +76,7 @@ class Attack_Object:
         self.attack_cycles = attack_cycles
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False
 
-        self.lpips_func = lpips.LPIPS(net='alex').to(self.device)
+        self.lpips_func = lpips_func
 
         self.func_package = (self.func, bool_tensor_delta, byte_quantize)
         self.device_package = (self.func_device, self.device, self.device)

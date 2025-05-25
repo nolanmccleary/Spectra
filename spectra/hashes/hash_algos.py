@@ -11,6 +11,8 @@ def generate_phash_batched(batched_tensor):
 
 
 def generate_phash_rgb_batched(batched_tensor):
+    if batched_tensor.dim() == 3:
+        batched_tensor = batched_tensor.unsqueeze(0)
     return torch.stack([generate_phash_rgb(v) for v in batched_tensor], dim=0)
 
 
@@ -27,9 +29,9 @@ def generate_phash(tensor): #[1, H, W] -> [64]
 
 
 
-def generate_phash_rgb(tensor): #[1, H, W] -> [64]
+def generate_phash_rgb(tensor): #[3, H, W] -> [64]
     gray = rgb_to_grayscale(tensor)
-    
+
     DCT_DIM = 8
     view = gray.squeeze(0)
     arr = (view.detach().cpu().numpy() * 255).round().astype(np.uint8)
