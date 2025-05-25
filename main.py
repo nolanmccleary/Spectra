@@ -2,7 +2,7 @@ import lpips
 import os
 import sys
 import torch
-from spectra import Attack_Engine, PHASH, PHASH_RGB, AHASH
+from spectra import Attack_Engine, PHASH, PHASH_RGB, AHASH, AHASH_RGB
 
 
 
@@ -17,15 +17,11 @@ def attack_sequence():
     
     F_LPIPS = lpips.LPIPS(net='alex').to("cpu")
 
-    engine.add_attack("phash_attack", images, PHASH, 24, "lpips", 40, "cpu", verbose="off", lpips_func = F_LPIPS)
+    #engine.add_attack("phash_attack", images, PHASH, 24, "lpips", 40, "cpu", verbose="off", lpips_func = F_LPIPS)
     #engine.add_attack("phash_attack_rgb", images, PHASH_RGB, 24, "lpips", 40, "cpu", verbose="off", lpips_func = F_LPIPS)
     
-    #engine.add_attack("ahash_attack", images, AHASH, 24, "lpips", 40, "cpu", verbose="off", lpips_func = F_LPIPS)
+    engine.add_attack("ahash_attack", images, AHASH, 24, "l2", 200, "cpu", verbose="off", lpips_func = F_LPIPS, scale_factor = 3)
 
-
-
-
-    
     engine.run_attacks()
 
 

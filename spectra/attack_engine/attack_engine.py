@@ -12,10 +12,9 @@ from torchvision.transforms import ToPILImage
 # TODO: Handle fail mode tracking better
 
 DEFAULT_SCALE_FACTOR = 6
-# DEFAULT_NUM_PERTURBATIONS = 3000
-ALPHA = 2.9
-BETA = 0.9  # Hah, Beta.
-STEP_COEFF = 0.008
+DEFAULT_ALPHA = 2.9
+DEFAULT_BETA = 0.9  # Hah, Beta.
+DEFAULT_STEP_COEFF = 0.008
 
 
 
@@ -53,7 +52,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func, verbose="off"):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func=None, alpha=DEFAULT_ALPHA, beta=DEFAULT_BETA, step_coeff=DEFAULT_STEP_COEFF, scale_factor = DEFAULT_SCALE_FACTOR, verbose="off"):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -76,10 +75,19 @@ class Attack_Object:
         self.attack_cycles = attack_cycles
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False
 
-        self.lpips_func = lpips_func
+        if lpips_func != None:
+            self.lpips_func = lpips_func
+        else:
+            self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
+
+        self.alpha = alpha
+        self.beta = beta
+        self.step_coeff = step_coeff
+        self.scale_factor = scale_factor
 
         self.func_package = (self.func, bool_tensor_delta, byte_quantize)
         self.device_package = (self.func_device, self.device, self.device)
+
 
 
 
@@ -142,7 +150,7 @@ class Attack_Object:
         self.optimizer = NES_Optimizer(func_package=self.func_package, device_package=self.device_package, tensor=self.tensor, vecMin=0.0, vecMax=1.0)
 
         # calculate number of perturbations
-        self.num_pertubations = ALPHA
+        self.num_pertubations = self.alpha
         for k in self.tensor.shape:
             self.num_pertubations *= k
         self.num_pertubations = (int(self.num_pertubations) // 2) * 2
@@ -155,11 +163,11 @@ class Attack_Object:
         self.log("Running attack...\n")
 
         optimal_delta = self.optimizer.get_delta(
-            step_coeff=STEP_COEFF,
+            step_coeff=self.step_coeff,
             num_steps=self.attack_cycles,
             perturbation_scale_factor=DEFAULT_SCALE_FACTOR,
             num_perturbations=self.num_pertubations,
-            beta=BETA, acceptance_func=self.acceptance_func)
+            beta=self.beta, acceptance_func=self.acceptance_func)
 
         if optimal_delta is not None:
             upsampled_delta = optimal_delta
