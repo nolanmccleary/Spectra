@@ -17,9 +17,9 @@ def attack_sequence(dev):
     
     F_LPIPS = lpips.LPIPS(net='alex').to(dev)
 
-    engine.add_attack("phash_attack", images, PHASH, 24, "lpips", 100, "cpu", verbose="off", lpips_func = F_LPIPS)
-    engine.add_attack("ahash_attack", images, AHASH, 24, "l2", 100, "cpu", verbose="off", lpips_func = F_LPIPS)
-    engine.add_attack("dhash_attack", images, DHASH, 24, "l2", 100, dev, verbose="off", lpips_func = F_LPIPS)
+    #engine.add_attack("phash_attack", images, PHASH, 24, "lpips", 40, dev, verbose="off", lpips_func = F_LPIPS)
+    engine.add_attack("ahash_attack", images, AHASH, 24, "l2", 900, dev, verbose="off", lpips_func = F_LPIPS)
+    #engine.add_attack("dhash_attack", images, DHASH, 24, "l2", 100, dev, verbose="off", lpips_func = F_LPIPS)
 
     engine.run_attacks()
 
