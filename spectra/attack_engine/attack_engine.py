@@ -11,11 +11,6 @@ from torchvision.transforms import ToPILImage
 
 # TODO: Handle fail mode tracking better
 
-DEFAULT_SCALE_FACTOR = 6 #DEFAULTS OPTIMIZED FOR PHASH
-DEFAULT_ALPHA = 2.9
-DEFAULT_BETA = 0.9  # Hah, Beta.
-DEFAULT_STEP_COEFF = 0.008
-
 
 
 class Attack_Engine:
@@ -31,16 +26,18 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, attack_tag, image_batch: list[tuple[str]], hash_wrapper: Hash_Wrapper, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, **kwargs):
-        self.attacks[attack_tag] = (image_batch, Attack_Object(hash_wrapper, hamming_threshold, acceptance_func, attack_cycles, device, **kwargs))
+    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, **kwargs):
+        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(hash_wrapper, hyperparameter_set, hamming_threshold, acceptance_func, attack_cycles, device, **kwargs))
 
 
     def run_attacks(self, output_name="spectra_out"):
         # run each registered attack
         for attack_tag in self.attacks.keys():
             self.attack_log[attack_tag] = {}
-            for image_pair in self.attacks[attack_tag][0]:
-                self.attack_log[attack_tag][image_pair[0]] = self.attacks[attack_tag][1].run_attack(image_pair[0], image_pair[1])
+            for image in self.attacks[attack_tag][0]:
+                input_image = f"{self.attacks[attack_tag][1]}/{image}"
+                output_image = f"{self.attacks[attack_tag][2]}/{attack_tag}_{image}"
+                self.attack_log[attack_tag][image] = self.attacks[attack_tag][3].run_attack(input_image, output_image)
 
         json_filename = f"{output_name}.json"
         with open(json_filename, 'w') as f:
@@ -52,7 +49,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func=None, alpha=DEFAULT_ALPHA, beta=DEFAULT_BETA, step_coeff=DEFAULT_STEP_COEFF, scale_factor = DEFAULT_SCALE_FACTOR, verbose="off"):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func=None, verbose="off"):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -80,10 +77,7 @@ class Attack_Object:
         else:
             self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
 
-        self.alpha = alpha
-        self.beta = beta
-        self.step_coeff = step_coeff
-        self.scale_factor = scale_factor
+        self.alpha, self.beta, self.step_coeff, self.scale_factor = hyperparameter_set["alpha"], hyperparameter_set["beta"], hyperparameter_set["step_coeff"], hyperparameter_set["scale_factor"]
 
         self.func_package = (self.func, bool_tensor_delta, byte_quantize)
         self.device_package = (self.func_device, self.device, self.device)
@@ -164,7 +158,7 @@ class Attack_Object:
         optimal_delta = self.optimizer.get_delta(
             step_coeff=self.step_coeff,
             num_steps=self.attack_cycles,
-            perturbation_scale_factor=DEFAULT_SCALE_FACTOR,
+            perturbation_scale_factor=self.scale_factor,
             num_perturbations=self.num_pertubations,
             beta=self.beta, acceptance_func=self.acceptance_func)
 
