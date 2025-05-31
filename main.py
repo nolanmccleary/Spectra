@@ -1,9 +1,12 @@
-import lpips
 import os
 import sys
 import torch
 from spectra import Attack_Engine, PHASH, PHASH_RGB, AHASH, AHASH_RGB, DHASH, DHASH_RGB
+from models import ALEX_ONNX
+#import lpips
 
+
+#F_LPIPS = lpips.LPIPS(net='alex').to(dev)
 
 DEFAULT_ALPHA = 2.9
 DEFAULT_BETA = 0.9  # Hah, Beta.
@@ -28,8 +31,8 @@ def attack_sequence(dev):
     image_input_dir = 'sample_images'
     image_output_dir = 'output'
 
-
-    F_LPIPS = lpips.LPIPS(net='alex').to(dev)
+    LPIPS_MODEL = ALEX_ONNX(device=dev)
+    F_LPIPS = LPIPS_MODEL.get_lpips
 
     engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 24, "lpips", 40, dev, verbose="off", lpips_func = F_LPIPS)
     engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, DEFAULT_HYPERPARAMETERS, 24, "l2", 900, dev, verbose="off", lpips_func = F_LPIPS)

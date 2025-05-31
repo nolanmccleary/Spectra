@@ -5,14 +5,12 @@ from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, lpips_rgb, to_hex, bool_tensor_delta, byte_quantize, l2_delta, make_acceptance_func
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, to_hex, bool_tensor_delta, byte_quantize, l2_delta, make_acceptance_func
 import torch
 from torchvision.transforms import ToPILImage
 
+
 # TODO: Handle fail mode tracking better
-
-
-
 class Attack_Engine:
 
     def __init__(self, verbose):
@@ -200,7 +198,7 @@ class Attack_Object:
                     self.output_hash = cand_hash
                     break
 
-            self.output_lpips = lpips_rgb(self.rgb_tensor, self.output_tensor, self.lpips_func)
+            self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
             self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
             out = self.output_tensor.detach()
             output_image = ToPILImage()(out)
@@ -218,5 +216,5 @@ class Attack_Object:
                 "lpips": self.output_lpips,
                 "l2": self.output_l2
             },
-            "post_validation": image_compare((input_image_path, output_image_path), self.device)
+            "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device)
         }

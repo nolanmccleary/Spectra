@@ -96,36 +96,6 @@ def l2_delta(a, b):
 
 
 
-def lpips_rgb(img1, img2, loss_func):
-    a = img1.unsqueeze(0) * 2.0 - 1.0   #[1, C, H, W] over [-1, 1]
-    b = img2.unsqueeze(0) * 2.0 - 1.0
-    return loss_func(a, b).item()
-
-
-
-
-def lpips_delta(old_tensor, new_tensor, lpips_func):
-        a3 = None
-        b3 = None
-
-        C, H, W = old_tensor.shape
-
-        if C == 1:
-            a = old_tensor.view(1, 1, H, W) * 2.0 - 1.0
-            b = new_tensor.view(1, 1, H, W) * 2.0 - 1.0
-
-            a3 = a.repeat(1, 3, 1, 1)
-            b3 = b.repeat(1, 3, 1, 1)
-
-        else:
-            a3 = old_tensor.unsqueeze(0)
-            b3 = new_tensor.unsqueeze(0)
-        
-        return lpips_func(a3, b3).item()
-
-
-
-
 def make_acceptance_func(self, acceptance_str):
     
     def lpips_acceptance_func(tensor, delta):
@@ -133,7 +103,7 @@ def make_acceptance_func(self, acceptance_str):
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
 
         if self.current_hamming >= self.hamming_threshold:
-            lpips_distance = lpips_delta(self.tensor, tensor, self.lpips_func)
+            lpips_distance = self.lpips_func(self.tensor, tensor)
 
             if lpips_distance < self.output_lpips:
                 self.output_lpips = lpips_distance

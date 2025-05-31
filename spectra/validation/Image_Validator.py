@@ -1,6 +1,5 @@
-import lpips
 from PIL import Image
-from spectra.utils import get_rgb_tensor, lpips_rgb, l2_delta
+from spectra.utils import get_rgb_tensor, l2_delta
 import imagehash
 from spectra.hashes.PDQ import PDQHasher
 
@@ -33,28 +32,27 @@ def PDQ_compare(img1, img2):
 
 
 
-def image_compare(image_pair: tuple[str], device="cpu"):
+def image_compare(img_path_1, img_path_2, lpips_func, device="cpu"):
     
-    input_image = None
-    output_image = None
+    img_1 = None
+    img_2 = None
 
-    with Image.open(image_pair[0]) as img:
-        input_image = get_rgb_tensor(img, device)
+    with Image.open(img_path_1) as img:
+        img_1 = get_rgb_tensor(img, device)
     
-    with Image.open(image_pair[1]) as img:
-        output_image = get_rgb_tensor(img, device)
+    with Image.open(img_path_2) as img:
+        img_2 = get_rgb_tensor(img, device)
     
-    lpips_score = lpips_rgb(input_image, output_image, lpips.LPIPS(net='alex').to(device))
-    l2_score = l2_delta(input_image, output_image)
+    lpips_score = lpips_func(img_1, img_2)
+    l2_score = l2_delta(img_1, img_2)
 
-    img_path1, img_path2 = image_pair
-    img1 = Image.open(img_path1)
-    img2 = Image.open(img_path2)
+    img1 = Image.open(img_path_1)
+    img2 = Image.open(img_path_2)
 
     ahash_delta = ahash_compare(img1, img2)["hamming"]
     dhash_delta = dhash_compare(img1, img2)["hamming"]
     phash_delta = phash_compare(img1, img2)["hamming"]
-    pdq_delta = PDQ_compare(img_path1, img_path2)["hamming"]
+    pdq_delta = PDQ_compare(img_path_1, img_path_2)["hamming"]
 
     return {
         "lpips" : str(lpips_score),

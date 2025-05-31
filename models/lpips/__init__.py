@@ -1,0 +1,1 @@
+from .lpips_onnx_wrapper import ALEX_ONNX

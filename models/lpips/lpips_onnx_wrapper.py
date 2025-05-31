@@ -1,17 +1,19 @@
 import onnxruntime as ort
 import numpy as np
+import os
 import torch
 
 
 class ALEX_ONNX:
-    def __init__(self, model_path="lpips_alex.onnx", device="cpu"):
+    def __init__(self, model_name="lpips_alex.onnx", device="cpu"):
         if device == "cuda" and "CUDAExecutionProvider" in ort.get_available_providers():
             providers = ["CUDAExecutionProvider", "CPUExecutionProvider"]
         elif device == "mps" and "MPSExecutionProvider" in ort.get_available_providers():
             providers = ["MPSExecutionProvider", "MPSExecutionProvider"]
         else:
             providers = ["CPUExecutionProvider"]
-        
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(script_dir, "onnx", model_name)
         self.session = ort.InferenceSession(model_path, providers=providers)
 
 
@@ -35,6 +37,6 @@ class ALEX_ONNX:
         npA = a3.detach().cpu().numpy().astype(np.float32)
         npB = b3.detach().cpu().numpy().astype(np.float32)
 
-        outputs = self.session.run("lpips_out", {"inA": npA, "inB": npB})
+        outputs = self.session.run(["lpips_out"], {"inA": npA, "inB": npB})
         val = float(outputs[0].item())  # shape (1,1,1,1) -> scalar
         return val

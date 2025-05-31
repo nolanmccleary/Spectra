@@ -1,0 +1,34 @@
+Custom Research License for the Spectra Adversarial Benchmark Toolchain - Version 1.0
+
+Copyright (c) 2025 Nolan McCleary
+
+Permission is hereby granted to use, copy, and modify this software and its associated files (the "Software") for academic, research, and non-commercial purposes only, subject to the following conditions:
+
+1. **Non-Commercial Use Only**  
+   The Software may not be used, in whole or in part, for any commercial purpose without explicit, prior written permission from the author.
+
+2. **Research and Educational Use Only**  
+   The Software is provided strictly for the purpose of academic research, experimentation, evaluation, and educational instruction. Use in real-world production systems is prohibited without prior review.
+
+3. **Ethical Use Required**  
+   Users of the Software must ensure that its use aligns with responsible and ethical standards. This includes, but is not limited to, avoiding harm to individuals or communities, avoiding use in oppressive or exploitative systems, and complying with applicable laws and human rights principles.
+
+4. **Attribution**  
+   Any published work, research paper, technical report, or derivative code that uses this Software, in part or in whole, must: 
+    1. Provide appropriate credit to the author, including a reference to the Spectra repository (https://github.com/nolanmccleary/spectra or equivalent).
+    2. Include a copy of this license in any redistributed codebase or associated documentation.
+
+5. **No Warranty**  
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. THE AUTHOR SHALL NOT BE LIABLE FOR ANY DAMAGES OR LOSSES RESULTING FROM THE USE OR MISUSE OF THIS SOFTWARE.
+
+6. **Third-Party Components**
+    This project includes components from the PDQ hashing library (https://github.com/facebook/ThreatExchange),
+    which is licensed under the BSD 3-Clause License. These components retain their original license
+    and are not subject to the restrictions outlined in this custom license.
+
+    A copy of the BSD 3-Clause License is included in the file: spectra/hashes/PDQ/LICENSE
+
+---
+
+For licensing inquiries or commercial use requests, contact: nolancmccleary@gmail.com
+
