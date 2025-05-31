@@ -1,6 +1,6 @@
-# Spectra: A Stress‐Test System for Perceptual Hash Pipelines
+# Spectra: Stress‐Testing Perceptual Hash Pipelines
 
-Spectra is a modular framework designed to rigorously evaluate and stress‐test perceptual image‐hash pipelines. By generating perceptually‐similar adversarial examples that intentionally “break” a variety of hash algorithms (e.g., pHash, aHash, dHash, PDQ), Spectra helps researchers and engineers measure robustness, uncover weaknesses, and fine‐tune hyperparameters for real‐world image‐hashing applications.
+Spectra is a framework for evaluating and stress‐testing perceptual image‐hash functions. By creating nearly imperceptible adversarial examples that “break” various hash algorithms (pHash, aHash, dHash, PDQ, etc.), Spectra lets you measure each algorithm’s robustness, find weak spots, and adjust hyperparameters to improve real‐world performance.
 
 ---
 
@@ -10,7 +10,7 @@ Spectra is a modular framework designed to rigorously evaluate and stress‐test
 2. [Requirements](#requirements)  
 3. [Installation](#installation)  
 4. [Exporting LPIPS to ONNX](#exporting‐lpips‐to‐onnx)  
-5. [ONNX‐based LPIPS Wrapper](#onnx‐based‐lpips‐wrapper)  
+5. [ONNX‐Based LPIPS Wrapper](#onnx‐based‐lpips‐wrapper)  
 6. [Usage](#usage)  
    - [Exporting LPIPS with `make_lpips_onnx.py`](#exporting‐lpips‐with‐makelpipsonnxpy)  
    - [Running the Attack Engine](#running‐the‐attack‐engine)  
@@ -25,46 +25,47 @@ Spectra is a modular framework designed to rigorously evaluate and stress‐test
 ## Features
 
 - **Modular Attack Engine**  
-  - Define, register, and run multiple adversarial attacks (pHash, aHash, dHash, PDQ, etc.) against any perceptual‐hash function.  
-  - Support for custom hash‐wrapper objects (implementing a unified `get_info()` interface).  
-  - Pluggable acceptance criteria based on LPIPS or L₂ distance to ensure perceptual fidelity.
+  - Register and run multiple adversarial attacks (pHash, aHash, dHash, PDQ, etc.) against any perceptual‐hash function.  
+  - Support for custom hash wrappers (implement a simple `get_info()` interface).  
+  - Flexible acceptance criteria (LPIPS or L₂) to ensure adversarial images remain visually similar.
 
 - **Hyperparameter Injection**  
-  - Easily configure α (number of perturbations), β (momentum), step‐coeff (gradient step size), scale‐factor, and other NES‐optimizer parameters at runtime.  
-  - Compare differing hyperparameter suites (e.g., `DEFAULT_HYPERPARAMETERS`) or YAML/JSON‐driven sets.
+  - Adjust NES‐optimizer settings (α, β, step coefficient, scale factor) at runtime.  
+  - Compare different hyperparameter sets (e.g. `DEFAULT_HYPERPARAMETERS`) or load custom configurations.
 
-- **ONNX‐based LPIPS for Efficiency**  
-  - Export the PyTorch LPIPS (AlexNet backbone) model to ONNX once, then perform inference via `onnxruntime` for faster, lightweight perceptual distance evaluation.  
-  - Include an `ALEX_ONNX` wrapper class to seamlessly replace the native PyTorch LPIPS module.
+- **ONNX‐Based LPIPS for Speed**  
+  - Export the PyTorch LPIPS (AlexNet backbone) model to ONNX once, then run inference with `onnxruntime` for faster distance calculations.  
+  - Provides an `ALEX_ONNX` wrapper class to swap in ONNX‐based LPIPS in place of the PyTorch version.
 
-- **Comprehensive Post‐Validation**  
-  - After generating adversarial examples, re‐compute LPIPS, L₂, and multiple hash distances (pHash, aHash, dHash, PDQ) to quantify attack success and perceptual change.  
-  - Output a JSON‐formatted “attack log” detailing both pre‐validation (adversarial generation) and post‐validation (hash distances, LPIPS, L₂).
+- **Detailed Post‐Validation**  
+  - After generating adversarial images, compute LPIPS, L₂, and multiple hash distances (pHash, aHash, dHash, PDQ) to confirm both attack success and visual similarity.  
+  - Produce a JSON “attack log” that records pre‐validation (Hamming distance, LPIPS, L₂) and post‐validation (hash distances, LPIPS, L₂) for each image.
 
-- **Flexible Input/Output Paths**  
-  - Dynamically control “input_image_dir” and “output_image_dir” so you can run batch attacks on any folder of images.  
-  - Automatic file naming convention: `<attack_name>_<original_filename>.<ext>`
+- **Customizable Input/Output Paths**  
+  - Specify any folder of images to attack.  
+  - Automatically name output files as `<attack_name>_<original_filename>.<ext>` in your chosen output directory.
 
 ---
 
 ## Requirements
 
-- **Python 3.9+** (tested on 3.10 – 3.13)  
-- **PyTorch 1.12+** (for LPIPS export and internal tensor ops)  
-- **Torchvision 0.13+** (for model weight loading warnings—optional)  
-- **lpips 0.1+** (for LPIPS PyTorch model)  
-- **onnx 1.15+** (must support `load_model_from_string`)  
-- **onnxruntime 1.15+** (or `onnxruntime‐gpu` for CUDA support; `onnxruntime‐mps` for Apple Silicon MPS)  
-- **NumPy 1.21+**  
-- **Pillow 8.0+**  
+- **Python 3.9 or higher**  
+- **PyTorch 1.12 or higher** (for LPIPS export and internal tensor operations)  
+- **Torchvision 0.13 or higher** (used by LPIPS; warnings don’t affect functionality)  
+- **lpips 0.1 or higher** (for the LPIPS model)  
+- **onnx 1.15 or higher** (must include `load_model_from_string`)  
+- **onnxruntime 1.15 or higher** (or `onnxruntime‐gpu` for CUDA; `onnxruntime‐mps` for Apple Metal)  
+- **NumPy 1.21 or higher**  
+- **Pillow 8.0 or higher**  
 
-**Install with pip**:
+Install them all with:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-If you want GPU acceleration for ONNX Runtime:
+If you need GPU support for ONNX Runtime:
+
 ```bash
 pip install onnxruntime‐gpu
 ```
