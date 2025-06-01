@@ -66,7 +66,10 @@ class Attack_Object:
             self.func_device = "cpu"
 
         self.hamming_threshold = hamming_threshold
+        
         self.acceptance_func = make_acceptance_func(self, acceptance_func)
+        self.quant_func = byte_quantize
+        
         self.attack_cycles = attack_cycles
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False
 
@@ -77,7 +80,7 @@ class Attack_Object:
 
         self.alpha, self.beta, self.step_coeff, self.scale_factor = hyperparameter_set["alpha"], hyperparameter_set["beta"], hyperparameter_set["step_coeff"], hyperparameter_set["scale_factor"]
 
-        self.func_package = (self.func, bool_tensor_delta, byte_quantize)
+        self.func_package = (self.func, bool_tensor_delta, self.quant_func)
         self.device_package = (self.func_device, self.device, self.device)
 
 
@@ -173,21 +176,24 @@ class Attack_Object:
             # LPIPS-based back-off scaling
             scale_factors = torch.linspace(0.0, 1.0, steps=50)
             self.output_tensor = self.rgb_tensor + rgb_delta
-            EPS = 1e-6
+
             for scale in scale_factors:
                 cand_delta = rgb_delta * scale
-                cand_tensor = self.rgb_tensor + cand_delta
                 safe_scale = anal_clamp(self.rgb_tensor, cand_delta, 0.0, 1.0)
                 safe_delta = cand_delta * safe_scale
+                
                 cand_tensor = self.rgb_tensor + safe_delta
+                cand_targ = cand_tensor.clone()
 
-                cand_targ = cand_tensor
-                if self.colormode == "grayscale":
-                    cand_targ = rgb_to_grayscale(cand_tensor)
+                if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
+                    cand_targ = rgb_to_grayscale(cand_targ)
                 elif self.colormode == "luma":
-                    cand_targ = rgb_to_luma(cand_tensor)
+                    cand_targ = rgb_to_luma(cand_targ)
                 if self.resize_flag:
                     cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+
+                cand_tensor = self.quant_func(cand_tensor)
+                cand_targ = self.quant_func(cand_targ)
 
                 cand_hash = self.func(cand_targ.to(self.func_device))
                 cand_ham = cand_hash.ne(self.original_hash).sum().item()
