@@ -24,8 +24,8 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, **kwargs):
-        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(hash_wrapper, hyperparameter_set, hamming_threshold, acceptance_func, attack_cycles, device, **kwargs))
+    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, lpips_func, **kwargs):
+        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(hash_wrapper, hyperparameter_set, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func, self.verbose, **kwargs))
 
 
     def run_attacks(self, output_name="spectra_out"):
@@ -216,5 +216,5 @@ class Attack_Object:
                 "lpips": self.output_lpips,
                 "l2": self.output_l2
             },
-            "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device)
+            "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, self.verbose)
         }
