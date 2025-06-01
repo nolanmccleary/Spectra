@@ -1,8 +1,9 @@
 import os
 import sys
+import time
 import torch
 from spectra import Attack_Engine, PHASH, PHASH_RGB, AHASH, AHASH_RGB, DHASH, DHASH_RGB
-from models import ALEX_ONNX
+from models import ALEX_ONNX, ALEX_IMPORT
 #import lpips
 
 
@@ -31,15 +32,19 @@ def attack_sequence(dev):
     image_input_dir = 'sample_images'
     image_output_dir = 'output'
 
-    LPIPS_MODEL = ALEX_ONNX(device=dev)
+    #LPIPS_MODEL = ALEX_ONNX(device=dev)
+    LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 24, "lpips", 40, dev, verbose="off", lpips_func = F_LPIPS)
-    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, DEFAULT_HYPERPARAMETERS, 24, "l2", 900, dev, verbose="off", lpips_func = F_LPIPS)
+    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 24, "lpips", 100, dev, verbose="off", lpips_func = F_LPIPS)
+    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, DEFAULT_HYPERPARAMETERS, 24, "l2", 100, dev, verbose="off", lpips_func = F_LPIPS)
     engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 24, "l2", 100, dev, verbose="off", lpips_func = F_LPIPS)
 
+    t1 = time.time()
     engine.run_attacks()
+    time_delta = time.time() - t1
 
+    print(f"\nAttack sequence completed in {time_delta:.2f} seconds")
 
 
 

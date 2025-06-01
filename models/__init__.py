@@ -1,1 +1,1 @@
-from .lpips import ALEX_ONNX
+from .lpips import ALEX_ONNX, ALEX_IMPORT

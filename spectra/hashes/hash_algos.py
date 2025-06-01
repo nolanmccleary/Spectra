@@ -11,12 +11,10 @@ def generate_ahash_batched(batched_tensor):
     return torch.stack([_generate_ahash(v) for v in batched_tensor], dim=0)
 
 
-
 def generate_ahash_rgb_batched(batched_tensor):
     if batched_tensor.dim() == 3:
         batched_tensor = batched_tensor.unsqueeze(0)
     return torch.stack([_generate_ahash_rgb(v) for v in batched_tensor], dim=0)
-
 
 
 def _generate_ahash(tensor):
@@ -37,7 +35,6 @@ def _generate_ahash_rgb(tensor):
 
 def generate_dhash_batched(batched_tensor):
     return torch.stack([_generate_dhash(v) for v in batched_tensor], dim=0)
-
 
 
 def generate_dhash_rgb_batched(batched_tensor):
@@ -64,12 +61,10 @@ def generate_phash_batched(batched_tensor):
     return torch.stack([_generate_phash(v) for v in batched_tensor], dim=0)
 
 
-
 def generate_phash_rgb_batched(batched_tensor):
     if batched_tensor.dim() == 3:
         batched_tensor = batched_tensor.unsqueeze(0)
     return torch.stack([_generate_phash_rgb(v) for v in batched_tensor], dim=0)
-
 
 
 def _generate_phash(tensor): #[1, H, W] -> [64]
@@ -82,7 +77,6 @@ def _generate_phash(tensor): #[1, H, W] -> [64]
     
     bits = (dct_kernel > np.median(dct_kernel)).astype(np.uint8).flatten()
     return torch.from_numpy(bits).to(tensor.device).to(torch.bool)
-
 
 
 def _generate_phash_rgb(tensor): #[3, H, W] -> [64]

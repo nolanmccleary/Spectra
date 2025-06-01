@@ -25,7 +25,6 @@ def rgb_to_luma(rgb_tensor): #[C, H, W] -> [1, H, W]
 
 
 
-
 def tensor_resize(input_tensor, height, width):
     tensor = input_tensor.clone().unsqueeze(0) #[{3,1}, H, W] -> [1, {3, 1}, H, W]
     tensor_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
@@ -72,12 +71,10 @@ def generate_perturbation_vectors(num_perturbations, shape, device):
 
 
 
-
 def to_hex(hash_bool):
     arr = hash_bool.view(-1).cpu().numpy().astype(np.uint8)
     packed = np.packbits(arr)  #Convert to byte array
     return '0x' + ''.join(f'{b:02x}' for b in packed.tolist()) #Format to hex
-
 
 
 
@@ -113,7 +110,6 @@ def make_acceptance_func(self, acceptance_str):
                 delta.zero_()
                 tensor = self.tensor.clone()
         return False
-    
 
     def l2_acceptance_func(tensor, delta):
         self.current_hash = self.func(tensor.to(self.func_device))
@@ -131,7 +127,6 @@ def make_acceptance_func(self, acceptance_str):
                 tensor = self.tensor.clone()
         
         return False
-
 
     if acceptance_str == "lpips":
         return lpips_acceptance_func
