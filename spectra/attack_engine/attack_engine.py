@@ -47,7 +47,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func=None, verbose="off"):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -83,7 +83,7 @@ class Attack_Object:
         self.func_package = (self.func, bool_tensor_delta, self.quant_func)
         self.device_package = (self.func_device, self.device, self.device)
 
-
+        self.delta_scaledown = delta_scaledown
 
 
     def log(self, msg):
@@ -115,7 +115,6 @@ class Attack_Object:
                 self.width = self.original_width
 
             self.original_hash = self.func(self.tensor.to(self.func_device))
-            self.current_hash = self.original_hash
 
 
 
@@ -124,8 +123,6 @@ class Attack_Object:
         self.rgb_tensor = None
         self.tensor = None
         self.original_hash = None
-        self.current_hash = None
-        self.current_hamming = None
         self.optimizer = None
         self.is_staged = False
         self.original_height = None
@@ -157,11 +154,11 @@ class Attack_Object:
         self.log("Running attack...\n")
 
         optimal_delta = self.optimizer.get_delta(
-            step_coeff=self.step_coeff,
-            num_steps=self.attack_cycles,
-            perturbation_scale_factor=self.scale_factor,
-            num_perturbations=self.num_pertubations,
-            beta=self.beta, acceptance_func=self.acceptance_func)
+        step_coeff=self.step_coeff,
+        num_steps=self.attack_cycles,
+        perturbation_scale_factor=self.scale_factor,
+        num_perturbations=self.num_pertubations,
+        beta=self.beta, acceptance_func=self.acceptance_func)
 
         if optimal_delta is not None:
             upsampled_delta = optimal_delta
@@ -173,42 +170,57 @@ class Attack_Object:
             if self.colormode in {"grayscale", "luma"}:
                 rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
-            # LPIPS-based back-off scaling
-            scale_factors = torch.linspace(0.0, 1.0, steps=50)
             self.output_tensor = self.rgb_tensor + rgb_delta
+            cand_targ = self.output_tensor
+            
+            if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
+                cand_targ = rgb_to_grayscale(cand_targ)
+            elif self.colormode == "luma":
+                cand_targ = rgb_to_luma(cand_targ)
+            if self.resize_flag:
+                cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+        
+            self.output_hash = self.func(self.quant_func(cand_targ))
+            self.output_hamming = self.original_hash.ne(self.output_hash).sum().item()
+            self.attack_success = self.output_hamming >= self.hamming_threshold
 
-            for scale in scale_factors:
-                cand_delta = rgb_delta * scale
-                safe_scale = anal_clamp(self.rgb_tensor, cand_delta, 0.0, 1.0)
-                safe_delta = cand_delta * safe_scale
+            if self.delta_scaledown:
+                scale_factors = torch.linspace(0.0, 1.0, steps=50)
                 
-                cand_tensor = self.rgb_tensor + safe_delta
-                cand_targ = cand_tensor.clone()
+                for scale in scale_factors:
+                    cand_delta = rgb_delta * scale
+                    safe_scale = anal_clamp(self.rgb_tensor, cand_delta, 0.0, 1.0)
+                    safe_delta = cand_delta * safe_scale
+                    
+                    cand_tensor = self.rgb_tensor + safe_delta
+                    cand_targ = cand_tensor.clone()
 
-                if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
-                    cand_targ = rgb_to_grayscale(cand_targ)
-                elif self.colormode == "luma":
-                    cand_targ = rgb_to_luma(cand_targ)
-                if self.resize_flag:
-                    cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+                    if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
+                        cand_targ = rgb_to_grayscale(cand_targ)
+                    elif self.colormode == "luma":
+                        cand_targ = rgb_to_luma(cand_targ)
+                    if self.resize_flag:
+                        cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
-                cand_tensor = self.quant_func(cand_tensor)
-                cand_targ = self.quant_func(cand_targ)
+                    cand_tensor = self.quant_func(cand_tensor)
+                    cand_targ = self.quant_func(cand_targ)
 
-                cand_hash = self.func(cand_targ.to(self.func_device))
-                cand_ham = cand_hash.ne(self.original_hash).sum().item()
-                if cand_ham >= self.hamming_threshold:
-                    self.attack_success = True
-                    self.output_tensor = cand_tensor
-                    self.output_hamming = cand_ham
-                    self.output_hash = cand_hash
-                    break
+                    cand_hash = self.func(cand_targ.to(self.func_device))
+                    cand_ham = cand_hash.ne(self.original_hash).sum().item()
+                    if cand_ham >= self.hamming_threshold:
+                        self.output_tensor = cand_tensor
+                        self.output_hash = cand_hash
+                        self.output_hamming = cand_ham
+                        self.attack_success = True
+                        break
 
             self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
             self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
+            
             out = self.output_tensor.detach()
             output_image = ToPILImage()(out)
             output_image.save(output_image_path)
+            
             self.log(f"Saved attacked image to {output_image_path}")
 
         self.log(f"Success status: {self.attack_success}")
