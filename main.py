@@ -16,11 +16,20 @@ DEFAULT_SCALE_FACTOR = 6 #DEFAULTS OPTIMIZED FOR PHASH
 
 
 DEFAULT_HYPERPARAMETERS = {
-    "alpha"         : DEFAULT_ALPHA,
-    "beta"          : DEFAULT_BETA,
-    "step_coeff"    : DEFAULT_STEP_COEFF,
-    "scale_factor"  : DEFAULT_SCALE_FACTOR
+    "alpha"         : 2.9,
+    "beta"          : 0.9,
+    "step_coeff"    : 0.008,
+    "scale_factor"  : 6
 }
+
+AHASH_HYPERPARAMETERS = {
+    "alpha"         : 18.5,
+    "beta"          : 0.9,
+    "step_coeff"    : 0.001,
+    "scale_factor"  : 8.5
+}
+
+
 
 
 torch.set_default_dtype(torch.float32)
@@ -38,14 +47,14 @@ def attack_sequence(dev):
 
     engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 150, dev, lpips_func = F_LPIPS, delta_scaledown=False)
     engine.add_attack("phash_attack_scaledown", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 150, dev, lpips_func = F_LPIPS, delta_scaledown=True)
-    #engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, DEFAULT_HYPERPARAMETERS, 32, "l2", 50, dev, lpips_func = F_LPIPS, delta_scaledown=False)
-    #engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 32, "l2", 150, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 10, "l2", 150, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 10, "l2", 30, dev, lpips_func = F_LPIPS, delta_scaledown=False)
 
     t1 = time.time()
     engine.run_attacks()
     time_delta = time.time() - t1
 
-    print(f"\nAttack sequence completed in {time_delta:.2f} seconds")
+    print(f"\nTest sequence completed in {time_delta:.2f} seconds")
 
 
 

@@ -1,34 +1,54 @@
-Custom Research License for the Spectra Adversarial Benchmark Toolchain - Version 1.0
+RESTRICTED RESEARCH LICENSE
 
-Copyright (c) 2025 Nolan McCleary
+Copyright (c) 2024 Nolan McCleary
 
-Permission is hereby granted to use, copy, and modify this software and its associated files (the "Software") for academic, research, and non-commercial purposes only, subject to the following conditions:
+IMPORTANT: READ THIS LICENSE CAREFULLY BEFORE USING THIS SOFTWARE.
 
-1. **Non-Commercial Use Only**  
-   The Software may not be used, in whole or in part, for any commercial purpose without explicit, prior written permission from the author.
+This software and associated documentation files (the "Software") are provided for RESEARCH AND EDUCATIONAL PURPOSES ONLY. By downloading, installing, or using this Software, you agree to be bound by the terms of this license.
 
-2. **Research and Educational Use Only**  
-   The Software is provided strictly for the purpose of academic research, experimentation, evaluation, and educational instruction. Use in real-world production systems is prohibited without prior review.
+1. GRANT OF LICENSE
+   Permission is hereby granted, free of charge, to any person obtaining a copy of the Software, to use the Software STRICTLY for:
+   a) Academic research in computer vision and security
+   b) Educational purposes in machine learning
+   c) Security research with explicit written permission from system owners
+   d) Development of more robust content protection systems
 
-3. **Ethical Use Required**  
-   Users of the Software must ensure that its use aligns with responsible and ethical standards. This includes, but is not limited to, avoiding harm to individuals or communities, avoiding use in oppressive or exploitative systems, and complying with applicable laws and human rights principles.
+2. RESTRICTIONS
+   The following uses are STRICTLY PROHIBITED:
+   a) Circumventing content protection systems
+   b) Evading content moderation systems
+   c) Creating or distributing harmful content
+   d) Violating terms of service of any platform
+   e) Any use that could cause harm or violate laws
+   f) Commercial use without explicit written permission
+   g) Distribution of modified versions without explicit written permission
+   h) Use in any system that processes user content without explicit written permission
 
-4. **Attribution**  
-   Any published work, research paper, technical report, or derivative code that uses this Software, in part or in whole, must: 
-    1. Provide appropriate credit to the author, including a reference to the Spectra repository (https://github.com/nolanmccleary/spectra or equivalent).
-    2. Include a copy of this license in any redistributed codebase or associated documentation.
+3. RESPONSIBLE DISCLOSURE
+   Users must:
+   a) Report any discovered vulnerabilities privately to system owners
+   b) Follow responsible disclosure guidelines
+   c) Not publicly disclose vulnerabilities without permission
+   d) Provide reasonable time for fixes to be implemented
 
-5. **No Warranty**  
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. THE AUTHOR SHALL NOT BE LIABLE FOR ANY DAMAGES OR LOSSES RESULTING FROM THE USE OR MISUSE OF THIS SOFTWARE.
+4. LEGAL COMPLIANCE
+   Users are responsible for:
+   a) Ensuring compliance with all applicable laws
+   b) Obtaining necessary permissions before testing any systems
+   c) Complying with export control regulations
+   d) Following platform terms of service
 
-6. **Third-Party Components**
-    This project includes components from the PDQ hashing library (https://github.com/facebook/ThreatExchange),
-    which is licensed under the BSD 3-Clause License. These components retain their original license
-    and are not subject to the restrictions outlined in this custom license.
+5. DISCLAIMER OF LIABILITY
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-    A copy of the BSD 3-Clause License is included in the file: spectra/hashes/PDQ/LICENSE
+6. INDEMNIFICATION
+   You agree to indemnify, defend, and hold harmless the copyright holder from and against any claims, damages, losses, liabilities, costs, and expenses (including reasonable attorneys' fees) arising from or relating to your use of the Software.
 
----
+7. TERMINATION
+   This license automatically terminates if you fail to comply with any of its terms and conditions.
 
-For licensing inquiries or commercial use requests, contact: nolancmccleary@gmail.com
+8. GOVERNING LAW
+   This license shall be governed by and construed in accordance with the laws of the jurisdiction in which the copyright holder resides, without regard to its conflict of law provisions.
 
+9. ENTIRE AGREEMENT
+   This license constitutes the entire agreement between you and the copyright holder regarding the Software and supersedes all prior or contemporaneous understandings regarding such subject matter. 
