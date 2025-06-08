@@ -122,17 +122,18 @@ def make_acceptance_func(self, acceptance_str):
                 self.output_l2 = l2_distance
                 return True
             
-            else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
+            else:   
                 delta.zero_()
                 tensor = self.tensor.clone()
-        
         return False
-
-    if acceptance_str == "lpips":
-        return lpips_acceptance_func
     
-    elif acceptance_str == "l2":
-        return l2_acceptance_func
+    def latching_acceptance_func(tensor, delta):
+        self.current_hash = self.func(tensor.to(self.func_device))
+        self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
+        return True
 
-    else:
-        return None
+    acceptance_table = {"lpips" : lpips_acceptance_func, "l2" : l2_acceptance_func, "latch" : latching_acceptance_func}
+    if acceptance_str not in acceptance_table.keys():
+        raise ValueError(f"'{acceptance_str}' not in set of valid acceptance function handles: {acceptance_table.keys()}")
+
+    return acceptance_table[acceptance_str]
