@@ -99,29 +99,29 @@ class Attack_Object:
             self.original_width = self.rgb_tensor.size(2)
             self.log("Setting grayscale image tensor")
 
-            self.tensor = self.rgb_tensor
+            self._tensor = self.rgb_tensor
 
             if self.colormode == "grayscale":
-                self.tensor = rgb_to_grayscale(self.rgb_tensor)
+                self._tensor = rgb_to_grayscale(self.rgb_tensor)
             elif self.colormode == "luma":
-                self.tensor = rgb_to_luma(self.rgb_tensor)
+                self._tensor = rgb_to_luma(self.rgb_tensor)
 
             if self.resize_flag:
-                self.tensor = tensor_resize(self.tensor, self.resize_height, self.resize_width)
+                self._tensor = tensor_resize(self._tensor, self.resize_height, self.resize_width)
                 self.height = self.resize_height
                 self.width = self.resize_width
             else:
                 self.height = self.original_height
                 self.width = self.original_width
 
-            self.original_hash = self.func(self.tensor.to(self.func_device))
+            self.original_hash = self.func(self._tensor.to(self.func_device))
 
 
 
     def stage_attack(self, input_image_path):
         # reset state
         self.rgb_tensor = None
-        self.tensor = None
+        self._tensor = None
         self.original_hash = None
         self.optimizer = None
         self.is_staged = False
@@ -136,14 +136,22 @@ class Attack_Object:
         self.attack_success = False
         self.prev_step = None
 
+        self.current_hash = None
+        self.current_hamming = None
+        self.current_lpips = None
+        self.current_l2 = None
+
+        self.system_state = []
+
+
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
 
-        self.optimizer = NES_Optimizer(func_package=self.func_package, device_package=self.device_package, tensor=self.tensor, vecMin=0.0, vecMax=1.0)
+        self.optimizer = NES_Optimizer(func_package=self.func_package, device_package=self.device_package, tensor=self._tensor, vecMin=0.0, vecMax=1.0)
 
         # calculate number of perturbations
         self.num_pertubations = self.alpha
-        for k in self.tensor.shape:
+        for k in self._tensor.shape:
             self.num_pertubations *= k
         self.num_pertubations = (int(self.num_pertubations) // 2) * 2
 
@@ -225,14 +233,16 @@ class Attack_Object:
 
         self.log(f"Success status: {self.attack_success}")
 
+        print(self.system_state)
+
         return {
             "pre_validation": {
-                "success": self.attack_success,
-                "original_hash": to_hex(self.original_hash),
-                "output_hash": to_hex(self.output_hash) if self.output_hash is not None else None,
-                "hamming_distance": self.output_hamming,
-                "lpips": self.output_lpips,
-                "l2": self.output_l2
+                "success"           : self.attack_success,
+                "original_hash"     : to_hex(self.original_hash),
+                "output_hash"       : to_hex(self.output_hash) if self.output_hash is not None else None,
+                "hamming_distance"  : self.output_hamming,
+                "lpips"             : self.output_lpips,
+                "l2"                : self.output_l2
             },
             "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, self.verbose)
         }

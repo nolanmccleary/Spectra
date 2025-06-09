@@ -9,6 +9,23 @@ from models import ALEX_ONNX, ALEX_IMPORT
 
 #F_LPIPS = lpips.LPIPS(net='alex').to(dev)
 
+
+
+#TODO: 
+# 1) Fix faulty l2/lpips regulator
+# 2) Smart scaleup lpips
+# 3) Fast DCT
+# 4) Pareto integrator
+# 5) CUDA port
+# 6) Cluster integration
+# 7) Mass analysis and HP training
+# 8) Backtrack algorithm
+
+
+#CRITICAL: GUT THE LOOPING
+
+
+
 DEFAULT_ALPHA = 2.9
 DEFAULT_BETA = 0.9  # Hah, Beta.
 DEFAULT_STEP_COEFF = 0.008
@@ -44,10 +61,10 @@ def attack_sequence(dev):
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "latch", 50, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    #engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 50, dev, lpips_func = F_LPIPS, delta_scaledown=False)
     #engine.add_attack("phash_attack_scaledown", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 150, dev, lpips_func = F_LPIPS, delta_scaledown=True)
-    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 20, "latch", 150, dev, lpips_func = F_LPIPS, delta_scaledown=False)
-    engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 20, "latch", 50, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 20, "latch", 1000, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    #engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 20, "l2", 1000, dev, lpips_func = F_LPIPS, delta_scaledown=False)
 
     t1 = time.time()
     engine.run_attacks()

@@ -13,12 +13,12 @@ def get_rgb_tensor(image_object, rgb_device):
 
 
 
-def rgb_to_grayscale(rgb_tensor): #[C, H, W] -> [1, H, W]
+def rgb_to_grayscale(rgb_tensor):   #[C, H, W] -> [1, H, W]
     return torch.mean(rgb_tensor, dim=0, keepdim=True)
 
 
 
-def rgb_to_luma(rgb_tensor): #[C, H, W] -> [1, H, W]
+def rgb_to_luma(rgb_tensor):        #[C, H, W] -> [1, H, W]
     r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
     gray = 0.299*r + 0.587*g + 0.114*b
     return gray.unsqueeze(0)
@@ -26,14 +26,14 @@ def rgb_to_luma(rgb_tensor): #[C, H, W] -> [1, H, W]
 
 
 def tensor_resize(input_tensor, height, width):
-    tensor = input_tensor.clone().unsqueeze(0) #[{3,1}, H, W] -> [1, {3, 1}, H, W]
-    tensor_resized = F.interpolate(   #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
+    tensor = input_tensor.clone().unsqueeze(0)      #[{3,1}, H, W] -> [1, {3, 1}, H, W]
+    tensor_resized = F.interpolate(                 #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
         tensor,
         size=(height, width),
         mode='bilinear',
         align_corners=False
     )
-    return tensor_resized.squeeze(0) #[1, {3, 1}, H, W] -> [{3,1}, H, W]
+    return tensor_resized.squeeze(0)                #[1, {3, 1}, H, W] -> [{3,1}, H, W]
 
 
 
@@ -44,7 +44,7 @@ def inverse_delta(rgb_tensor, delta, eps=1e-6):
         return delta
 
     rgb_mean = rgb_tensor.mean()  # [1, H, W]
-    gd = delta.unsqueeze(0)              # [1, H, W]
+    gd = delta.unsqueeze(0)       # [1, H, W]
     
     # Avoid division by zero
     delta = torch.where(
@@ -65,16 +65,16 @@ def generate_seed_perturbation(dim, start_scalar, device):
 def generate_perturbation_vectors(num_perturbations, shape, device):
     base = torch.randn((num_perturbations // 2, *shape), dtype=torch.float32, device=device) 
     absmax = base.abs().amax(dim=1, keepdim=True)
-    scale = torch.where(absmax > 0, 1.0 / absmax, torch.tensor(1.0, device = device)) #scale tensor to get max val of each generated perturbation so that we can normalize
+    scale = torch.where(absmax > 0, 1.0 / absmax, torch.tensor(1.0, device = device))   #Scale tensor to get max val of each generated perturbation so that we can normalize
     base = base * scale
-    return torch.cat([base, -base], dim=0) #Mirror to preserve distribution
+    return torch.cat([base, -base], dim=0)                                              #Mirror to preserve distribution
 
 
 
 def to_hex(hash_bool):
     arr = hash_bool.view(-1).cpu().numpy().astype(np.uint8)
-    packed = np.packbits(arr)  #Convert to byte array
-    return '0x' + ''.join(f'{b:02x}' for b in packed.tolist()) #Format to hex
+    packed = np.packbits(arr)                                   #Convert to byte array
+    return '0x' + ''.join(f'{b:02x}' for b in packed.tolist())  #Format to hex
 
 
 
@@ -98,38 +98,56 @@ def make_acceptance_func(self, acceptance_str):
     def lpips_acceptance_func(tensor, delta):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
+        self.current_lpips = self.lpips_func(self._tensor, tensor)
+        self.current_l2 = l2_delta(self._tensor, tensor)
+
+        self.system_state.append({"current_hamming" : self.current_hamming,
+                                  "current_lpips"   : self.current_lpips,
+                                  "current_l2"      : self.current_l2})
 
         if self.current_hamming >= self.hamming_threshold:
-            lpips_distance = self.lpips_func(self.tensor, tensor)
-
-            if lpips_distance < self.output_lpips:
-                self.output_lpips = lpips_distance
+            if self.current_lpips < self.output_lpips:
+                self.output_lpips = self.current_lpips
                 return True
             
-            else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start; <- NEED TO TEST THIS
+            else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start
                 delta.zero_()
-                tensor = self.tensor.clone()
+                tensor.copy_(self._tensor)  # Modify tensor contents instead of reassigning
+                return False
+        
         return False
+
 
     def l2_acceptance_func(tensor, delta):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
+        self.current_l2 = l2_delta(self._tensor, tensor)
+
+        self.system_state.append({"current_hamming" : self.current_hamming,
+                                  "current_lpips"   : self.current_lpips,
+                                  "current_l2"      : self.current_l2})
 
         if self.current_hamming >= self.hamming_threshold:
-            l2_distance = l2_delta(self.tensor, tensor)
-
-            if l2_distance < self.output_l2:
-                self.output_l2 = l2_distance
+            if self.current_l2 < self.output_l2:
+                self.output_l2 = self.current_l2
                 return True
             
             else:   
                 delta.zero_()
-                tensor = self.tensor.clone()
+                tensor.copy_(self._tensor)  # Modify tensor contents instead of reassigning
+                return False
+
         return False
     
+
     def latching_acceptance_func(tensor, delta):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
+        self.current_l2 = l2_delta(self._tensor, tensor)
+        
+        self.system_state.append({"current_hamming" : self.current_hamming,
+                                  "current_lpips"   : self.current_lpips,
+                                  "current_l2"      : self.current_l2})
         return True
 
     acceptance_table = {"lpips" : lpips_acceptance_func, "l2" : l2_acceptance_func, "latch" : latching_acceptance_func}
