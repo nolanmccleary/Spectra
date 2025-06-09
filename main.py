@@ -42,7 +42,7 @@ DEFAULT_HYPERPARAMETERS = {
 AHASH_HYPERPARAMETERS = {
     "alpha"         : 2.5,
     "beta"          : 0.9,
-    "step_coeff"    : 0.008,
+    "step_coeff"    : 0.001,
     "scale_factor"  : 6
 }
 
@@ -53,7 +53,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
 
 def attack_sequence(dev):
     engine = Attack_Engine(verbose="on")
-    images = ['imagehash.png']
+    images = ['peppers.png', 'imagehash.png']
     image_input_dir = 'sample_images'
     image_output_dir = 'output'
 
@@ -61,10 +61,10 @@ def attack_sequence(dev):
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    #engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 2, 500, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 30, "lpips", 4, 200, dev, lpips_func = F_LPIPS, delta_scaledown=False)
     #engine.add_attack("phash_attack_scaledown", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 150, dev, lpips_func = F_LPIPS, delta_scaledown=True)
-    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 10, "lpips", 1, 1000, dev, lpips_func = F_LPIPS, delta_scaledown=False)
-    #engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 20, "l2", 1000, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 10, "l2", 4, 400, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 20, "l2", 5, 500, dev, lpips_func = F_LPIPS, delta_scaledown=False)
 
     t1 = time.time()
     engine.run_attacks()

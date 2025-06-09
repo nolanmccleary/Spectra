@@ -254,7 +254,7 @@ class Attack_Object:
         self.log(f"Saved attacked image to {output_image_path}")
 
         self.log(f"Success status: {self.attack_success}")
-        self.log(self.system_state)
+        #self.log(self.system_state)
 
         return {
             "pre_validation": {
