@@ -3,7 +3,7 @@ import numpy as np
 import onnxruntime as ort
 import os
 import torch
-
+from spectra.utils import tensor_resize
 
 class ALEX_ONNX:
 
@@ -20,21 +20,31 @@ class ALEX_ONNX:
 
 
     def get_lpips(self, old_tensor: torch.Tensor, new_tensor: torch.Tensor) -> float:
-        a3 = None
-        b3 = None
 
-        C, H, W = old_tensor.shape
+        old = old_tensor.clone().to(self.device)
+        new = new_tensor.clone().to(self.device)
+
+        C, H, W = old.shape
+
+        if H * W < 1024:
+            W = 32
+            H = 32
+            old = tensor_resize(old, H, W)
+            new = tensor_resize(new, H, W)
+
+        a3 = torch.zeros_like(old).to(self.device)
+        b3 = torch.zeros_like(new).to(self.device)
 
         if C == 1:
-            a = old_tensor.view(1, 1, H, W) * 2.0 - 1.0
-            b = new_tensor.view(1, 1, H, W) * 2.0 - 1.0
+            a = old.view(1, 1, H, W) * 2.0 - 1.0
+            b = new.view(1, 1, H, W) * 2.0 - 1.0
 
             a3 = a.repeat(1, 3, 1, 1)
             b3 = b.repeat(1, 3, 1, 1)
 
         else:
-            a3 = old_tensor.unsqueeze(0)
-            b3 = new_tensor.unsqueeze(0)
+            a3 = old.unsqueeze(0)
+            b3 = new.unsqueeze(0)
 
         npA = a3.detach().cpu().numpy().astype(np.float32)
         npB = b3.detach().cpu().numpy().astype(np.float32)
@@ -51,21 +61,30 @@ class ALEX_IMPORT:
 
 
     def get_lpips(self, old_tensor: torch.Tensor, new_tensor: torch.Tensor) -> float:
-        a3 = torch.zeros_like(old_tensor).to(self.device)   #Shapes should match but it would be good to force a crash here if they don't
-        b3 = torch.zeros_like(new_tensor).to(self.device)
+        old = old_tensor.clone().to(self.device)
+        new = new_tensor.clone().to(self.device)
 
-        C, H, W = old_tensor.shape
+        C, H, W = old.shape
+
+        if H * W < 1024:
+            W = 32
+            H = 32
+            old = tensor_resize(old, H, W)
+            new = tensor_resize(new, H, W)
+
+        a3 = torch.zeros_like(old).to(self.device)
+        b3 = torch.zeros_like(new).to(self.device)
 
         if C == 1:
-            a = old_tensor.view(1, 1, H, W) * 2.0 - 1.0
-            b = new_tensor.view(1, 1, H, W) * 2.0 - 1.0
+            a = old.view(1, 1, H, W) * 2.0 - 1.0
+            b = new.view(1, 1, H, W) * 2.0 - 1.0
 
             a3 = a.repeat(1, 3, 1, 1)
             b3 = b.repeat(1, 3, 1, 1)
 
         else:
-            a3 = old_tensor.unsqueeze(0)
-            b3 = new_tensor.unsqueeze(0)
+            a3 = old.unsqueeze(0)
+            b3 = new.unsqueeze(0)
 
         output = self.model(a3, b3)
         return output.item()

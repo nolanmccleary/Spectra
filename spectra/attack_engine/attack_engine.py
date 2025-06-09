@@ -131,10 +131,17 @@ class Attack_Object:
         self.original_width = None
 
         self.output_tensor = None
+        
         self.output_hash = None
         self.output_hamming = None
         self.output_lpips = 1
         self.output_l2 = 1
+        
+        self.current_hash = None
+        self.current_hamming = None
+        self.current_lpips = 1
+        self.current_l2 = 1
+
         self.attack_success = False
         self.prev_step = None
 
@@ -166,90 +173,85 @@ class Attack_Object:
             perturbation_scale_factor=self.scale_factor,
             num_perturbations=self.num_pertubations,
             beta=self.beta, acceptance_func=self.acceptance_func)
-
-            self.system_state.append({"current_hamming" : self.current_hamming,
-                                    "current_lpips"     : self.current_lpips,
-                                    "current_l2"        : self.current_l2})
-            if accepted:
+            
+            if optimal_delta is None or accepted:
                 optimal_delta = curr_delta
 
-
-        if optimal_delta is not None:
             
-            ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
-            upsampled_delta = optimal_delta
-            
-            if self.resize_flag:
-                optimal_delta = optimal_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
-                upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
-            rgb_delta = upsampled_delta
-            if self.colormode in {"grayscale", "luma"}:
-                rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
-
-            self.output_tensor = self.rgb_tensor + rgb_delta
-            cand_targ = self.output_tensor
-
-
-            ################################ RTQ - IMAGE SPACE BACK TO HASH SPACE  ########################################
-
-            if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
-                cand_targ = rgb_to_grayscale(cand_targ)
-            elif self.colormode == "luma":
-                cand_targ = rgb_to_luma(cand_targ)
-            
-            if self.resize_flag:
-                cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+        ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
+        upsampled_delta = optimal_delta
         
+        if self.resize_flag:
+            optimal_delta = optimal_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
+            upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
+        rgb_delta = upsampled_delta
+        if self.colormode in {"grayscale", "luma"}:
+            rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
+
+        self.output_tensor = self.rgb_tensor + rgb_delta
+        cand_targ = self.output_tensor
+
+
+        ################################ RTQ - IMAGE SPACE BACK TO HASH SPACE  ########################################
+
+        if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
+            cand_targ = rgb_to_grayscale(cand_targ)
+        elif self.colormode == "luma":
+            cand_targ = rgb_to_luma(cand_targ)
+        
+        if self.resize_flag:
+            cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+    
+        
+        ################################ END OF ROUND-TRIP QUANTIZATION #####################################
+
+        self.output_hash = self.func(self.quant_func(cand_targ))
+        self.output_hamming = self.original_hash.ne(self.output_hash).sum().item()
+        self.attack_success = self.output_hamming >= self.hamming_threshold
+
+        ################################# DELTA SCALEDOWN (OPTIONAL) #############################################
+
+        if self.delta_scaledown:
+            scale_factors = torch.linspace(0.0, 1.0, steps=50)
             
-            ################################ END OF ROUND-TRIP QUANTIZATION #####################################
-
-            self.output_hash = self.func(self.quant_func(cand_targ))
-            self.output_hamming = self.original_hash.ne(self.output_hash).sum().item()
-            self.attack_success = self.output_hamming >= self.hamming_threshold
-
-            ################################# DELTA SCALEDOWN (OPTIONAL) #############################################
-
-            if self.delta_scaledown:
-                scale_factors = torch.linspace(0.0, 1.0, steps=50)
+            for scale in scale_factors:
+                cand_delta = rgb_delta * scale
+                safe_scale = anal_clamp(self.rgb_tensor, cand_delta, 0.0, 1.0)
+                safe_delta = cand_delta * safe_scale
                 
-                for scale in scale_factors:
-                    cand_delta = rgb_delta * scale
-                    safe_scale = anal_clamp(self.rgb_tensor, cand_delta, 0.0, 1.0)
-                    safe_delta = cand_delta * safe_scale
-                    
-                    cand_tensor = self.rgb_tensor + safe_delta
-                    cand_targ = cand_tensor.clone()
+                cand_tensor = self.rgb_tensor + safe_delta
+                cand_targ = cand_tensor.clone()
 
-                    if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
-                        cand_targ = rgb_to_grayscale(cand_targ)
-                    elif self.colormode == "luma":
-                        cand_targ = rgb_to_luma(cand_targ)
-                    if self.resize_flag:
-                        cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+                if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
+                    cand_targ = rgb_to_grayscale(cand_targ)
+                elif self.colormode == "luma":
+                    cand_targ = rgb_to_luma(cand_targ)
+                if self.resize_flag:
+                    cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
-                    cand_tensor = self.quant_func(cand_tensor)
-                    cand_targ = self.quant_func(cand_targ)
+                cand_tensor = self.quant_func(cand_tensor)
+                cand_targ = self.quant_func(cand_targ)
 
-                    cand_hash = self.func(cand_targ.to(self.func_device))
-                    cand_ham = cand_hash.ne(self.original_hash).sum().item()
-                    if cand_ham >= self.hamming_threshold:
-                        self.output_tensor = cand_tensor
-                        self.output_hash = cand_hash
-                        self.output_hamming = cand_ham
-                        self.attack_success = True
-                        break
+                cand_hash = self.func(cand_targ.to(self.func_device))
+                cand_ham = cand_hash.ne(self.original_hash).sum().item()
+                if cand_ham >= self.hamming_threshold:
+                    self.output_tensor = cand_tensor
+                    self.output_hash = cand_hash
+                    self.output_hamming = cand_ham
+                    self.attack_success = True
+                    break
 
 
-            ################################# END OF DELTA SCALEDOWN  ###################################################
+        ################################# END OF DELTA SCALEDOWN  ###################################################
 
-            self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
-            self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
-            
-            out = self.output_tensor.detach()
-            output_image = ToPILImage()(out)
-            output_image.save(output_image_path)
-            
-            self.log(f"Saved attacked image to {output_image_path}")
+        self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
+        self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
+        
+        out = self.output_tensor.detach()
+        output_image = ToPILImage()(out)
+        output_image.save(output_image_path)
+        
+        self.log(f"Saved attacked image to {output_image_path}")
 
         self.log(f"Success status: {self.attack_success}")
         self.log(self.system_state)

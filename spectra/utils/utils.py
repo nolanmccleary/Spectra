@@ -95,48 +95,62 @@ def l2_delta(a, b):
 
 def make_acceptance_func(self, acceptance_str):
     
-    def lpips_acceptance_func(tensor, delta):
+    def lpips_acceptance_func(tensor):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
         self.current_lpips = self.lpips_func(self._tensor, tensor)
         self.current_l2 = l2_delta(self._tensor, tensor)
+
+        break_loop, accepted = False, False
+
+        self.system_state.append({"current_hamming"     : self.current_hamming,
+                                    "current_lpips"     : self.current_lpips,
+                                    "current_l2"        : self.current_l2})
 
         if self.current_hamming >= self.hamming_threshold:
             if self.current_lpips < self.output_lpips:
                 self.output_lpips = self.current_lpips
-                return True
-            
-            else:   #Lpips distance more or less increases monotonically so once we know it isn't better than our current best we may as well re-start
-                return False
-        
-        return False
+                accepted = True
+
+            break_loop = True
+
+        return break_loop, accepted
 
 
-    def l2_acceptance_func(tensor, delta):
+    def l2_acceptance_func(tensor):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
         self.current_lpips = self.lpips_func(self._tensor, tensor)
         self.current_l2 = l2_delta(self._tensor, tensor)
 
+        self.system_state.append({  "current_hamming"   : self.current_hamming,
+                                    "current_lpips"     : self.current_lpips,
+                                    "current_l2"        : self.current_l2
+                                    })
+
+        break_loop, accepted = False, False
+        
         if self.current_hamming >= self.hamming_threshold:
             if self.current_l2 < self.output_l2:
                 self.output_l2 = self.current_l2
-                return True
-            
-            else:   
-                delta.zero_()
-                tensor.copy_(self._tensor)  # Modify tensor contents instead of reassigning
-                return False
+                accepted = True
 
-        return False
+            break_loop = True
+
+        return break_loop, accepted
     
 
-    def latching_acceptance_func(tensor, delta):
+    def latching_acceptance_func(tensor):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
         self.current_lpips = self.lpips_func(self._tensor, tensor)
         self.current_l2 = l2_delta(self._tensor, tensor)
-        return True
+        
+        self.system_state.append({  "current_hamming"   : self.current_hamming,
+                                    "current_lpips"     : self.current_lpips,
+                                    "current_l2"        : self.current_l2})
+        return False, True
+
 
     acceptance_table = {"lpips" : lpips_acceptance_func, "l2" : l2_acceptance_func, "latch" : latching_acceptance_func}
     if acceptance_str not in acceptance_table.keys():
