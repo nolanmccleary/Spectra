@@ -24,8 +24,8 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, acceptance_func, attack_cycles: int, device: str, lpips_func, **kwargs):
-        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(hash_wrapper, hyperparameter_set, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func, self.verbose, **kwargs))
+    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, acceptance_func, num_reps: int, attack_cycles: int, device: str, lpips_func, **kwargs):
+        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(hash_wrapper, hyperparameter_set, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func, self.verbose, **kwargs))
 
 
     def run_attacks(self, output_name="spectra_out"):
@@ -47,7 +47,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -70,7 +70,9 @@ class Attack_Object:
         self.acceptance_func = make_acceptance_func(self, acceptance_func)
         self.quant_func = byte_quantize
         
+        self.num_reps = num_reps
         self.attack_cycles = attack_cycles
+
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False
 
         if lpips_func != None:
@@ -136,13 +138,7 @@ class Attack_Object:
         self.attack_success = False
         self.prev_step = None
 
-        self.current_hash = None
-        self.current_hamming = None
-        self.current_lpips = None
-        self.current_l2 = None
-
         self.system_state = []
-
 
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
@@ -161,36 +157,57 @@ class Attack_Object:
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
-        optimal_delta = self.optimizer.get_delta(
-        step_coeff=self.step_coeff,
-        num_steps=self.attack_cycles,
-        perturbation_scale_factor=self.scale_factor,
-        num_perturbations=self.num_pertubations,
-        beta=self.beta, acceptance_func=self.acceptance_func)
+        optimal_delta = None
+
+        for _ in range(self.num_reps):
+            curr_delta, accepted = self.optimizer.get_delta(
+            step_coeff=self.step_coeff,
+            num_steps=self.attack_cycles,
+            perturbation_scale_factor=self.scale_factor,
+            num_perturbations=self.num_pertubations,
+            beta=self.beta, acceptance_func=self.acceptance_func)
+
+            self.system_state.append({"current_hamming" : self.current_hamming,
+                                    "current_lpips"     : self.current_lpips,
+                                    "current_l2"        : self.current_l2})
+            if accepted:
+                optimal_delta = curr_delta
+
 
         if optimal_delta is not None:
+            
+            ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
             upsampled_delta = optimal_delta
+            
             if self.resize_flag:
                 optimal_delta = optimal_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
                 upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
-
             rgb_delta = upsampled_delta
             if self.colormode in {"grayscale", "luma"}:
                 rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
 
             self.output_tensor = self.rgb_tensor + rgb_delta
             cand_targ = self.output_tensor
-            
+
+
+            ################################ RTQ - IMAGE SPACE BACK TO HASH SPACE  ########################################
+
             if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
                 cand_targ = rgb_to_grayscale(cand_targ)
             elif self.colormode == "luma":
                 cand_targ = rgb_to_luma(cand_targ)
+            
             if self.resize_flag:
                 cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
         
+            
+            ################################ END OF ROUND-TRIP QUANTIZATION #####################################
+
             self.output_hash = self.func(self.quant_func(cand_targ))
             self.output_hamming = self.original_hash.ne(self.output_hash).sum().item()
             self.attack_success = self.output_hamming >= self.hamming_threshold
+
+            ################################# DELTA SCALEDOWN (OPTIONAL) #############################################
 
             if self.delta_scaledown:
                 scale_factors = torch.linspace(0.0, 1.0, steps=50)
@@ -222,6 +239,9 @@ class Attack_Object:
                         self.attack_success = True
                         break
 
+
+            ################################# END OF DELTA SCALEDOWN  ###################################################
+
             self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
             self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
             
@@ -232,8 +252,7 @@ class Attack_Object:
             self.log(f"Saved attacked image to {output_image_path}")
 
         self.log(f"Success status: {self.attack_success}")
-
-        print(self.system_state)
+        self.log(self.system_state)
 
         return {
             "pre_validation": {
