@@ -1,0 +1,3 @@
+[submodule "spectra/deltagrad"]
+	path = spectra/deltagrad
+	url = https://github.com/nolanmccleary/deltagrad.git

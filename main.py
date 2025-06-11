@@ -61,10 +61,10 @@ def attack_sequence(dev):
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 30, "lpips", 4, 200, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 5, "lpips", 1, 30, dev, lpips_func = F_LPIPS, delta_scaledown=False)
     #engine.add_attack("phash_attack_scaledown", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 150, dev, lpips_func = F_LPIPS, delta_scaledown=True)
-    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 10, "l2", 4, 400, dev, lpips_func = F_LPIPS, delta_scaledown=False)
-    engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 20, "l2", 5, 500, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    #engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 10, "l2", 1, 400, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    #engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 20, "l2", 1, 500, dev, lpips_func = F_LPIPS, delta_scaledown=False)
 
     t1 = time.time()
     engine.run_attacks()
@@ -75,4 +75,4 @@ def attack_sequence(dev):
 
 
 if __name__ == '__main__':
-    attack_sequence("cpu")
+    attack_sequence("cuda")

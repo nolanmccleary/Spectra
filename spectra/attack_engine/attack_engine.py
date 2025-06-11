@@ -206,7 +206,7 @@ class Attack_Object:
         ################################ END OF ROUND-TRIP QUANTIZATION #####################################
 
         self.output_hash = self.func(self.quant_func(cand_targ))
-        self.output_hamming = self.original_hash.ne(self.output_hash).sum().item()
+        self.output_hamming = self.original_hash.ne(self.output_hash.to(self.original_hash.device)).sum().item()
         self.attack_success = self.output_hamming >= self.hamming_threshold
 
         ################################# DELTA SCALEDOWN (OPTIONAL) #############################################
