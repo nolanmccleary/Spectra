@@ -12,17 +12,16 @@ from models import ALEX_ONNX, ALEX_IMPORT
 
 
 #TODO: 
-# 1) Fix faulty l2/lpips regulator
-# 2) Smart scaleup lpips
-# 3) Fast DCT
+# 1) Fix faulty l2/lpips regulator - DONE
+# 2) Smart scaleup lpips - DONE
+# 3) Fast DCT - DONE
+# 4.1) LPIPS constraint
 # 4) Pareto integrator
 # 5) CUDA port
 # 6) Cluster integration
 # 7) Mass analysis and HP training
 # 8) Backtrack algorithm
 
-
-#CRITICAL: GUT THE LOOPING
 
 
 
@@ -61,7 +60,7 @@ def attack_sequence(dev):
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 5, "lpips", 1, 30, dev, lpips_func = F_LPIPS, delta_scaledown=False)
+    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 15, "lpips", 1, 100, dev, lpips_func = F_LPIPS, delta_scaledown=False)
     #engine.add_attack("phash_attack_scaledown", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 20, "lpips", 150, dev, lpips_func = F_LPIPS, delta_scaledown=True)
     #engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 10, "l2", 1, 400, dev, lpips_func = F_LPIPS, delta_scaledown=False)
     #engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 20, "l2", 1, 500, dev, lpips_func = F_LPIPS, delta_scaledown=False)
