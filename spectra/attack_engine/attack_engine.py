@@ -47,7 +47,7 @@ class Attack_Engine:
 
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False, gate=None):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -67,7 +67,7 @@ class Attack_Object:
 
         self.hamming_threshold = hamming_threshold
         
-        self.acceptance_func = make_acceptance_func(self, acceptance_func)
+        self.acceptance_func = make_acceptance_func(self, acceptance_func, gate)
         self.quant_func = byte_quantize
         
         self.num_reps = num_reps
@@ -174,7 +174,7 @@ class Attack_Object:
             num_perturbations=self.num_pertubations,
             beta=self.beta, acceptance_func=self.acceptance_func)
             
-            if optimal_delta is None or accepted:
+            if accepted or optimal_delta is None:
                 optimal_delta = curr_delta
 
             

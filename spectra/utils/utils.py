@@ -93,8 +93,10 @@ def l2_delta(a, b):
 
 
 
-def make_acceptance_func(self, acceptance_str):
+def make_acceptance_func(self, acceptance_str, gate = None):
     
+    self.gate = gate
+
     def lpips_acceptance_func(tensor):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
@@ -107,6 +109,10 @@ def make_acceptance_func(self, acceptance_str):
                                     "current_lpips"     : self.current_lpips,
                                     "current_l2"        : self.current_l2})
 
+        if self.gate is not None:
+            if self.current_lpips >= self.gate:
+                break_loop = True
+        
         if self.current_hamming >= self.hamming_threshold:
             if self.current_lpips < self.output_lpips:
                 self.output_lpips = self.current_lpips
@@ -123,13 +129,17 @@ def make_acceptance_func(self, acceptance_str):
         self.current_lpips = self.lpips_func(self._tensor, tensor)
         self.current_l2 = l2_delta(self._tensor, tensor)
 
+        break_loop, accepted = False, False
+        
         self.system_state.append({  "current_hamming"   : self.current_hamming,
                                     "current_lpips"     : self.current_lpips,
                                     "current_l2"        : self.current_l2
                                     })
-
-        break_loop, accepted = False, False
         
+        if self.gate is not None:
+            if self.current_lpips >= self.gate:
+                break_loop = True
+
         if self.current_hamming >= self.hamming_threshold:
             if self.current_l2 < self.output_l2:
                 self.output_l2 = self.current_l2
