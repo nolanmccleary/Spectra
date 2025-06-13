@@ -10,6 +10,8 @@ from .dsp import create_dct_matrix, jarosz_filter
 ###################################### AHASH #########################################
 
 def generate_ahash_batched(batched_tensor):
+    if batched_tensor.dim() == 3:
+        batched_tensor = batched_tensor.unsqueeze(0)
     return torch.stack([_generate_ahash(v) for v in batched_tensor], dim=0)
 
 
@@ -36,6 +38,8 @@ def _generate_ahash_rgb(tensor):
 ###################################### DHASH ##########################################
 
 def generate_dhash_batched(batched_tensor):
+    if batched_tensor.dim() == 3:
+        batched_tensor = batched_tensor.unsqueeze(0)
     return torch.stack([_generate_dhash(v) for v in batched_tensor], dim=0)
 
 
@@ -96,6 +100,8 @@ def _generate_phash_rgb(tensor): #[1, H, W] -> [64]
 
 
 def generate_phash_torch_batched(batched_tensor, dct_dim=8):
+    if batched_tensor.dim() == 3:
+        batched_tensor = batched_tensor.unsqueeze(0)
     return torch.stack([_generate_phash_torch(v, dct_dim) for v in batched_tensor], dim=0)
 
 
@@ -124,6 +130,8 @@ def _generate_phash_torch(tensor, dct_dim):
 
 
 def generate_pdq_batched(batched_tensor, dct_dim=16):
+    if batched_tensor.dim() == 3:
+        batched_tensor = batched_tensor.unsqueeze(0)
     return torch.stack([_generate_pdq(v, dct_dim) for v in batched_tensor], dim=0)
 
 
