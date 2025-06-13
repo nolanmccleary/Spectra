@@ -1,5 +1,5 @@
 from .hash_wrapper import Hash_Wrapper, PDQ_Wrapper
-from .hash_algos import generate_phash_batched, generate_phash_torch_batched, generate_phash_rgb_batched, generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched
+from .hash_algos import generate_phash_torch_batched, generate_phash_rgb_batched, generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched, generate_pdq_batched
 
 AHASH = Hash_Wrapper(name="ahash", func=generate_ahash_batched, colormode="grayscale", resize_height=8, resize_width=8, available_devices={"cpu", "cuda", "mps"}) #Cannonical ahash resizes to 8x8
 
@@ -13,4 +13,4 @@ PHASH = Hash_Wrapper(name="phash", func=generate_phash_torch_batched, colormode=
 
 PHASH_RGB = Hash_Wrapper(name="phash_rgb", func=generate_phash_rgb_batched, colormode="rgb", resize_height=32, resize_width=32, available_devices={"cpu"})
 
-PDQ_HASH = PDQ_Wrapper(name="pdq_hash", func=None, colormode="luma", resize_height=512, resize_width=512, available_devices={"cpu"})  #Canonical PDQ applies DCT on 512x512 downsample
+PDQ = Hash_Wrapper(name="pdq_hash", func=generate_pdq_batched, colormode="luma", resize_height=512, resize_width=512, available_devices={"cpu"})  #Canonical PDQ applies DCT on 512x512 downsample

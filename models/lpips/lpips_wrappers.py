@@ -17,6 +17,7 @@ class ALEX_ONNX:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(script_dir, "onnx", model_name)
         self.session = ort.InferenceSession(model_path, providers=providers)
+        self.device = device
 
 
     def get_lpips(self, old_tensor: torch.Tensor, new_tensor: torch.Tensor) -> float:
@@ -55,6 +56,7 @@ class ALEX_ONNX:
 
 
 class ALEX_IMPORT:
+    
     def __init__(self, device="cpu"):
         self.device = device
         self.model = lpips.LPIPS(net='alex').to(device)

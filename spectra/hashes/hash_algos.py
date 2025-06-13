@@ -3,10 +3,9 @@ import numpy as np
 import scipy.fftpack
 import torch
 from spectra.utils import rgb_to_grayscale
+from .dsp import create_dct_matrix, jarosz_filter
 
 
-PI = math.pi
-ROOT_2 = math.sqrt(2)
 
 ###################################### AHASH #########################################
 
@@ -100,37 +99,18 @@ def generate_phash_torch_batched(batched_tensor, dct_dim=8):
     return torch.stack([_generate_phash_torch(v, dct_dim) for v in batched_tensor], dim=0)
 
 
-_dct_cache = {}
-
-def _create_dct_matrix(N, device, dtype): #1) May be able to drop transpose, 2) May be able to drop global scaling
-
-    key = (N, device, dtype)
-    if key not in _dct_cache:
-
-        n = torch.arange(N, device=device, dtype=dtype)
-        k = n.unsqueeze(0) #[1, N]
-
-        basis = torch.cos(PI * (2 * n + 1).unsqueeze(1) * k / (2 * N)) #[N, 1] * [1, N] -> [N, N]; broadcast across k so we have N dct row vectors of length N
-        basis = basis.t().to()
-
-        _dct_cache[key] = basis
-
-    return _dct_cache[key]
-
 
 #[C, H, W] -> [dct_dim * dct_dim]
-def _generate_phash_torch(tensor, dct_dim=8):
-
+def _generate_phash_torch(tensor, dct_dim):
     arr = tensor.squeeze(0)
 
     H, W = arr.shape
     device, dtype = arr.device, arr.dtype
 
-    # get only the top-dct_dim rows of the DCT basis for each axis
-    D_H = _create_dct_matrix(H, device, dtype)[:dct_dim, : ]   # [8, H] - Assuming dct_dim = 8; In our case, H should equal W
-    D_W = _create_dct_matrix(W, device, dtype)[:dct_dim, : ]   # [8, W]
+    D_H = create_dct_matrix(H, device, dtype)[:dct_dim, : ]   # [dim, H]
+    D_W = create_dct_matrix(W, device, dtype)[:dct_dim, : ]   # [dim, W]
 
-    # compute low-frequency DCT block: [K,H] @ [H,W] @ [W,K] → [K,K]
+    #[K,H] @ [H,W] @ [W,K] → [K,K]
     low = D_H @ arr @ D_W.t()
 
     med = low.median()
@@ -140,3 +120,28 @@ def _generate_phash_torch(tensor, dct_dim=8):
 
 
 
+###################################### PDQ ##########################################
+
+
+def generate_pdq_batched(batched_tensor, dct_dim=16):
+    return torch.stack([_generate_pdq(v, dct_dim) for v in batched_tensor], dim=0)
+
+
+
+#[C, H, W] -> [dct_dim * dct_dim]
+def _generate_pdq(tensor, dct_dim):
+    arr = jarosz_filter(tensor).squeeze(0)
+
+    H, W = arr.shape
+    device, dtype = arr.device, arr.dtype
+
+    D_H = create_dct_matrix(H, device, dtype)[:dct_dim, : ]   # [dim, H]
+    D_W = create_dct_matrix(W, device, dtype)[:dct_dim, : ]   # [dim, W]
+
+    #[K,H] @ [H,W] @ [W,K] → [K,K]
+    low = D_H @ arr @ D_W.t()
+
+    med = low.median()
+    bits = (low > med).flatten()
+
+    return bits.to(torch.bool)
