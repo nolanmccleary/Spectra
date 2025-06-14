@@ -3,28 +3,6 @@ import torch
 import torch.nn.functional as F
 
 
-
-def get_rgb_tensor(image_object, rgb_device):
-    if image_object.mode == 'RGBA':
-        image_object = image_object.convert('RGB')
-    arr = np.array(image_object).astype(np.float32) / 255.0
-    tensor = torch.from_numpy(arr).permute(2, 0, 1).to(rgb_device)
-    return tensor
-
-
-
-def rgb_to_grayscale(rgb_tensor):   #[C, H, W] -> [1, H, W]
-    return torch.mean(rgb_tensor, dim=0, keepdim=True)
-
-
-
-def rgb_to_luma(rgb_tensor):        #[C, H, W] -> [1, H, W]
-    r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
-    gray = 0.299*r + 0.587*g + 0.114*b
-    return gray.unsqueeze(0)
-
-
-
 def tensor_resize(input_tensor, height, width):
     tensor = input_tensor.clone().unsqueeze(0)      #[{3,1}, H, W] -> [1, {3, 1}, H, W]
     tensor_resized = F.interpolate(                 #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
@@ -37,26 +15,92 @@ def tensor_resize(input_tensor, height, width):
 
 
 
-def inverse_delta(rgb_tensor, delta, eps=1e-6):
-    C, H, W = rgb_tensor.shape
-
-    if delta.shape == (C, H, W):
-        return delta
-
-    rgb_mean = rgb_tensor.mean()  # [1, H, W]
-    gd = delta.unsqueeze(0)       # [1, H, W]
-    
-    # Avoid division by zero
-    delta = torch.where(
-        gd <= 0,
-        gd * rgb_tensor / (rgb_mean + eps),
-        gd * (1 - rgb_tensor) / ((1 - rgb_mean) + eps)
-    )
-
-    return delta.view(C, H, W)
+def get_rgb_tensor(image_object, rgb_device):
+    if image_object.mode == 'RGBA':
+        image_object = image_object.convert('RGB')
+    arr = np.array(image_object).astype(np.float32) / 255.0
+    tensor = torch.from_numpy(arr).permute(2, 0, 1).to(rgb_device)
+    return tensor
 
 
 
+def rgb_to_grayscale(rgb_tensor):
+    return torch.mean(rgb_tensor, dim = 0, keepdim=True)
+
+def rgb_to_grayscale_vectored(rgb_tensor):   #[C, H, W] -> [1, H, W]
+    return torch.mean(rgb_tensor, dim=0, keepdim=True)
+
+def rgb_to_luma(rgb_tensor):        #[C, H, W] -> [1, H, W]
+        r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
+        gray = 0.299*r + 0.587*g + 0.114*b
+        return gray.unsqueeze(0)
+
+def no_conversion(tensor):
+    return tensor
+
+
+def generate_conversion(conversion_str: str):
+    inversion_table = {"grayscale" : rgb_to_grayscale, "grayscale_vectored" : rgb_to_grayscale_vectored, "luma" : rgb_to_luma, "noinvert" : no_conversion}
+    if conversion_str not in inversion_table.keys():
+        raise ValueError(f"'{conversion_str}' not in set of valid acceptance function handles: {inversion_table.keys()}")
+
+    return inversion_table[conversion_str]
+
+
+
+def generate_inversion(inversion_str: str):
+
+    def inverse_delta(tensor, delta, eps=1e-6):
+        C, H, W = tensor.shape
+
+        if delta.shape == (C, H, W):
+            return delta
+
+        rgb_mean = tensor.mean()  # [1, H, W]
+        gd = delta.unsqueeze(0)       # [1, H, W]
+        
+        # Avoid division by zero
+        delta = torch.where(
+            gd <= 0,
+            gd * tensor / (rgb_mean + eps),
+            gd * (1 - tensor) / ((1 - rgb_mean) + eps)
+        )
+
+        return delta.view(C, H, W)
+
+    def inverse_delta_vectored(tensor, delta, eps=1e-6):
+        C, H, W = tensor.shape
+
+        if delta.shape == (C, H, W):
+            return delta
+
+        rgb_mean = tensor.mean()  # [1, H, W]
+        gd = delta.unsqueeze(0)       # [1, H, W]
+        
+        # Avoid division by zero
+        delta = torch.where(
+            gd <= 0,
+            gd * tensor / (rgb_mean + eps),
+            gd * (1 - tensor) / ((1 - rgb_mean) + eps)
+        )
+
+        return delta.view(C, H, W)
+
+    def inverse_luma(tensor, delta):
+        print("fuck")
+
+
+    def no_inversion(tensor, delta):
+        return tensor
+
+    inversion_table = {"grayscale" : inverse_delta, "grayscale_vectored" : inverse_delta_vectored, "luma" : inverse_luma, "noinvert" : no_inversion} #TODO: Add inverse luma
+    if inversion_str not in inversion_table.keys():
+        raise ValueError(f"'{inversion_str}' not in set of valid acceptance function handles: {inversion_table.keys()}")
+
+    return inversion_table[inversion_str]
+
+
+'''
 def generate_seed_perturbation(dim, start_scalar, device):
     return torch.rand((1, dim), dtype=torch.float32, device=device) * start_scalar
 
@@ -68,7 +112,7 @@ def generate_perturbation_vectors(num_perturbations, shape, device):
     scale = torch.where(absmax > 0, 1.0 / absmax, torch.tensor(1.0, device = device))   #Scale tensor to get max val of each generated perturbation so that we can normalize
     base = base * scale
     return torch.cat([base, -base], dim=0)                                              #Mirror to preserve distribution
-
+'''
 
 
 def to_hex(hash_bool):
@@ -93,8 +137,7 @@ def l2_delta(a, b):
 
 
 
-def make_acceptance_func(self, acceptance_str):
-    
+def generate_acceptance(self, acceptance_str):
 
     def lpips_acceptance_func(tensor):
         self.current_hash = self.func(tensor.to(self.func_device))
@@ -147,7 +190,6 @@ def make_acceptance_func(self, acceptance_str):
         self.current_l2 = l2_delta(self._tensor, tensor)
 
         return False, True
-
 
     acceptance_table = {"lpips" : lpips_acceptance_func, "l2" : l2_acceptance_func, "latch" : latching_acceptance_func}
     if acceptance_str not in acceptance_table.keys():

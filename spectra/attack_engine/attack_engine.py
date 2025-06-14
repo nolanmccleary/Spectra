@@ -5,7 +5,7 @@ from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, to_hex, bool_tensor_delta, l2_delta, make_acceptance_func, noop
+from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, noop, generate_acceptance, generate_conversion, generate_inversion
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -67,7 +67,7 @@ class Attack_Object:
 
         self.hamming_threshold = hamming_threshold
         
-        self.acceptance_func = make_acceptance_func(self, acceptance_func)
+        self.acceptance_func = generate_acceptance(self, acceptance_func)
         
         if quant_func is not None:
             self.quant_func = quant_func
@@ -109,10 +109,10 @@ class Attack_Object:
 
             self._tensor = self.rgb_tensor
 
-            if self.colormode == "grayscale":
-                self._tensor = rgb_to_grayscale(self.rgb_tensor)
-            elif self.colormode == "luma":
-                self._tensor = rgb_to_luma(self.rgb_tensor)
+            self.inversion_func = generate_inversion(self.colormode)
+            self.conversion_func = generate_conversion(self.colormode)
+
+            self._tensor = self.conversion_func(self.rgb_tensor)
 
             if self.resize_flag:
                 self._tensor = tensor_resize(self._tensor, self.resize_height, self.resize_width)
@@ -189,20 +189,15 @@ class Attack_Object:
         if self.resize_flag:
             optimal_delta = optimal_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
             upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
-        rgb_delta = upsampled_delta
-        if self.colormode in {"grayscale", "luma"}:
-            rgb_delta = inverse_delta(self.rgb_tensor, upsampled_delta)
-
+        
+        rgb_delta = self.inversion_func(self.rgb_tensor, upsampled_delta)
+        
         self.output_tensor = self.rgb_tensor + rgb_delta
-        cand_targ = self.output_tensor
 
 
         ################################ RTQ - IMAGE SPACE BACK TO HASH SPACE  ########################################
 
-        if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
-            cand_targ = rgb_to_grayscale(cand_targ)
-        elif self.colormode == "luma":
-            cand_targ = rgb_to_luma(cand_targ)
+        cand_targ = self.conversion_func(self.output_tensor)
         
         if self.resize_flag:
             cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
@@ -225,12 +220,8 @@ class Attack_Object:
                 safe_delta = cand_delta * safe_scale
                 
                 cand_tensor = self.rgb_tensor + safe_delta
-                cand_targ = cand_tensor.clone()
+                cand_targ = self.conversion_func(cand_tensor.clone())
 
-                if self.colormode == "grayscale":           #Adjust target if our hash function requires grayscale or resize
-                    cand_targ = rgb_to_grayscale(cand_targ)
-                elif self.colormode == "luma":
-                    cand_targ = rgb_to_luma(cand_targ)
                 if self.resize_flag:
                     cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
