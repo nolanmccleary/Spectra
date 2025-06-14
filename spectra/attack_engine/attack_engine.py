@@ -5,7 +5,7 @@ from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
 from PIL import Image
-from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, to_hex, bool_tensor_delta, byte_quantize, l2_delta, make_acceptance_func
+from spectra.utils import get_rgb_tensor, rgb_to_grayscale, rgb_to_luma, tensor_resize, inverse_delta, to_hex, bool_tensor_delta, l2_delta, make_acceptance_func, noop
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -44,10 +44,10 @@ class Attack_Engine:
 
 
 
-
+#TODO: Refactor input set
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False, gate=None):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False, gate=None, quant_func=None):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -67,9 +67,15 @@ class Attack_Object:
 
         self.hamming_threshold = hamming_threshold
         
-        self.acceptance_func = make_acceptance_func(self, acceptance_func, gate)
-        self.quant_func = byte_quantize
+        self.acceptance_func = make_acceptance_func(self, acceptance_func)
         
+        if quant_func is not None:
+            self.quant_func = quant_func
+        else:
+            self.quant_func = noop
+
+        self.gate = gate
+
         self.num_reps = num_reps
         self.attack_cycles = attack_cycles
 
@@ -145,7 +151,6 @@ class Attack_Object:
         self.attack_success = False
         self.prev_step = None
 
-        self.system_state = []
 
         self.log("Staging attack...\n")
         self.set_tensor(input_image_path)
@@ -254,7 +259,6 @@ class Attack_Object:
         self.log(f"Saved attacked image to {output_image_path}")
 
         self.log(f"Success status: {self.attack_success}")
-        #self.log(self.system_state)
 
         return {
             "pre_validation": {

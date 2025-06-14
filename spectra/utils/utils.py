@@ -93,9 +93,8 @@ def l2_delta(a, b):
 
 
 
-def make_acceptance_func(self, acceptance_str, gate = None):
+def make_acceptance_func(self, acceptance_str):
     
-    self.gate = gate
 
     def lpips_acceptance_func(tensor):
         self.current_hash = self.func(tensor.to(self.func_device))
@@ -104,10 +103,6 @@ def make_acceptance_func(self, acceptance_str, gate = None):
         self.current_l2 = l2_delta(self._tensor, tensor)
 
         break_loop, accepted = False, False
-
-        self.system_state.append({"current_hamming"     : self.current_hamming,
-                                    "current_lpips"     : self.current_lpips,
-                                    "current_l2"        : self.current_l2})
 
         if self.gate is not None:
             if self.current_lpips >= self.gate:
@@ -130,14 +125,9 @@ def make_acceptance_func(self, acceptance_str, gate = None):
         self.current_l2 = l2_delta(self._tensor, tensor)
 
         break_loop, accepted = False, False
-        
-        self.system_state.append({  "current_hamming"   : self.current_hamming,
-                                    "current_lpips"     : self.current_lpips,
-                                    "current_l2"        : self.current_l2
-                                    })
-        
+
         if self.gate is not None:
-            if self.current_lpips >= self.gate:
+            if self.current_l2 >= self.gate:
                 break_loop = True
 
         if self.current_hamming >= self.hamming_threshold:
@@ -155,10 +145,7 @@ def make_acceptance_func(self, acceptance_str, gate = None):
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
         self.current_lpips = self.lpips_func(self._tensor, tensor)
         self.current_l2 = l2_delta(self._tensor, tensor)
-        
-        self.system_state.append({  "current_hamming"   : self.current_hamming,
-                                    "current_lpips"     : self.current_lpips,
-                                    "current_l2"        : self.current_l2})
+
         return False, True
 
 
@@ -167,3 +154,7 @@ def make_acceptance_func(self, acceptance_str, gate = None):
         raise ValueError(f"'{acceptance_str}' not in set of valid acceptance function handles: {acceptance_table.keys()}")
 
     return acceptance_table[acceptance_str]
+
+
+def noop(tensor):
+    return tensor
