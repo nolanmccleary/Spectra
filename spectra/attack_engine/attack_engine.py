@@ -72,6 +72,7 @@ class Attack_Object:
         if quant_func is not None:
             self.quant_func = quant_func
         else:
+            print("\nWARNING: NO QUANT FUNC IN USE!\n")
             self.quant_func = noop
 
         self.gate = gate

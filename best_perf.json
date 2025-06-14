@@ -1,0 +1,162 @@
+{
+    "phash_attack": {
+        "peppers.png": {
+            "pre_validation": {
+                "success": true,
+                "original_hash": "0x94b71cdc78dc40e3",
+                "output_hash": "0x96ad0b8973179ce1",
+                "hamming_distance": 26,
+                "lpips": 0.017535965889692307,
+                "l2": 0.06702754646539688
+            },
+            "post_validation": {
+                "lpips": "0.017617056146264076",
+                "l2": "0.0670766681432724",
+                "ahash_hamming": "3",
+                "dhash_hamming": "8",
+                "phash_hamming": "18",
+                "pdq_hamming": "24",
+                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        },
+        "imagehash.png": {
+            "pre_validation": {
+                "success": true,
+                "original_hash": "0xfacc84b1794bc564",
+                "output_hash": "0xec93955c6b839a16",
+                "hamming_distance": 32,
+                "lpips": 0.022825244814157486,
+                "l2": 0.07133135199546814
+            },
+            "post_validation": {
+                "lpips": "0.023180358111858368",
+                "l2": "0.06780359148979187",
+                "ahash_hamming": "6",
+                "dhash_hamming": "19",
+                "phash_hamming": "24",
+                "pdq_hamming": "52",
+                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        }
+    },
+    "phash_attack_scaledown": {
+        "peppers.png": {
+            "pre_validation": {
+                "success": true,
+                "original_hash": "0x94b71cdc78dc40e3",
+                "output_hash": "0x96ad0bc9791598e3",
+                "hamming_distance": 20,
+                "lpips": 0.010984157212078571,
+                "l2": 0.053316835314035416
+            },
+            "post_validation": {
+                "lpips": "0.010984157212078571",
+                "l2": "0.053316835314035416",
+                "ahash_hamming": "3",
+                "dhash_hamming": "8",
+                "phash_hamming": "12",
+                "pdq_hamming": "18",
+                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        },
+        "imagehash.png": {
+            "pre_validation": {
+                "success": true,
+                "original_hash": "0xfacc84b1794bc564",
+                "output_hash": "0xbe8b8712698bca66",
+                "hamming_distance": 20,
+                "lpips": 0.004941339138895273,
+                "l2": 0.034708041697740555
+            },
+            "post_validation": {
+                "lpips": "0.004941339138895273",
+                "l2": "0.034708041697740555",
+                "ahash_hamming": "2",
+                "dhash_hamming": "8",
+                "phash_hamming": "8",
+                "pdq_hamming": "24",
+                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        }
+    },
+    "ahash_attack": {
+        "peppers.png": {
+            "pre_validation": {
+                "success": true,
+                "original_hash": "0x9f972784e41e9400",
+                "output_hash": "0x2e2f228ae31fbe04",
+                "hamming_distance": 21,
+                "lpips": 0.01668446883559227,
+                "l2": 0.07299797981977463
+            },
+            "post_validation": {
+                "lpips": "0.01654667593538761",
+                "l2": "0.07271196693181992",
+                "ahash_hamming": "9",
+                "dhash_hamming": "3",
+                "phash_hamming": "8",
+                "pdq_hamming": "12",
+                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        },
+        "imagehash.png": {
+            "pre_validation": {
+                "success": true,
+                "original_hash": "0xffdfbfc181efffff",
+                "output_hash": "0x3313aea009b9b779",
+                "hamming_distance": 24,
+                "lpips": 0.03643636405467987,
+                "l2": 0.10667698830366135
+            },
+            "post_validation": {
+                "lpips": "0.03712073341012001",
+                "l2": "0.10745500773191452",
+                "ahash_hamming": "15",
+                "dhash_hamming": "14",
+                "phash_hamming": "24",
+                "pdq_hamming": "56",
+                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        }
+    },
+    "dhash_attack": {
+        "peppers.png": {
+            "pre_validation": {
+                "success": false,
+                "original_hash": "0x78d730cdbc1a5d",
+                "output_hash": "0x78d730d5948a9d",
+                "hamming_distance": 8,
+                "lpips": 0.010174951516091824,
+                "l2": 0.03711364045739174
+            },
+            "post_validation": {
+                "lpips": "0.01025436818599701",
+                "l2": "0.03682553023099899",
+                "ahash_hamming": "3",
+                "dhash_hamming": "7",
+                "phash_hamming": "6",
+                "pdq_hamming": "10",
+                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        },
+        "imagehash.png": {
+            "pre_validation": {
+                "success": true,
+                "original_hash": "0x004109b4a20000",
+                "output_hash": "0x0c659194b35148",
+                "hamming_distance": 15,
+                "lpips": 0.00015791229088790715,
+                "l2": 0.007354261353611946
+            },
+            "post_validation": {
+                "lpips": "0.00020224775653332472",
+                "l2": "0.008254596032202244",
+                "ahash_hamming": "0",
+                "dhash_hamming": "2",
+                "phash_hamming": "4",
+                "pdq_hamming": "8",
+                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            }
+        }
+    }
+}

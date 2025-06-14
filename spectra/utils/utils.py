@@ -27,9 +27,6 @@ def get_rgb_tensor(image_object, rgb_device):
 def rgb_to_grayscale(rgb_tensor):
     return torch.mean(rgb_tensor, dim = 0, keepdim=True)
 
-def rgb_to_grayscale_vectored(rgb_tensor):   #[C, H, W] -> [1, H, W]
-    return torch.mean(rgb_tensor, dim=0, keepdim=True)
-
 def rgb_to_luma(rgb_tensor):        #[C, H, W] -> [1, H, W]
         r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
         gray = 0.299*r + 0.587*g + 0.114*b
@@ -40,7 +37,7 @@ def no_conversion(tensor):
 
 
 def generate_conversion(conversion_str: str):
-    inversion_table = {"grayscale" : rgb_to_grayscale, "grayscale_vectored" : rgb_to_grayscale_vectored, "luma" : rgb_to_luma, "noinvert" : no_conversion}
+    inversion_table = {"grayscale" : rgb_to_grayscale, "grayscale_local" : rgb_to_grayscale, "luma" : rgb_to_luma, "noinvert" : no_conversion}
     if conversion_str not in inversion_table.keys():
         raise ValueError(f"'{conversion_str}' not in set of valid acceptance function handles: {inversion_table.keys()}")
 
@@ -52,7 +49,6 @@ def generate_inversion(inversion_str: str):
 
     def inverse_delta(tensor, delta, eps=1e-6):
         C, H, W = tensor.shape
-
         if delta.shape == (C, H, W):
             return delta
 
@@ -68,13 +64,12 @@ def generate_inversion(inversion_str: str):
 
         return delta.view(C, H, W)
 
-    def inverse_delta_vectored(tensor, delta, eps=1e-6):
+    def inverse_delta_local(tensor, delta, eps=1e-6):
         C, H, W = tensor.shape
-
         if delta.shape == (C, H, W):
             return delta
 
-        rgb_mean = tensor.mean()  # [1, H, W]
+        rgb_mean = tensor.mean(dim=0, keepdim=True)  # [1, H, W]
         gd = delta.unsqueeze(0)       # [1, H, W]
         
         # Avoid division by zero
@@ -87,13 +82,15 @@ def generate_inversion(inversion_str: str):
         return delta.view(C, H, W)
 
     def inverse_luma(tensor, delta):
-        print("fuck")
+        return(inverse_delta_local(tensor, delta))   #Workaround for now
+        
+
 
 
     def no_inversion(tensor, delta):
         return tensor
 
-    inversion_table = {"grayscale" : inverse_delta, "grayscale_vectored" : inverse_delta_vectored, "luma" : inverse_luma, "noinvert" : no_inversion} #TODO: Add inverse luma
+    inversion_table = {"grayscale" : inverse_delta, "grayscale_local" : inverse_delta_local, "luma" : inverse_luma, "noinvert" : no_inversion} #TODO: Add inverse luma
     if inversion_str not in inversion_table.keys():
         raise ValueError(f"'{inversion_str}' not in set of valid acceptance function handles: {inversion_table.keys()}")
 
