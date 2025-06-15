@@ -4,6 +4,7 @@ from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
 from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
+from pathlib import Path
 from PIL import Image
 from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, generate_acceptance, generate_conversion, generate_inversion, generate_quant
 import torch
@@ -24,18 +25,46 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, *args, **kwargs):
+    def add_attack(self, attack_tag, input_image_dirname, output_image_dirname, *args, **kwargs):
+        dir = Path(input_image_dirname)
+        images = [f.name for f in dir.iterdir() if f.suffix.lower() in [".png", ".jpg", ".jpeg"]]
         self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(*args, **kwargs, verbose=self.verbose))
 
 
     def run_attacks(self, output_name="spectra_out"):
         # run each registered attack
         for attack_tag in self.attacks.keys():
-            self.attack_log[attack_tag] = {}
+            self.attack_log[attack_tag] = {"per_image_results" : {}, "average_results" : {}}
             for image in self.attacks[attack_tag][0]:
                 input_image = f"{self.attacks[attack_tag][1]}/{image}"
                 output_image = f"{self.attacks[attack_tag][2]}/{attack_tag}_{image}"
-                self.attack_log[attack_tag][image] = self.attacks[attack_tag][3].run_attack(input_image, output_image)
+                self.attack_log[attack_tag]["per_image_results"][image] = self.attacks[attack_tag][3].run_attack(input_image, output_image)
+            
+            i = 0
+            sum_phash_hamming = 0
+            sum_ahash_hamming = 0
+            sum_dhash_hamming = 0
+            sum_pdq_hamming = 0
+            sum_lpips = 0.0
+            sum_l2 = 0.0
+            for image in self.attack_log[attack_tag]["per_image_results"].values():
+                sum_phash_hamming   += int(image["post_validation"]["phash_hamming"])
+                sum_ahash_hamming   += int(image["post_validation"]["ahash_hamming"])
+                sum_dhash_hamming   += int(image["post_validation"]["dhash_hamming"])
+                sum_pdq_hamming     += int(image["post_validation"]["pdq_hamming"])
+                sum_lpips           += float(image["post_validation"]["lpips"])
+                sum_l2              += float(image["post_validation"]["l2"])
+                i                   += 1
+
+            if i > 0:
+                self.attack_log[attack_tag]["average_results"] = {
+                    "average_phash_hamming"     : sum_phash_hamming // i,
+                    "average_ahash_hamming"     : sum_ahash_hamming // i,
+                    "average_dhash_hamming"     : sum_dhash_hamming // i,
+                    "average_pdq_hamming"       : sum_pdq_hamming // i,
+                    "average_lpips"             : sum_lpips / i,
+                    "average_l2"                : sum_l2 / i
+                }
 
         json_filename = f"{output_name}.json"
         with open(json_filename, 'w') as f:
