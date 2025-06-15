@@ -35,7 +35,6 @@ def rgb_to_luma(rgb_tensor):        #[C, H, W] -> [1, H, W]
 def no_conversion(tensor):
     return tensor
 
-
 def generate_conversion(conversion_str: str):
     inversion_table = {"grayscale" : rgb_to_grayscale, "grayscale_local" : rgb_to_grayscale, "luma" : rgb_to_luma, "noinvert" : no_conversion}
     if conversion_str not in inversion_table.keys():
@@ -52,8 +51,8 @@ def generate_inversion(inversion_str: str):
         if delta.shape == (C, H, W):
             return delta
 
-        rgb_mean = tensor.mean()  # [1, H, W]
-        gd = delta.unsqueeze(0)       # [1, H, W]
+        rgb_mean = tensor.mean()        # [1, H, W]
+        gd = delta.unsqueeze(0)         # [1, H, W]
         
         # Avoid division by zero
         delta = torch.where(
@@ -61,7 +60,6 @@ def generate_inversion(inversion_str: str):
             gd * tensor / (rgb_mean + eps),
             gd * (1 - tensor) / ((1 - rgb_mean) + eps)
         )
-
         return delta.view(C, H, W)
 
     def inverse_delta_local(tensor, delta, eps=1e-6):
@@ -69,8 +67,8 @@ def generate_inversion(inversion_str: str):
         if delta.shape == (C, H, W):
             return delta
 
-        rgb_mean = tensor.mean(dim=0, keepdim=True)  # [1, H, W]
-        gd = delta.unsqueeze(0)       # [1, H, W]
+        rgb_mean = tensor.mean(dim=0, keepdim=True)     # [1, H, W]
+        gd = delta.unsqueeze(0)                         # [1, H, W]
         
         # Avoid division by zero
         delta = torch.where(
@@ -78,17 +76,23 @@ def generate_inversion(inversion_str: str):
             gd * tensor / (rgb_mean + eps),
             gd * (1 - tensor) / ((1 - rgb_mean) + eps)
         )
-
         return delta.view(C, H, W)
 
     def inverse_luma(tensor, delta):
-        return(inverse_delta_local(tensor, delta))   #Workaround for now
-        
+        if delta.dim() == 2:               # delta is (H, W)
+            delta = delta.unsqueeze(0)     # -> (1, H, W)
 
+        r, g, b = tensor[0], tensor[1], tensor[2]
 
+        luma = (0.2126*r + 0.7152*g + 0.0722*b).unsqueeze(0)   # (1, H, W)
+        new_luma = torch.clamp(luma + delta, 0.0, 1.0)         # broadcast OK
+        ratio    = (new_luma+1e-6) / (luma+1e-6)               # (1,H,W)
+        perturbed = tensor * ratio                             # (3,H,W)
+        delta_rgb = perturbed - tensor                         # (3,H,W)
+        return delta_rgb
 
     def no_inversion(tensor, delta):
-        return tensor
+        return delta
 
     inversion_table = {"grayscale" : inverse_delta, "grayscale_local" : inverse_delta_local, "luma" : inverse_luma, "noinvert" : no_inversion} #TODO: Add inverse luma
     if inversion_str not in inversion_table.keys():
@@ -99,16 +103,7 @@ def generate_inversion(inversion_str: str):
 
 '''
 def generate_seed_perturbation(dim, start_scalar, device):
-    return torch.rand((1, dim), dtype=torch.float32, device=device) * start_scalar
-
-
-
-def generate_perturbation_vectors(num_perturbations, shape, device):
-    base = torch.randn((num_perturbations // 2, *shape), dtype=torch.float32, device=device) 
-    absmax = base.abs().amax(dim=1, keepdim=True)
-    scale = torch.where(absmax > 0, 1.0 / absmax, torch.tensor(1.0, device = device))   #Scale tensor to get max val of each generated perturbation so that we can normalize
-    base = base * scale
-    return torch.cat([base, -base], dim=0)                                              #Mirror to preserve distribution
+    return torch.rand((1, dim), dtype=torch.float32, device=device) * start_scalar                                        #Mirror to preserve distribution
 '''
 
 
@@ -151,6 +146,9 @@ def generate_acceptance(self, acceptance_str):
         if self.current_hamming >= self.hamming_threshold:
             if self.current_lpips < self.output_lpips:
                 self.output_lpips = self.current_lpips
+                self.output_l2 = self.current_l2
+                self.output_hash = self.current_hash
+                self.output_hamming = self.current_hamming
                 accepted = True
 
             break_loop = True
@@ -173,6 +171,9 @@ def generate_acceptance(self, acceptance_str):
         if self.current_hamming >= self.hamming_threshold:
             if self.current_l2 < self.output_l2:
                 self.output_l2 = self.current_l2
+                self.output_lpips = self.current_lpips
+                self.output_hash = self.current_hash
+                self.output_hamming = self.current_hamming
                 accepted = True
 
             break_loop = True
