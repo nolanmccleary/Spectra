@@ -101,6 +101,17 @@ def generate_inversion(inversion_str: str):
     return inversion_table[inversion_str]
 
 
+def generate_quant(quant_str):
+    if quant_str is None:
+        return noop
+    else:
+        quant_table = {"byte_quantize" : byte_quantize}
+        if quant_str not in quant_table.keys():
+            raise ValueError(f"'{quant_str}' not in set of valid acceptance function handles: {quant_table.keys()}")
+    return quant_table[quant_str]
+
+
+
 '''
 def generate_seed_perturbation(dim, start_scalar, device):
     return torch.rand((1, dim), dtype=torch.float32, device=device) * start_scalar                                        #Mirror to preserve distribution

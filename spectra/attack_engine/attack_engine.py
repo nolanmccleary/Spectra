@@ -5,7 +5,7 @@ from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
 from PIL import Image
-from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, noop, generate_acceptance, generate_conversion, generate_inversion
+from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, generate_acceptance, generate_conversion, generate_inversion, generate_quant
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -24,8 +24,8 @@ class Attack_Engine:
             print(msg)
 
 
-    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, acceptance_func, num_reps: int, attack_cycles: int, device: str, lpips_func, **kwargs):
-        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(hash_wrapper, hyperparameter_set, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func, self.verbose, **kwargs))
+    def add_attack(self, attack_tag, images: list[str], input_image_dirname, output_image_dirname, *args, **kwargs):
+        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(*args, **kwargs, verbose=self.verbose))
 
 
     def run_attacks(self, output_name="spectra_out"):
@@ -47,7 +47,7 @@ class Attack_Engine:
 #TODO: Refactor input set
 class Attack_Object:
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, acceptance_func, num_reps, attack_cycles, device, lpips_func=None, verbose="off", delta_scaledown=False, gate=None, quant_func=None):
+    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, colormode, acceptance_func, quant_func, lpips_func, num_reps, attack_cycles, device, delta_scaledown=False, gate=None, verbose="off"):
         valid_devices = {"cpu", "cuda", "mps"}
         valid_verbosities = {"on", "off"}
         if device not in valid_devices:
@@ -55,31 +55,25 @@ class Attack_Object:
         if verbose not in valid_verbosities:
             raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {valid_verbosities}")
 
+        self.hamming_threshold = hamming_threshold
+        self.colormode = colormode
+
         self.device = device
         self.verbose = verbose
 
-        self.func, self.resize_height, self.resize_width, available_devices, self.colormode = hash_wrapper.get_info()
+        self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()
         if device in available_devices:
             self.func_device = device
         else:
             self.log(f"Warning, current hash function '{hash_wrapper.get_name()}' does not support the chosen device {device}. Defaulting to CPU for hash function calls; this will add overhead.")
             self.func_device = "cpu"
-
-        self.hamming_threshold = hamming_threshold
         
         self.acceptance_func = generate_acceptance(self, acceptance_func)
         
-        if quant_func is not None:
-            self.quant_func = quant_func
-        else:
-            print("\nWARNING: NO QUANT FUNC IN USE!\n")
-            self.quant_func = noop
-
-        self.gate = gate
+        self.quant_func = generate_quant(quant_func)
 
         self.num_reps = num_reps
         self.attack_cycles = attack_cycles
-
         self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False
 
         if lpips_func != None:
@@ -88,10 +82,9 @@ class Attack_Object:
             self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
 
         self.alpha, self.beta, self.step_coeff, self.scale_factor = hyperparameter_set["alpha"], hyperparameter_set["beta"], hyperparameter_set["step_coeff"], hyperparameter_set["scale_factor"]
-
         self.func_package = (self.func, bool_tensor_delta, self.quant_func)
         self.device_package = (self.func_device, self.device, self.device)
-
+        self.gate = gate
         self.delta_scaledown = delta_scaledown
 
 
