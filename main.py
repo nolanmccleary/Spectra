@@ -39,7 +39,7 @@ DEFAULT_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
     "step_coeff"    : 0.016,
-    "scale_factor"  : 8
+    "scale_factor"  : 6
 }
 
 AHASH_HYPERPARAMETERS = {
@@ -64,10 +64,10 @@ def attack_sequence(dev):
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 28, "lpips", 10, 10000, dev, lpips_func = F_LPIPS, delta_scaledown=True)
+    engine.add_attack("phash_attack", images, image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, 34, "lpips", 10, 10000, dev, lpips_func = F_LPIPS, delta_scaledown=True, quant_func=byte_quantize)
     #engine.add_attack("pdq_attack", images, image_input_dir, image_output_dir, PDQ, DEFAULT_HYPERPARAMETERS, 1, "lpips", 1, 1, dev, lpips_func = F_LPIPS, delta_scaledown=False, gate=0.04)
-    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, DEFAULT_HYPERPARAMETERS, 28, "lpips", 10, 10000, dev, lpips_func = F_LPIPS, delta_scaledown=True)
-    engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 28, "lpips", 10, 10000, dev, lpips_func = F_LPIPS, delta_scaledown=True)
+    engine.add_attack("ahash_attack", images, image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, 28, "lpips", 10, 1000, dev, lpips_func = F_LPIPS, delta_scaledown=True, quant_func=byte_quantize)
+    engine.add_attack("dhash_attack", images, image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, 28, "lpips", 10, 1000, dev, lpips_func = F_LPIPS, delta_scaledown=True, quant_func=byte_quantize)
 
     t1 = time.time()
     engine.run_attacks()
