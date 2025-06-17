@@ -1,162 +1,1577 @@
 {
     "phash_attack": {
-        "peppers.png": {
-            "pre_validation": {
-                "success": true,
-                "original_hash": "0x94b71cdc78dc40e3",
-                "output_hash": "0x96ad0b8973179ce1",
-                "hamming_distance": 26,
-                "lpips": 0.017535965889692307,
-                "l2": 0.06702754646539688
+        "per_image_results": {
+            "dizzy2.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x878633c1c93ab74e",
+                    "output_hash": "0x8f8433dd9a1e80f6",
+                    "hamming_distance": 20,
+                    "lpips": 0.00401696003973484,
+                    "l2": 0.04498528689146042
+                },
+                "post_validation": {
+                    "lpips": "0.014023765921592712",
+                    "l2": "0.04895292967557907",
+                    "ahash_hamming": "0",
+                    "dhash_hamming": "2",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "24",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
             },
-            "post_validation": {
-                "lpips": "0.017617056146264076",
-                "l2": "0.0670766681432724",
-                "ahash_hamming": "3",
-                "dhash_hamming": "8",
-                "phash_hamming": "18",
-                "pdq_hamming": "24",
-                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            "firstnight.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xd1b43e4368bf23d0",
+                    "output_hash": "0xd1ad2f4ae40ea33a",
+                    "hamming_distance": 20,
+                    "lpips": 0.012864140793681145,
+                    "l2": 0.04938611760735512
+                },
+                "post_validation": {
+                    "lpips": "0.02114521712064743",
+                    "l2": "0.051085736602544785",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "15",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "24",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x05\\x03\\x03\\x03\\x05\\x06\\x05\\x05\\x05\\x05\\x06\\x08\\x06\\x06\\x06\\x06\\x06\\x08\\n\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\x0c\\x0e\\x0e\\x0e\\x0e\\x0e\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f', b'\\x01\\x02\\x03\\x03\\x04\\x04\\x04\\x07\\x04\\x04\\x07\\x10\\x0b\\t\\x0b\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "imagehash.png": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfacc84b1794bc564",
+                    "output_hash": "0xbc898752698bca6e",
+                    "hamming_distance": 22,
+                    "lpips": 0.006836177781224251,
+                    "l2": 0.03921637311577797
+                },
+                "post_validation": {
+                    "lpips": "0.006836177781224251",
+                    "l2": "0.03921637311577797",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "10",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "28",
+                    "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
+                }
+            },
+            "refined.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xf2d62eeb88783309",
+                    "output_hash": "0xf3ec24689d2b390b",
+                    "hamming_distance": 20,
+                    "lpips": 0.013223477639257908,
+                    "l2": 0.06341470032930374
+                },
+                "post_validation": {
+                    "lpips": "0.026694364845752716",
+                    "l2": "0.06622659415006638",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "9",
+                    "phash_hamming": "18",
+                    "pdq_hamming": "22",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x05\\x03\\x03\\x03\\x05\\x06\\x05\\x05\\x05\\x05\\x06\\x08\\x06\\x06\\x06\\x06\\x06\\x08\\n\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\x0c\\x0e\\x0e\\x0e\\x0e\\x0e\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f', b'\\x01\\x02\\x03\\x03\\x04\\x04\\x04\\x07\\x04\\x04\\x07\\x10\\x0b\\t\\x0b\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "stickermachine.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xc9c91435e97c19a7",
+                    "output_hash": "0xc19c5631ab6927b5",
+                    "hamming_distance": 20,
+                    "lpips": 0.007875047624111176,
+                    "l2": 0.05513758584856987
+                },
+                "post_validation": {
+                    "lpips": "0.019126391038298607",
+                    "l2": "0.061347588896751404",
+                    "ahash_hamming": "6",
+                    "dhash_hamming": "7",
+                    "phash_hamming": "20",
+                    "pdq_hamming": "24",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 36864, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01', b'\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "stallion.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xe395a73456da8c19",
+                    "output_hash": "0xe39e29061297ef38",
+                    "hamming_distance": 22,
+                    "lpips": 0.010826305486261845,
+                    "l2": 0.07466993480920792
+                },
+                "post_validation": {
+                    "lpips": "0.024359634146094322",
+                    "l2": "0.07691790163516998",
+                    "ahash_hamming": "6",
+                    "dhash_hamming": "16",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "24",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "course_registration.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x8ada1a4a8afa5a6b",
+                    "output_hash": "0x86ca465bd2db1173",
+                    "hamming_distance": 20,
+                    "lpips": 0.005978690925985575,
+                    "l2": 0.038118015974760056
+                },
+                "post_validation": {
+                    "lpips": "0.02159261703491211",
+                    "l2": "0.038884252309799194",
+                    "ahash_hamming": "0",
+                    "dhash_hamming": "23",
+                    "phash_hamming": "22",
+                    "pdq_hamming": "28",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "2muchsauce.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x9b892ef16708ef05",
+                    "output_hash": "0x948b7ef1468c0b9e",
+                    "hamming_distance": 20,
+                    "lpips": 0.004454432055354118,
+                    "l2": 0.04435412585735321
+                },
+                "post_validation": {
+                    "lpips": "0.02422809787094593",
+                    "l2": "0.049937449395656586",
+                    "ahash_hamming": "7",
+                    "dhash_hamming": "9",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "12",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "ranchcore.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xb8b23f4e4dc9421d",
+                    "output_hash": "0xb1b6316543c46b3d",
+                    "hamming_distance": 20,
+                    "lpips": 0.003908115439116955,
+                    "l2": 0.026973353698849678
+                },
+                "post_validation": {
+                    "lpips": "0.015181655064225197",
+                    "l2": "0.028377465903759003",
+                    "ahash_hamming": "0",
+                    "dhash_hamming": "11",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "30",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "boom.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x926c6d9398966759",
+                    "output_hash": "0x98676eb3849963c6",
+                    "hamming_distance": 22,
+                    "lpips": 0.015637915581464767,
+                    "l2": 0.06949596107006073
+                },
+                "post_validation": {
+                    "lpips": "0.022017333656549454",
+                    "l2": "0.070231594145298",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "21",
+                    "phash_hamming": "20",
+                    "pdq_hamming": "48",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "needabettercamera2.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xd3a44b16ab4d966a",
+                    "output_hash": "0xd0a54b36b765518d",
+                    "hamming_distance": 20,
+                    "lpips": 0.0020365696400403976,
+                    "l2": 0.029078911989927292
+                },
+                "post_validation": {
+                    "lpips": "0.005246755201369524",
+                    "l2": "0.03028034418821335",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "15",
+                    "phash_hamming": "18",
+                    "pdq_hamming": "26",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "cringe.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xd0e75b003fda213d",
+                    "output_hash": "0xd0ff40976dd6221c",
+                    "hamming_distance": 20,
+                    "lpips": 0.003424398833885789,
+                    "l2": 0.02601994015276432
+                },
+                "post_validation": {
+                    "lpips": "0.021174978464841843",
+                    "l2": "0.028788868337869644",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "9",
+                    "phash_hamming": "22",
+                    "pdq_hamming": "20",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "hipster_vaporwave.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x89563dc23f2d239c",
+                    "output_hash": "0xd5f33c867d650b80",
+                    "hamming_distance": 20,
+                    "lpips": 0.005130513571202755,
+                    "l2": 0.04417378455400467
+                },
+                "post_validation": {
+                    "lpips": "0.016872690990567207",
+                    "l2": "0.04798834025859833",
+                    "ahash_hamming": "11",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "24",
+                    "pdq_hamming": "28",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "nice.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x85870fa8a1bd8f1e",
+                    "output_hash": "0x87872faaeea0a2d2",
+                    "hamming_distance": 20,
+                    "lpips": 0.004522996488958597,
+                    "l2": 0.04002390056848526
+                },
+                "post_validation": {
+                    "lpips": "0.015612812712788582",
+                    "l2": "0.04180075600743294",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "28",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "truck_hex.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x8a40f5cdda7e4562",
+                    "output_hash": "0xc943f1da8e5d494a",
+                    "hamming_distance": 20,
+                    "lpips": 0.0017844151007011533,
+                    "l2": 0.023162461817264557
+                },
+                "post_validation": {
+                    "lpips": "0.012756727635860443",
+                    "l2": "0.025658583268523216",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "16",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "overrated.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xdcad6b1615482ef2",
+                    "output_hash": "0x95ac6f92014f31fc",
+                    "hamming_distance": 20,
+                    "lpips": 0.005126656033098698,
+                    "l2": 0.04414539784193039
+                },
+                "post_validation": {
+                    "lpips": "0.013709875755012035",
+                    "l2": "0.04608741030097008",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "18",
+                    "pdq_hamming": "22",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "needabettercamera1.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xff800ad391ac2b5b",
+                    "output_hash": "0xef890dc596ad6c42",
+                    "hamming_distance": 20,
+                    "lpips": 0.004906145390123129,
+                    "l2": 0.03668580204248428
+                },
+                "post_validation": {
+                    "lpips": "0.02009604126214981",
+                    "l2": "0.040690772235393524",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "20",
+                    "pdq_hamming": "30",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "excalibur.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x8205d0f77ad09fb1",
+                    "output_hash": "0x8f43c3b078e69eb0",
+                    "hamming_distance": 20,
+                    "lpips": 0.008040133863687515,
+                    "l2": 0.05740012973546982
+                },
+                "post_validation": {
+                    "lpips": "0.02549310401082039",
+                    "l2": "0.06262468546628952",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "19",
+                    "phash_hamming": "22",
+                    "pdq_hamming": "30",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "tragedy.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xc4dee60139f1c64e",
+                    "output_hash": "0xcbc5e21838fbe30c",
+                    "hamming_distance": 20,
+                    "lpips": 0.004072521813213825,
+                    "l2": 0.029783029109239578
+                },
+                "post_validation": {
+                    "lpips": "0.015846746042370796",
+                    "l2": "0.03263641521334648",
+                    "ahash_hamming": "7",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "22",
+                    "pdq_hamming": "34",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "nerdcore.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xf4ad435b0d842eb5",
+                    "output_hash": "0xf5aa5352589528de",
+                    "hamming_distance": 20,
+                    "lpips": 0.00494216475635767,
+                    "l2": 0.04416683688759804
+                },
+                "post_validation": {
+                    "lpips": "0.015270859934389591",
+                    "l2": "0.046144165098667145",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "20",
+                    "pdq_hamming": "26",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "mtv_cribz.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xd48bfc8bb0e292d8",
+                    "output_hash": "0xf269e0b3b9e291e0",
+                    "hamming_distance": 20,
+                    "lpips": 0.0032271065283566713,
+                    "l2": 0.028911910951137543
+                },
+                "post_validation": {
+                    "lpips": "0.020901188254356384",
+                    "l2": "0.03490947559475899",
+                    "ahash_hamming": "10",
+                    "dhash_hamming": "7",
+                    "phash_hamming": "12",
+                    "pdq_hamming": "24",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "theyGroomedForOnce.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xdf51f5c20fe0ca30",
+                    "output_hash": "0xfa54e7c91ce4813c",
+                    "hamming_distance": 20,
+                    "lpips": 0.0036875554360449314,
+                    "l2": 0.029798876494169235
+                },
+                "post_validation": {
+                    "lpips": "0.011609110049903393",
+                    "l2": "0.03145166113972664",
+                    "ahash_hamming": "3",
+                    "dhash_hamming": "11",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "24",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "peppers.png": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x94b71cdc78dc40e3",
+                    "output_hash": "0x96ad0bc9791598e3",
+                    "hamming_distance": 20,
+                    "lpips": 0.011211400851607323,
+                    "l2": 0.04960750415921211
+                },
+                "post_validation": {
+                    "lpips": "0.011211400851607323",
+                    "l2": "0.04960750415921211",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "16",
+                    "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+                }
+            },
+            "coolwhip.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xb914826ebfd3412d",
+                    "output_hash": "0xbe32876abcc06936",
+                    "hamming_distance": 20,
+                    "lpips": 0.0036559165455400944,
+                    "l2": 0.042225226759910583
+                },
+                "post_validation": {
+                    "lpips": "0.01873932033777237",
+                    "l2": "0.046736735850572586",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "7",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "14",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "boats.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xc3ccb16707c5388f",
+                    "output_hash": "0xc7f2ba4506e2b89c",
+                    "hamming_distance": 20,
+                    "lpips": 0.006680910941213369,
+                    "l2": 0.05051841959357262
+                },
+                "post_validation": {
+                    "lpips": "0.018117180094122887",
+                    "l2": "0.05270153656601906",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "20",
+                    "pdq_hamming": "36",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "dizzy1.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfec8816556d55c68",
+                    "output_hash": "0xffc08137fa16105b",
+                    "hamming_distance": 20,
+                    "lpips": 0.006133821792900562,
+                    "l2": 0.05109819769859314
+                },
+                "post_validation": {
+                    "lpips": "0.017463894560933113",
+                    "l2": "0.05455821007490158",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "11",
+                    "phash_hamming": "20",
+                    "pdq_hamming": "26",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "walk_number_4238973.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x84c4705cbdb3eae2",
+                    "output_hash": "0x84c4755d574b6b98",
+                    "hamming_distance": 20,
+                    "lpips": 0.004000893794000149,
+                    "l2": 0.04394310712814331
+                },
+                "post_validation": {
+                    "lpips": "0.014530450105667114",
+                    "l2": "0.04559296369552612",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "6",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "16",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
             }
         },
-        "imagehash.png": {
-            "pre_validation": {
-                "success": true,
-                "original_hash": "0xfacc84b1794bc564",
-                "output_hash": "0xec93955c6b839a16",
-                "hamming_distance": 32,
-                "lpips": 0.022825244814157486,
-                "l2": 0.07133135199546814
-            },
-            "post_validation": {
-                "lpips": "0.023180358111858368",
-                "l2": "0.06780359148979187",
-                "ahash_hamming": "6",
-                "dhash_hamming": "19",
-                "phash_hamming": "24",
-                "pdq_hamming": "52",
-                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
-            }
-        }
-    },
-    "phash_attack_scaledown": {
-        "peppers.png": {
-            "pre_validation": {
-                "success": true,
-                "original_hash": "0x94b71cdc78dc40e3",
-                "output_hash": "0x96ad0bc9791598e3",
-                "hamming_distance": 20,
-                "lpips": 0.010984157212078571,
-                "l2": 0.053316835314035416
-            },
-            "post_validation": {
-                "lpips": "0.010984157212078571",
-                "l2": "0.053316835314035416",
-                "ahash_hamming": "3",
-                "dhash_hamming": "8",
-                "phash_hamming": "12",
-                "pdq_hamming": "18",
-                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
-            }
-        },
-        "imagehash.png": {
-            "pre_validation": {
-                "success": true,
-                "original_hash": "0xfacc84b1794bc564",
-                "output_hash": "0xbe8b8712698bca66",
-                "hamming_distance": 20,
-                "lpips": 0.004941339138895273,
-                "l2": 0.034708041697740555
-            },
-            "post_validation": {
-                "lpips": "0.004941339138895273",
-                "l2": "0.034708041697740555",
-                "ahash_hamming": "2",
-                "dhash_hamming": "8",
-                "phash_hamming": "8",
-                "pdq_hamming": "24",
-                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
-            }
+        "average_results": {
+            "average_phash_hamming": 17,
+            "average_ahash_hamming": 3,
+            "average_dhash_hamming": 11,
+            "average_pdq_hamming": 25,
+            "average_lpips": 0.01740216262017687,
+            "average_l2": 0.04627541901060828
         }
     },
     "ahash_attack": {
-        "peppers.png": {
-            "pre_validation": {
-                "success": true,
-                "original_hash": "0x9f972784e41e9400",
-                "output_hash": "0x2e2f228ae31fbe04",
-                "hamming_distance": 21,
-                "lpips": 0.01668446883559227,
-                "l2": 0.07299797981977463
+        "per_image_results": {
+            "dizzy2.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x3f37373d38300020",
+                    "output_hash": "0x3e3a387133281321",
+                    "hamming_distance": 20,
+                    "lpips": 0.04469462111592293,
+                    "l2": 0.2044413685798645
+                },
+                "post_validation": {
+                    "lpips": "0.05769974738359451",
+                    "l2": "0.20511014759540558",
+                    "ahash_hamming": "21",
+                    "dhash_hamming": "17",
+                    "phash_hamming": "26",
+                    "pdq_hamming": "34",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
             },
-            "post_validation": {
-                "lpips": "0.01654667593538761",
-                "l2": "0.07271196693181992",
-                "ahash_hamming": "9",
-                "dhash_hamming": "3",
-                "phash_hamming": "8",
-                "pdq_hamming": "12",
-                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            "firstnight.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfffffefa7c280001",
+                    "output_hash": "0x0107fffb7a3b0000",
+                    "hamming_distance": 20,
+                    "lpips": 0.05146242678165436,
+                    "l2": 0.1987883746623993
+                },
+                "post_validation": {
+                    "lpips": "0.059834543615579605",
+                    "l2": "0.19909968972206116",
+                    "ahash_hamming": "23",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "32",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x05\\x03\\x03\\x03\\x05\\x06\\x05\\x05\\x05\\x05\\x06\\x08\\x06\\x06\\x06\\x06\\x06\\x08\\n\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\x0c\\x0e\\x0e\\x0e\\x0e\\x0e\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f', b'\\x01\\x02\\x03\\x03\\x04\\x04\\x04\\x07\\x04\\x04\\x07\\x10\\x0b\\t\\x0b\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "imagehash.png": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xffdfbfc181efffff",
+                    "output_hash": "0x0020403e76000000",
+                    "hamming_distance": 62,
+                    "lpips": 0.07065974920988083,
+                    "l2": 0.12664292752742767
+                },
+                "post_validation": {
+                    "lpips": "0.07065974920988083",
+                    "l2": "0.12664292752742767",
+                    "ahash_hamming": "21",
+                    "dhash_hamming": "14",
+                    "phash_hamming": "28",
+                    "pdq_hamming": "62",
+                    "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
+                }
+            },
+            "refined.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x81e66bccfa608103",
+                    "output_hash": "0xe1622cd6d8e6e047",
+                    "hamming_distance": 21,
+                    "lpips": 0.02223345637321472,
+                    "l2": 0.09004359692335129
+                },
+                "post_validation": {
+                    "lpips": "0.037056051194667816",
+                    "l2": "0.09206283837556839",
+                    "ahash_hamming": "10",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "22",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x05\\x03\\x03\\x03\\x05\\x06\\x05\\x05\\x05\\x05\\x06\\x08\\x06\\x06\\x06\\x06\\x06\\x08\\n\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\x0c\\x0e\\x0e\\x0e\\x0e\\x0e\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f', b'\\x01\\x02\\x03\\x03\\x04\\x04\\x04\\x07\\x04\\x04\\x07\\x10\\x0b\\t\\x0b\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "stickermachine.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x3e7cfdfee3008028",
+                    "output_hash": "0xdabdfcfcfb404454",
+                    "hamming_distance": 20,
+                    "lpips": 0.012468665838241577,
+                    "l2": 0.08901697397232056
+                },
+                "post_validation": {
+                    "lpips": "0.02450660429894924",
+                    "l2": "0.09300427883863449",
+                    "ahash_hamming": "10",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "14",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 36864, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01', b'\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "stallion.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x4ff7f9fd40f1e1e1",
+                    "output_hash": "0xd767f8fd60851ee9",
+                    "hamming_distance": 20,
+                    "lpips": 0.031387969851493835,
+                    "l2": 0.14971017837524414
+                },
+                "post_validation": {
+                    "lpips": "0.044924311339855194",
+                    "l2": "0.15102912485599518",
+                    "ahash_hamming": "18",
+                    "dhash_hamming": "15",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "28",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "course_registration.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xffffffff00000000",
+                    "output_hash": "0xfdff8301ff090000",
+                    "hamming_distance": 23,
+                    "lpips": 0.09186454117298126,
+                    "l2": 0.236707404255867
+                },
+                "post_validation": {
+                    "lpips": "0.10503612458705902",
+                    "l2": "0.2366674393415451",
+                    "ahash_hamming": "16",
+                    "dhash_hamming": "7",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "10",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "2muchsauce.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x60ad1a11e9eb96b0",
+                    "output_hash": "0x35982821abea1ca4",
+                    "hamming_distance": 21,
+                    "lpips": 0.01327465195208788,
+                    "l2": 0.07544372230768204
+                },
+                "post_validation": {
+                    "lpips": "0.033865198493003845",
+                    "l2": "0.0787518173456192",
+                    "ahash_hamming": "23",
+                    "dhash_hamming": "14",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "26",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "ranchcore.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x00ffffff00010700",
+                    "output_hash": "0x001f3f7ca87ed700",
+                    "hamming_distance": 21,
+                    "lpips": 0.05038156732916832,
+                    "l2": 0.19352754950523376
+                },
+                "post_validation": {
+                    "lpips": "0.06293446570634842",
+                    "l2": "0.19372151792049408",
+                    "ahash_hamming": "20",
+                    "dhash_hamming": "9",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "32",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "boom.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x0000001f1f0e1c00",
+                    "output_hash": "0x0000036cec7d2f00",
+                    "hamming_distance": 22,
+                    "lpips": 0.05122034624218941,
+                    "l2": 0.15238803625106812
+                },
+                "post_validation": {
+                    "lpips": "0.059549298137426376",
+                    "l2": "0.1527567207813263",
+                    "ahash_hamming": "12",
+                    "dhash_hamming": "17",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "64",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "needabettercamera2.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfffffffffcfcf8f8",
+                    "output_hash": "0x0f0f1f1f3d7e78f8",
+                    "hamming_distance": 20,
+                    "lpips": 0.014604039490222931,
+                    "l2": 0.13423767685890198
+                },
+                "post_validation": {
+                    "lpips": "0.018616903573274612",
+                    "l2": "0.13405276834964752",
+                    "ahash_hamming": "24",
+                    "dhash_hamming": "6",
+                    "phash_hamming": "12",
+                    "pdq_hamming": "18",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "cringe.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x7cfcfcfe00787c40",
+                    "output_hash": "0xcaf2f3ff2e7af800",
+                    "hamming_distance": 21,
+                    "lpips": 0.010792908258736134,
+                    "l2": 0.058707013726234436
+                },
+                "post_validation": {
+                    "lpips": "0.03137859329581261",
+                    "l2": "0.06000811606645584",
+                    "ahash_hamming": "10",
+                    "dhash_hamming": "15",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "20",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "hipster_vaporwave.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x0c9c3f02013c5b09",
+                    "output_hash": "0x20f97422542f1e09",
+                    "hamming_distance": 22,
+                    "lpips": 0.008811336942017078,
+                    "l2": 0.0640576034784317
+                },
+                "post_validation": {
+                    "lpips": "0.02093266323208809",
+                    "l2": "0.06690382957458496",
+                    "ahash_hamming": "19",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "30",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "nice.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x3f3c3e7f7e8e1000",
+                    "output_hash": "0x3f3f3f7e01719200",
+                    "hamming_distance": 21,
+                    "lpips": 0.02659326232969761,
+                    "l2": 0.12655483186244965
+                },
+                "post_validation": {
+                    "lpips": "0.03855300322175026",
+                    "l2": "0.1270965337753296",
+                    "ahash_hamming": "12",
+                    "dhash_hamming": "22",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "26",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "truck_hex.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfff8100937f4e6ff",
+                    "output_hash": "0xfae81439330899ff",
+                    "hamming_distance": 20,
+                    "lpips": 0.02567990869283676,
+                    "l2": 0.11192630976438522
+                },
+                "post_validation": {
+                    "lpips": "0.03749478608369827",
+                    "l2": "0.11238779127597809",
+                    "ahash_hamming": "17",
+                    "dhash_hamming": "24",
+                    "phash_hamming": "26",
+                    "pdq_hamming": "46",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "overrated.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x1fffff3a1e3c9c30",
+                    "output_hash": "0xf91fd9386e14fcb0",
+                    "hamming_distance": 20,
+                    "lpips": 0.024875374510884285,
+                    "l2": 0.1340765655040741
+                },
+                "post_validation": {
+                    "lpips": "0.03415311500430107",
+                    "l2": "0.13463637232780457",
+                    "ahash_hamming": "18",
+                    "dhash_hamming": "11",
+                    "phash_hamming": "12",
+                    "pdq_hamming": "26",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "needabettercamera1.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x71a0e0f7fcf0c0c0",
+                    "output_hash": "0x8050d1f6faefc0c0",
+                    "hamming_distance": 20,
+                    "lpips": 0.009125782176852226,
+                    "l2": 0.06558509171009064
+                },
+                "post_validation": {
+                    "lpips": "0.024196650832891464",
+                    "l2": "0.06782432645559311",
+                    "ahash_hamming": "15",
+                    "dhash_hamming": "11",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "16",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "excalibur.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x682e2870c68b5fff",
+                    "output_hash": "0x78243fb1c7fc7cff",
+                    "hamming_distance": 20,
+                    "lpips": 0.010305170901119709,
+                    "l2": 0.06731384247541428
+                },
+                "post_validation": {
+                    "lpips": "0.028609024360775948",
+                    "l2": "0.0718490332365036",
+                    "ahash_hamming": "11",
+                    "dhash_hamming": "15",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "20",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "tragedy.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xf8feffff007ed800",
+                    "output_hash": "0x7efdffff00fdeffb",
+                    "hamming_distance": 20,
+                    "lpips": 0.00243599945679307,
+                    "l2": 0.03374272212386131
+                },
+                "post_validation": {
+                    "lpips": "0.01406837534159422",
+                    "l2": "0.036326467990875244",
+                    "ahash_hamming": "16",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "4",
+                    "pdq_hamming": "8",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "nerdcore.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xffe10346c080fec0",
+                    "output_hash": "0x00dec7c4c0c0fe80",
+                    "hamming_distance": 21,
+                    "lpips": 0.008474556729197502,
+                    "l2": 0.06135201454162598
+                },
+                "post_validation": {
+                    "lpips": "0.01905680075287819",
+                    "l2": "0.06267105787992477",
+                    "ahash_hamming": "10",
+                    "dhash_hamming": "7",
+                    "phash_hamming": "2",
+                    "pdq_hamming": "12",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "mtv_cribz.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xba00fef50e0f5692",
+                    "output_hash": "0xd850dc0809c4f492",
+                    "hamming_distance": 25,
+                    "lpips": 0.011107999831438065,
+                    "l2": 0.05460366606712341
+                },
+                "post_validation": {
+                    "lpips": "0.029597952961921692",
+                    "l2": "0.05790730193257332",
+                    "ahash_hamming": "24",
+                    "dhash_hamming": "18",
+                    "phash_hamming": "18",
+                    "pdq_hamming": "30",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "theyGroomedForOnce.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xe0c8f8f800fbeba6",
+                    "output_hash": "0x98b0f4f401fce79f",
+                    "hamming_distance": 22,
+                    "lpips": 0.0169680118560791,
+                    "l2": 0.08960127085447311
+                },
+                "post_validation": {
+                    "lpips": "0.024306727573275566",
+                    "l2": "0.09010979533195496",
+                    "ahash_hamming": "15",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "26",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "peppers.png": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x9f972784e41e9400",
+                    "output_hash": "0x2e2f228ae31fbe04",
+                    "hamming_distance": 21,
+                    "lpips": 0.0144268237054348,
+                    "l2": 0.0670681744813919
+                },
+                "post_validation": {
+                    "lpips": "0.0144268237054348",
+                    "l2": "0.0670681744813919",
+                    "ahash_hamming": "9",
+                    "dhash_hamming": "3",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "12",
+                    "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+                }
+            },
+            "coolwhip.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x0203d2e383e2ff3f",
+                    "output_hash": "0x5d4890f38162de55",
+                    "hamming_distance": 21,
+                    "lpips": 0.013163331896066666,
+                    "l2": 0.08486934751272202
+                },
+                "post_validation": {
+                    "lpips": "0.030565176159143448",
+                    "l2": "0.08724173903465271",
+                    "ahash_hamming": "5",
+                    "dhash_hamming": "16",
+                    "phash_hamming": "12",
+                    "pdq_hamming": "14",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "boats.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfffbff383020300c",
+                    "output_hash": "0x70fcfd6070a0ec22",
+                    "hamming_distance": 23,
+                    "lpips": 0.013711059466004372,
+                    "l2": 0.09783291071653366
+                },
+                "post_validation": {
+                    "lpips": "0.02697833627462387",
+                    "l2": "0.09900624305009842",
+                    "ahash_hamming": "11",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "28",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "dizzy1.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfffbfda1a0802000",
+                    "output_hash": "0xffffdfdc40428481",
+                    "hamming_distance": 20,
+                    "lpips": 0.04654758423566818,
+                    "l2": 0.21474891901016235
+                },
+                "post_validation": {
+                    "lpips": "0.06142831966280937",
+                    "l2": "0.21571093797683716",
+                    "ahash_hamming": "14",
+                    "dhash_hamming": "18",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "36",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "walk_number_4238973.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xf676773eb0100202",
+                    "output_hash": "0xfe7e79a20f310522",
+                    "hamming_distance": 22,
+                    "lpips": 0.01702183671295643,
+                    "l2": 0.10476110875606537
+                },
+                "post_validation": {
+                    "lpips": "0.028864149004220963",
+                    "l2": "0.10548343509435654",
+                    "ahash_hamming": "16",
+                    "dhash_hamming": "16",
+                    "phash_hamming": "12",
+                    "pdq_hamming": "26",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
             }
         },
-        "imagehash.png": {
-            "pre_validation": {
-                "success": true,
-                "original_hash": "0xffdfbfc181efffff",
-                "output_hash": "0x3313aea009b9b779",
-                "hamming_distance": 24,
-                "lpips": 0.03643636405467987,
-                "l2": 0.10667698830366135
-            },
-            "post_validation": {
-                "lpips": "0.03712073341012001",
-                "l2": "0.10745500773191452",
-                "ahash_hamming": "15",
-                "dhash_hamming": "14",
-                "phash_hamming": "24",
-                "pdq_hamming": "56",
-                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
-            }
+        "average_results": {
+            "average_phash_hamming": 13,
+            "average_ahash_hamming": 15,
+            "average_dhash_hamming": 13,
+            "average_pdq_hamming": 26,
+            "average_lpips": 0.038492351666920714,
+            "average_l2": 0.11574557133846813
         }
     },
     "dhash_attack": {
-        "peppers.png": {
-            "pre_validation": {
-                "success": false,
-                "original_hash": "0x78d730cdbc1a5d",
-                "output_hash": "0x78d730d5948a9d",
-                "hamming_distance": 8,
-                "lpips": 0.010174951516091824,
-                "l2": 0.03711364045739174
+        "per_image_results": {
+            "dizzy2.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xf3916932644729",
+                    "output_hash": "0x55a9582007c121",
+                    "hamming_distance": 20,
+                    "lpips": 0.004538597539067268,
+                    "l2": 0.04050661623477936
+                },
+                "post_validation": {
+                    "lpips": "0.014753340743482113",
+                    "l2": "0.04492148756980896",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "9",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "14",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
             },
-            "post_validation": {
-                "lpips": "0.01025436818599701",
-                "l2": "0.03682553023099899",
-                "ahash_hamming": "3",
-                "dhash_hamming": "7",
-                "phash_hamming": "6",
-                "pdq_hamming": "10",
-                "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+            "firstnight.jpeg": {
+                "pre_validation": {
+                    "success": false,
+                    "original_hash": "0xfffefa7c2940a1",
+                    "output_hash": "0xdefa782d008151",
+                    "hamming_distance": 18,
+                    "lpips": 0.021365845575928688,
+                    "l2": 0.05995597317814827
+                },
+                "post_validation": {
+                    "lpips": "0.02887915074825287",
+                    "l2": "0.06148652359843254",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "11",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "18",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x05\\x03\\x03\\x03\\x05\\x06\\x05\\x05\\x05\\x05\\x06\\x08\\x06\\x06\\x06\\x06\\x06\\x08\\n\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\x0c\\x0e\\x0e\\x0e\\x0e\\x0e\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f', b'\\x01\\x02\\x03\\x03\\x04\\x04\\x04\\x07\\x04\\x04\\x07\\x10\\x0b\\t\\x0b\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "imagehash.png": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x002040366e1000",
+                    "output_hash": "0xc037c1817ed906",
+                    "hamming_distance": 21,
+                    "lpips": 0.012214602902531624,
+                    "l2": 0.05280500650405884
+                },
+                "post_validation": {
+                    "lpips": "0.012214602902531624",
+                    "l2": "0.05280500650405884",
+                    "ahash_hamming": "3",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "30",
+                    "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
+                }
+            },
+            "refined.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x7609d4fa65915f",
+                    "output_hash": "0x7e7d98f9460512",
+                    "hamming_distance": 20,
+                    "lpips": 0.010999610647559166,
+                    "l2": 0.05175764486193657
+                },
+                "post_validation": {
+                    "lpips": "0.024878492578864098",
+                    "l2": "0.055145975202322006",
+                    "ahash_hamming": "3",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "14",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x05\\x03\\x03\\x03\\x05\\x06\\x05\\x05\\x05\\x05\\x06\\x08\\x06\\x06\\x06\\x06\\x06\\x08\\n\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\x0c\\x0e\\x0e\\x0e\\x0e\\x0e\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f\\x0f', b'\\x01\\x02\\x03\\x03\\x04\\x04\\x04\\x07\\x04\\x04\\x07\\x10\\x0b\\t\\x0b\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10\\x10'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "stickermachine.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfdc7fa6300fc3d",
+                    "output_hash": "0x65f9668310a57d",
+                    "hamming_distance": 21,
+                    "lpips": 0.006384984124451876,
+                    "l2": 0.043518222868442535
+                },
+                "post_validation": {
+                    "lpips": "0.017626985907554626",
+                    "l2": "0.05113109573721886",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "5",
+                    "phash_hamming": "4",
+                    "pdq_hamming": "12",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 36864, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01', b'\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "stallion.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xf7f8ed00b52ee9",
+                    "output_hash": "0xf4a95400bf8b20",
+                    "hamming_distance": 20,
+                    "lpips": 0.011792943812906742,
+                    "l2": 0.0607282854616642
+                },
+                "post_validation": {
+                    "lpips": "0.024055618792772293",
+                    "l2": "0.06350082904100418",
+                    "ahash_hamming": "6",
+                    "dhash_hamming": "10",
+                    "phash_hamming": "4",
+                    "pdq_hamming": "16",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "course_registration.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x42800800080002",
+                    "output_hash": "0x1de200000006f9",
+                    "hamming_distance": 20,
+                    "lpips": 0.00958501361310482,
+                    "l2": 0.04689834266901016
+                },
+                "post_validation": {
+                    "lpips": "0.024907099083065987",
+                    "l2": "0.047473080456256866",
+                    "ahash_hamming": "0",
+                    "dhash_hamming": "19",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "22",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "2muchsauce.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x8f1ae5ef7a14a1",
+                    "output_hash": "0x9b4211e8ce16b0",
+                    "hamming_distance": 20,
+                    "lpips": 0.005087599623948336,
+                    "l2": 0.04468289762735367
+                },
+                "post_validation": {
+                    "lpips": "0.0251801498234272",
+                    "l2": "0.05020400509238243",
+                    "ahash_hamming": "12",
+                    "dhash_hamming": "7",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "12",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "ranchcore.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfff8d000ffc700",
+                    "output_hash": "0xff740840801f20",
+                    "hamming_distance": 20,
+                    "lpips": 0.02371494099497795,
+                    "l2": 0.10152210295200348
+                },
+                "post_validation": {
+                    "lpips": "0.03561455011367798",
+                    "l2": "0.10190697014331818",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "16",
+                    "phash_hamming": "16",
+                    "pdq_hamming": "34",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "boom.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xffffffe0001c00",
+                    "output_hash": "0x06ff7f8f6410c0",
+                    "hamming_distance": 20,
+                    "lpips": 0.007446891628205776,
+                    "l2": 0.04773604869842529
+                },
+                "post_validation": {
+                    "lpips": "0.013575809076428413",
+                    "l2": "0.048777345567941666",
+                    "ahash_hamming": "0",
+                    "dhash_hamming": "12",
+                    "phash_hamming": "4",
+                    "pdq_hamming": "18",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "needabettercamera2.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xfffefffcfef8f8",
+                    "output_hash": "0x5ba460bcf2b830",
+                    "hamming_distance": 20,
+                    "lpips": 0.0004536628839559853,
+                    "l2": 0.009468724019825459
+                },
+                "post_validation": {
+                    "lpips": "0.0031266179867088795",
+                    "l2": "0.012813622131943703",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "3",
+                    "phash_hamming": "4",
+                    "pdq_hamming": "4",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "cringe.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xf3a31f0078cc00",
+                    "output_hash": "0xfccfa20079b880",
+                    "hamming_distance": 20,
+                    "lpips": 0.00461884681135416,
+                    "l2": 0.028784317895770073
+                },
+                "post_validation": {
+                    "lpips": "0.022931883111596107",
+                    "l2": "0.03129906207323074",
+                    "ahash_hamming": "2",
+                    "dhash_hamming": "5",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "20",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "hipster_vaporwave.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xd977825dbe5b01",
+                    "output_hash": "0xdd2703e47d8209",
+                    "hamming_distance": 20,
+                    "lpips": 0.004641935229301453,
+                    "l2": 0.041761644184589386
+                },
+                "post_validation": {
+                    "lpips": "0.016446152701973915",
+                    "l2": "0.04577617719769478",
+                    "ahash_hamming": "11",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "24",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "nice.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x00f74380831020",
+                    "output_hash": "0xc482f500910048",
+                    "hamming_distance": 20,
+                    "lpips": 0.011151812970638275,
+                    "l2": 0.05498679727315903
+                },
+                "post_validation": {
+                    "lpips": "0.022599535062909126",
+                    "l2": "0.05627961829304695",
+                    "ahash_hamming": "3",
+                    "dhash_hamming": "16",
+                    "phash_hamming": "12",
+                    "pdq_hamming": "22",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "truck_hex.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x801729f7c88b7f",
+                    "output_hash": "0x5804eff6f0effb",
+                    "hamming_distance": 20,
+                    "lpips": 0.005826444830745459,
+                    "l2": 0.04672577232122421
+                },
+                "post_validation": {
+                    "lpips": "0.017354056239128113",
+                    "l2": "0.0480252206325531",
+                    "ahash_hamming": "8",
+                    "dhash_hamming": "17",
+                    "phash_hamming": "14",
+                    "pdq_hamming": "30",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "overrated.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xefc820cf30db20",
+                    "output_hash": "0xeae40a1694c862",
+                    "hamming_distance": 21,
+                    "lpips": 0.005332986358553171,
+                    "l2": 0.03744259476661682
+                },
+                "post_validation": {
+                    "lpips": "0.014010239392518997",
+                    "l2": "0.03969922661781311",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "5",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "14",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "needabettercamera1.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x86f5ff08e14000",
+                    "output_hash": "0xdbf6cebcc18142",
+                    "hamming_distance": 20,
+                    "lpips": 0.008374438621103764,
+                    "l2": 0.04850561171770096
+                },
+                "post_validation": {
+                    "lpips": "0.023627812042832375",
+                    "l2": "0.05152403563261032",
+                    "ahash_hamming": "8",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "18",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "excalibur.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x2699f1ceb956e3",
+                    "output_hash": "0x0f51f0cf0c7bf6",
+                    "hamming_distance": 20,
+                    "lpips": 0.00739672128111124,
+                    "l2": 0.046314142644405365
+                },
+                "post_validation": {
+                    "lpips": "0.025066673755645752",
+                    "l2": "0.05258997529745102",
+                    "ahash_hamming": "5",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "16",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "tragedy.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xffffaf00ffc023",
+                    "output_hash": "0xbfbf5101fe06ff",
+                    "hamming_distance": 20,
+                    "lpips": 0.00911675300449133,
+                    "l2": 0.05611692741513252
+                },
+                "post_validation": {
+                    "lpips": "0.02098653092980385",
+                    "l2": "0.05761370062828064",
+                    "ahash_hamming": "18",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "20",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "nerdcore.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xe0034480287e01",
+                    "output_hash": "0x0367d4e0967f00",
+                    "hamming_distance": 20,
+                    "lpips": 0.00887678936123848,
+                    "l2": 0.0592179000377655
+                },
+                "post_validation": {
+                    "lpips": "0.01956525817513466",
+                    "l2": "0.060699354857206345",
+                    "ahash_hamming": "4",
+                    "dhash_hamming": "4",
+                    "phash_hamming": "12",
+                    "pdq_hamming": "34",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "mtv_cribz.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x04ff010ed7f28b",
+                    "output_hash": "0x41fe7d03ced0b2",
+                    "hamming_distance": 21,
+                    "lpips": 0.005593468900769949,
+                    "l2": 0.035882581025362015
+                },
+                "post_validation": {
+                    "lpips": "0.02421991340816021",
+                    "l2": "0.04082274064421654",
+                    "ahash_hamming": "16",
+                    "dhash_hamming": "7",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "22",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "theyGroomedForOnce.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x9b777201ff0796",
+                    "output_hash": "0x60ff0500ffe784",
+                    "hamming_distance": 21,
+                    "lpips": 0.009586486034095287,
+                    "l2": 0.055076904594898224
+                },
+                "post_validation": {
+                    "lpips": "0.01745966449379921",
+                    "l2": "0.05600129812955856",
+                    "ahash_hamming": "7",
+                    "dhash_hamming": "8",
+                    "phash_hamming": "10",
+                    "pdq_hamming": "22",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "peppers.png": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x016088611fe000",
+                    "output_hash": "0xd102c07e1b0441",
+                    "hamming_distance": 20,
+                    "lpips": 0.013427110388875008,
+                    "l2": 0.05361950024962425
+                },
+                "post_validation": {
+                    "lpips": "0.013427110388875008",
+                    "l2": "0.05361950024962425",
+                    "ahash_hamming": "6",
+                    "dhash_hamming": "5",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "22",
+                    "error_log": "\nMISMATCH:: First Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 600, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: iCCP not found in output image metadata\nKEY NOT FOUND:: pHYs not found in output image metadata"
+                }
+            },
+            "coolwhip.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xc9f2e701769d11",
+                    "output_hash": "0xa0f66384783f2d",
+                    "hamming_distance": 20,
+                    "lpips": 0.008753187954425812,
+                    "l2": 0.06128929927945137
+                },
+                "post_validation": {
+                    "lpips": "0.024462658911943436",
+                    "l2": "0.06450316309928894",
+                    "ahash_hamming": "0",
+                    "dhash_hamming": "13",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "10",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "boats.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0xdbd50076a05f0f",
+                    "output_hash": "0x9c8330b041de0f",
+                    "hamming_distance": 20,
+                    "lpips": 0.005716872401535511,
+                    "l2": 0.04433530941605568
+                },
+                "post_validation": {
+                    "lpips": "0.017814788967370987",
+                    "l2": "0.046773575246334076",
+                    "ahash_hamming": "5",
+                    "dhash_hamming": "11",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "16",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
+            },
+            "dizzy1.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x819ca0408b344b",
+                    "output_hash": "0x92850022122551",
+                    "hamming_distance": 20,
+                    "lpips": 0.0020145424641668797,
+                    "l2": 0.029805324971675873
+                },
+                "post_validation": {
+                    "lpips": "0.013170222751796246",
+                    "l2": "0.035437989979982376",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "9",
+                    "phash_hamming": "8",
+                    "pdq_hamming": "14",
+                    "error_log": "\nMISMATCH:: First Image: {'dpi_x': 0, 'dpi_y': 18432, 'units': 1}, Second Image: {'dpi_x': 0, 'dpi_y': 256, 'units': 1}\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP13 not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x06\\x04\\x04\\x04\\x04\\x06\\x07\\x06\\x06\\x06\\x06\\x06\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0c\\x0c\\x0c\\x0c\\x0c\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r', b'\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\x0e\\t\\x08\\t\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e\\x0e'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']"
+                }
+            },
+            "walk_number_4238973.jpeg": {
+                "pre_validation": {
+                    "success": true,
+                    "original_hash": "0x0be1aec15106fa",
+                    "output_hash": "0x6955aa99420227",
+                    "hamming_distance": 21,
+                    "lpips": 0.00255640153773129,
+                    "l2": 0.033728647977113724
+                },
+                "post_validation": {
+                    "lpips": "0.01302804984152317",
+                    "l2": "0.035870641469955444",
+                    "ahash_hamming": "1",
+                    "dhash_hamming": "3",
+                    "phash_hamming": "6",
+                    "pdq_hamming": "16",
+                    "error_log": "\nKEY NOT FOUND:: APP1_Exif not found in output image metadata\nKEY NOT FOUND:: APP2 not found in output image metadata\nMISMATCH:: First Image: [b'\\x00\\x02\\x02\\x02\\x02\\x02\\x02\\x03\\x02\\x02\\x03\\x04\\x03\\x03\\x03\\x04\\x05\\x04\\x04\\x04\\x04\\x05\\x07\\x05\\x05\\x05\\x05\\x05\\x07\\x08\\x07\\x07\\x07\\x07\\x07\\x07\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\x08\\n\\n\\n\\n\\n\\n\\x0b\\x0b\\x0b\\x0b\\x0b\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\x01\\x02\\x02\\x02\\x03\\x03\\x03\\x06\\x03\\x03\\x06\\r\\t\\x07\\t\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r\\r'], Second Image: [b'\\x00\\x08\\x06\\x06\\x07\\x06\\x05\\x08\\x07\\x07\\x07\\t\\t\\x08\\n\\x0c\\x14\\r\\x0c\\x0b\\x0b\\x0c\\x19\\x12\\x13\\x0f\\x14\\x1d\\x1a\\x1f\\x1e\\x1d\\x1a\\x1c\\x1c $.\\' \",#\\x1c\\x1c(7),01444\\x1f\\'9=82<.342', b'\\x01\\t\\t\\t\\x0c\\x0b\\x0c\\x18\\r\\r\\x182!\\x1c!22222222222222222222222222222222222222222222222222']\nMISMATCH:: First Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b\\x10\\x00\\x02'], Second Image: [b'\\x00\\x00\\x01\\x05\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x10\\x00\\x02\\x01\\x03\\x03\\x02\\x04\\x03\\x05\\x05\\x04\\x04\\x00\\x00\\x01}\\x01\\x02\\x03\\x00\\x04\\x11\\x05\\x12!1A\\x06\\x13Qa', b'\\x01\\x00\\x03\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x01\\x00\\x00\\x00\\x00\\x00\\x00\\x01\\x02\\x03\\x04\\x05\\x06\\x07\\x08\\t\\n\\x0b', b'\\x11\\x00\\x02\\x01\\x02\\x04\\x04\\x03\\x04\\x07\\x05\\x04\\x04\\x00\\x01\\x02w\\x00\\x01\\x02\\x03\\x11\\x04\\x05!1\\x06\\x12AQ\\x07a']"
+                }
             }
         },
-        "imagehash.png": {
-            "pre_validation": {
-                "success": true,
-                "original_hash": "0x004109b4a20000",
-                "output_hash": "0x0c659194b35148",
-                "hamming_distance": 15,
-                "lpips": 0.00015791229088790715,
-                "l2": 0.007354261353611946
-            },
-            "post_validation": {
-                "lpips": "0.00020224775653332472",
-                "l2": "0.008254596032202244",
-                "ahash_hamming": "0",
-                "dhash_hamming": "2",
-                "phash_hamming": "4",
-                "pdq_hamming": "8",
-                "error_log": "\nMISMATCH:: First Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 6, 'interlace': 0}, Second Image: {'width': 1200, 'height': 600, 'bit_depth': 8, 'color_type': 2, 'interlace': 0}\nKEY NOT FOUND:: pHYs not found in output image metadata"
-            }
+        "average_results": {
+            "average_phash_hamming": 8,
+            "average_ahash_hamming": 4,
+            "average_dhash_hamming": 9,
+            "average_pdq_hamming": 19,
+            "average_lpips": 0.019666035849325084,
+            "average_l2": 0.050618563744205015
         }
     }
 }

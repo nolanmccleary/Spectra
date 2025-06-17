@@ -42,10 +42,10 @@ DEFAULT_HYPERPARAMETERS = {
 }
 
 AHASH_HYPERPARAMETERS = {
-    "alpha"         : 2.5,
+    "alpha"         : 2.9,
     "beta"          : 0.9,
     "step_coeff"    : 0.001,
-    "scale_factor"  : 6
+    "scale_factor"  : 5
 }
 
 
