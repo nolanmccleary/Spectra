@@ -34,39 +34,46 @@ DEFAULT_STEP_COEFF = 0.008
 DEFAULT_SCALE_FACTOR = 6 #DEFAULTS OPTIMIZED FOR PHASH
 
 
-DEFAULT_HYPERPARAMETERS = {
+PHASH_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
     "step_coeff"    : 0.016,
-    "scale_factor"  : 7
+    "scale_factor"  : 0.5
 }
 
 AHASH_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
-    "step_coeff"    : 0.001,
-    "scale_factor"  : 5
+    "step_coeff"    : 0.01,
+    "scale_factor"  : 0.4
 }
 
+DHASH_HYPERPARAMETERS = {
+    "alpha"         : 2.9,
+    "beta"          : 0.85,
+    "step_coeff"    : 0.0033,
+    "scale_factor"  : 0.3
+}
 
 
 torch.set_default_dtype(torch.float32)
 sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
 
+
 def attack_sequence(dev):
     engine = Attack_Engine(verbose="on")
     images = ['dizzy1.jpeg']
-    image_input_dir = 'sample_images'
+    image_input_dir = 'sample_images2'
     image_output_dir = 'output'
 
     #LPIPS_MODEL = ALEX_ONNX(device=dev)
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("phash_attack", image_input_dir, image_output_dir, PHASH, DEFAULT_HYPERPARAMETERS, hamming_threshold=20, colormode="grayscale", acceptance_func="lpips", quant_func="byte_quantize", lpips_func=F_LPIPS, num_reps=1, attack_cycles=1000, device=dev, delta_scaledown=True)
-    #engine.add_attack("pdq_attack", images, image_input_dir, image_output_dir, PDQ, DEFAULT_HYPERPARAMETERS, 1, "lpips", 1, 1, dev, lpips_func = F_LPIPS, delta_scaledown=False, gate=0.04)
+    engine.add_attack("phash_attack", image_input_dir, image_output_dir, PHASH, PHASH_HYPERPARAMETERS, hamming_threshold=20, colormode="grayscale", acceptance_func="lpips", quant_func="byte_quantize", lpips_func=F_LPIPS, num_reps=1, attack_cycles=1000, device=dev, delta_scaledown=True)
+    #engine.add_attack("pdq_attack", image_input_dir, image_output_dir, PDQ, PHASH_HYPERPARAMETERS, hamming_threshold=20, colormode="grayscale", acceptance_func="lpips", quant_func="byte_quantize", lpips_func=F_LPIPS, num_reps=1, attack_cycles=1, device=dev, delta_scaledown=True)
     engine.add_attack("ahash_attack", image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, hamming_threshold=20, colormode="grayscale", acceptance_func="lpips", quant_func="byte_quantize", lpips_func=F_LPIPS, num_reps=1, attack_cycles=1000, device=dev, delta_scaledown=True)
-    engine.add_attack("dhash_attack", image_input_dir, image_output_dir, DHASH, DEFAULT_HYPERPARAMETERS, hamming_threshold=20, colormode="grayscale", acceptance_func="lpips", quant_func="byte_quantize", lpips_func=F_LPIPS, num_reps=1, attack_cycles=1000, device=dev, delta_scaledown=True)
+    engine.add_attack("dhash_attack", image_input_dir, image_output_dir, DHASH, DHASH_HYPERPARAMETERS, hamming_threshold=20, colormode="grayscale", acceptance_func="lpips", quant_func="byte_quantize", lpips_func=F_LPIPS, num_reps=1, attack_cycles=1000, device=dev, delta_scaledown=True)
 
     t1 = time.time()
     engine.run_attacks()
