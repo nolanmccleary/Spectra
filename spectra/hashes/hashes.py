@@ -13,4 +13,4 @@ PHASH = Hash_Wrapper(name="phash", func=generate_phash_torch_batched, resize_hei
 
 PHASH_RGB = Hash_Wrapper(name="phash_rgb", func=generate_phash_rgb_batched, resize_height=32, resize_width=32, available_devices={"cpu"})
 
-PDQ = Hash_Wrapper(name="pdq_hash", func=generate_pdq_batched, resize_height=512, resize_width=512, available_devices={"cpu"})  #Canonical PDQ applies DCT on 512x512 downsample
+PDQ = Hash_Wrapper(name="pdq_hash", func=generate_pdq_batched, resize_height=32, resize_width=32, available_devices={"cpu"})  #Canonical PDQ applies DCT on 512x512 downsample
