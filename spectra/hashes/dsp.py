@@ -16,7 +16,10 @@ def create_dct_matrix(N, device, dtype): #For 2D Orthnormal DCT
         k = n.unsqueeze(0) #[1, N]
 
         basis = torch.cos(PI * (2 * n + 1).unsqueeze(1) * k / (2 * N)) #[N, 1] * [1, N] -> [N, N]; broadcast across k so we have N dct row vectors of length N
-        basis = basis.t().to()
+        
+        print(basis.shape)
+        basis = basis.to(device)
+        print(basis.shape)
 
         _dct_cache[key] = basis
 

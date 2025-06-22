@@ -113,11 +113,11 @@ def _generate_phash_torch(tensor, dct_dim):
     H, W = arr.shape
     device, dtype = arr.device, arr.dtype
 
-    D_H = create_dct_matrix(H, device, dtype)[:dct_dim, : ]   # [dim, H]
-    D_W = create_dct_matrix(W, device, dtype)[:dct_dim, : ]   # [dim, W]
+    D_H = create_dct_matrix(H, device, dtype)[ : , : dct_dim]   # [dim, H]
+    D_W = create_dct_matrix(W, device, dtype)[ : , : dct_dim]   # [dim, W]
 
     #[K,H] @ [H,W] @ [W,K] → [K,K]
-    low = D_H @ arr @ D_W.t()
+    low = D_H.t() @ arr @ D_W
 
     med = low.median()
     bits = (low > med).flatten()
