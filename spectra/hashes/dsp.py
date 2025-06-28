@@ -6,6 +6,7 @@ import torch.nn.functional as F
 
 PI = math.pi
 _dct_cache = {}
+_window_cache = {}
 
 def create_dct_matrix(N, device, dtype): #For 2D Orthnormal DCT
     global _dct_cache
@@ -16,10 +17,7 @@ def create_dct_matrix(N, device, dtype): #For 2D Orthnormal DCT
         k = n.unsqueeze(0) #[1, N]
 
         basis = torch.cos(PI * (2 * n + 1).unsqueeze(1) * k / (2 * N)) #[N, 1] * [1, N] -> [N, N]; broadcast across k so we have N dct row vectors of length N
-        
-        print(basis.shape)
         basis = basis.to(device)
-        print(basis.shape)
 
         _dct_cache[key] = basis
 
@@ -27,90 +25,91 @@ def create_dct_matrix(N, device, dtype): #For 2D Orthnormal DCT
 
 
 def _get_window(N, w, device):
-    half = (w + 2) // 2
-    
-    p2 = w - half + 1
-    p3 = N - w
-    
-    j = torch.arange(N, device=device)
-    l = torch.empty(N, dtype=torch.long, device=device)
-    r = torch.empty(N, dtype=torch.long, device=device)
+    global _window_cache
+    key = (N, w, device)
 
-    mask1 = j < p2
-    l[mask1] = 0
-    r[mask1] = (half - 1) + j[mask1]
+    if key not in _window_cache:
+        half = (w + 2) // 2
+        
+        p2 = w - half + 1
+        p3 = N - w
+        
+        j = torch.arange(N, device=device)
+        l = torch.empty(N, dtype=torch.long, device=device)
+        r = torch.empty(N, dtype=torch.long, device=device)
 
-    mask2 = (j >= p2) & (j < p2 + p3)
-    i2 = j[mask2] - p2
-    l[mask2] = i2 + 1
-    r[mask2] = i2 + w
+        mask1 = j < p2
 
-    mask3 = j >= (p2 + p3)
-    l[mask3] = j[mask3] - (w - half)
-    r[mask3] = N - 1
+        l[mask1] = 0
+        r[mask1] = (half - 1) + j[mask1]
 
-    return l, r
+        mask2 = (j >= p2) & (j < p2 + p3)
+        i2 = j[mask2] - p2
+        l[mask2] = i2 + 1
+        r[mask2] = i2 + w
+
+        mask3 = j >= (p2 + p3)
+        l[mask3] = j[mask3] - (w - half)
+        r[mask3] = N - 1
+
+        _window_cache[key] = (l, r)
+
+    return _window_cache[key]
 
 
-def _box_filter_1d(x, w, dim):
-    N = x.size(dim)
-    device = x.device
+def _box_filter_1d(tensor, w, dim):
+    N = tensor.size(dim)
+    device = tensor.device
     l, r = _get_window(N, w, device)
 
-    ps = torch.cat([
-        torch.zeros_like(x.select(dim, 0).unsqueeze(dim)),
-        x.cumsum(dim=dim)
+    ps = torch.cat([                                              
+        torch.zeros_like(tensor.select(dim, 0).unsqueeze(dim)), #prepend padding
+        tensor.cumsum(dim=dim) #cumsum along the 'dim'th slice'
     ], dim=dim)  # shape[..., N+1]
 
-    r1 = (r + 1)
-
-    shape = list(x.shape)
+    shape = list(tensor.shape)
     idx_shape = shape.copy()
     idx_shape[dim] = N
     l_idx = l
-    r1_idx = r1
+    r_idx = r + 1
 
     for _ in range(dim):
         l_idx = l_idx.unsqueeze(0)
-        r1_idx = r1_idx.unsqueeze(0)
+        r_idx = r_idx.unsqueeze(0)
 
-    for _ in range(x.ndim - dim - 1):
+    for _ in range(tensor.ndim - dim - 1):
         l_idx = l_idx.unsqueeze(-1)
-        r1_idx = r1_idx.unsqueeze(-1)
+        r_idx = r_idx.unsqueeze(-1)
 
     l_idx = l_idx.expand(idx_shape)
-    r1_idx = r1_idx.expand(idx_shape)
+    r_idx = r_idx.expand(idx_shape)
 
-    sum_windows = ps.gather(dim, r1_idx) - ps.gather(dim, l_idx)
-    counts = (r - l + 1).to(x.dtype).view(
-        *([1]*dim + [N] + [1]*(x.ndim-dim-1))
-    ).expand(idx_shape)
+    sum_windows = ps.gather(dim, r_idx) - ps.gather(dim, l_idx)
+    #counts = (r - l + 1).to(tensor.dtype).view(
+    #    *([1]*dim + [N] + [1]*(tensor.ndim-dim-1))
+    #)
+    #return sum_windows.div(counts)
+    return sum_windows.div(4)
 
-    return sum_windows.div(counts)
 
-
-def jarosz_pdq_tent(x):
-    C, H, W = x.shape
-
-    full_w_W = math.ceil(W / 128)
-    full_w_H = math.ceil(H / 128)
-    out = x
+def jarosz_pdq_tent(tensor, box_size):
+    out = tensor
     for _ in range(2):
-        out = _box_filter_1d(out, full_w_W, dim=2)  # rows
-        out = _box_filter_1d(out, full_w_H, dim=1)  # cols
+        out = _box_filter_1d(out, box_size, dim=2)  # Filter pass along rows
+        out = _box_filter_1d(out, box_size, dim=1)  # Filter pass along columns
     return out
 
 
-def pdq_decimate(x, D=64):
-    C, H, W = x.shape
-    device = x.device
+def pdq_decimate(tensor, D=64):
+    C, H, W = tensor.shape
+    device = tensor.device
 
     idxH = torch.floor(((torch.arange(D, device=device, dtype=torch.float) + 0.5) * H) / D).long()
     idxW = torch.floor(((torch.arange(D, device=device, dtype=torch.float) + 0.5) * W) / D).long()
 
-    return x.index_select(1, idxH).index_select(2, idxW)
+    return tensor.index_select(1, idxH).index_select(2, idxW)
 
 
-def jarosz_filter(tensor, out_dim=64):
-    blurred = jarosz_pdq_tent(tensor)
+def jarosz_filter(tensor, out_dim=64, box_size = 4):
+    blurred = jarosz_pdq_tent(tensor, box_size)
     return pdq_decimate(blurred, D=out_dim)
