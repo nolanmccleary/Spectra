@@ -292,12 +292,20 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
 def directory_compare(input_dir, output_dir, lpips_func, device, verbose="off"):
     """
     Compare every output image in output_dir against its corresponding
-    input in input_dir.  Outputs are assumed named <prefix>_<input_filename>.
+    input in input_dir. Outputs are assumed named <prefix>_<input_filename>.
     Returns a dict of the form:
       {
         "<prefix>": {
           "<input_filename>": { …results of image_compare… },
-          …
+          …,
+          "average": {
+            "lpips": …,
+            "l2": …,
+            "ahash_hamming": …,
+            "dhash_hamming": …,
+            "phash_hamming": …,
+            "pdq_hamming": …
+          }
         },
         …
       }
@@ -338,4 +346,23 @@ def directory_compare(input_dir, output_dir, lpips_func, device, verbose="off"):
 
         results.setdefault(prefix, {})[match] = cmp_res
 
+    for prefix, entries in results.items():
+        sums = {}
+        count = 0
+
+        for img_name, metrics in entries.items():
+            if img_name == "average":
+                continue
+            count += 1
+            for key, val in metrics.items():
+                if key == "error_log":
+                    continue
+                num = float(val)
+                sums[key] = sums.get(key, 0.0) + num
+
+        avg_metrics = { key: (sums[key] / count) for key in sums }
+        entries["average"] = avg_metrics
+
     return results
+
+
