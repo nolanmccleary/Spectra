@@ -2,3 +2,4 @@ myenv/
 __pycache__/
 output/
 spectra_out.json
+post_validation.json

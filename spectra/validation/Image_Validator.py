@@ -1,10 +1,12 @@
 import imagehash
-import struct
-import zlib
 from pathlib import Path
 from PIL import Image
+import struct
+import zlib
 from spectra.utils import get_rgb_tensor, l2_delta
 from spectra.hashes.PDQ import PDQHasher
+
+
 
 
 ############################# HASH COMPARISON ######################################################
@@ -214,7 +216,7 @@ def parse_jpeg_metadata(jpeg_path):
 ##########################################################################################################
 
 
-def image_compare(img_path_1, img_path_2, lpips_func, device="cpu", verbose = "off"):
+def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
     
     img_1 = None
     img_2 = None
@@ -284,3 +286,56 @@ def image_compare(img_path_1, img_path_2, lpips_func, device="cpu", verbose = "o
         "pdq_hamming"   : str(pdq_delta),
         "error_log"     : error_log
     }
+
+
+
+def directory_compare(input_dir, output_dir, lpips_func, device, verbose="off"):
+    """
+    Compare every output image in output_dir against its corresponding
+    input in input_dir.  Outputs are assumed named <prefix>_<input_filename>.
+    Returns a dict of the form:
+      {
+        "<prefix>": {
+          "<input_filename>": { …results of image_compare… },
+          …
+        },
+        …
+      }
+    """
+    input_dir  = Path(input_dir)
+    output_dir = Path(output_dir)
+
+    input_files = {f.name: f for f in input_dir.iterdir() if f.is_file()}
+
+    results: dict[str, dict[str, dict]] = {}
+
+    for out_path in output_dir.iterdir():
+        if not out_path.is_file():
+            continue
+        out_name = out_path.name
+
+        match = None
+        for in_name in input_files:
+            suffix = f"_{in_name}"
+            if out_name.endswith(suffix):
+                prefix = out_name[: -len(suffix)]
+                match  = in_name
+                break
+
+        if match is None:
+            if verbose == "on":
+                print(f"Skipping unmatched output: {out_name}")
+            continue
+
+        in_path = input_files[match]
+        cmp_res = image_compare(
+            str(in_path),
+            str(out_path),
+            lpips_func,
+            device,
+            verbose
+        )
+
+        results.setdefault(prefix, {})[match] = cmp_res
+
+    return results
