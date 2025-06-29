@@ -9,7 +9,7 @@ from spectra.hashes.PDQ import PDQHasher
 
 
 
-############################# HASH COMPARISON ######################################################
+########################################## HASH COMPARISON ######################################################
 
 def ahash_compare(img1, img2):
     hash1 = imagehash.average_hash(img1)
@@ -39,7 +39,7 @@ def PDQ_compare(img1, img2):
 
 
 
-############################# FILE METADATA COMPARISON ######################################################
+################################## FILE METADATA COMPARISON ######################################################
 
 
 

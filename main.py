@@ -6,10 +6,6 @@ import torch
 from spectra import Attack_Engine, PHASH, PHASH_RGB, AHASH, AHASH_RGB, DHASH, DHASH_RGB, PDQ
 from spectra.validation import directory_compare
 from models import ALEX_ONNX, ALEX_IMPORT
-#import lpips
-
-
-#F_LPIPS = lpips.LPIPS(net='alex').to(dev)
 
 
 
@@ -30,19 +26,11 @@ from models import ALEX_ONNX, ALEX_IMPORT
 
 
 
-DEFAULT_ALPHA = 2.9
-DEFAULT_BETA = 0.9  # Hah, Beta.
-DEFAULT_STEP_COEFF = 0.008
-DEFAULT_SCALE_FACTOR = 6 #DEFAULTS OPTIMIZED FOR PHASH
-
-
-
-
 
 PDQ_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
-    "step_coeff"    : 0.0002,
+    "step_coeff"    : 0.0001,
     "scale_factor"  : 0.5
 }
 
@@ -50,22 +38,23 @@ PDQ_HYPERPARAMETERS = {
 AHASH_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
-    "step_coeff"    : 0.0007,
-    "scale_factor"  : 0.4
+    "step_coeff"    : 0.0001,
+    "scale_factor"  : 0.5
 }
+
 
 DHASH_HYPERPARAMETERS = {
     "alpha"         : 2.9,
-    "beta"          : 0.85,
-    "step_coeff"    : 0.00013,
-    "scale_factor"  : 0.3
+    "beta"          : 0.9,
+    "step_coeff"    : 0.0001,
+    "scale_factor"  : 5.5
 }
 
 
 PHASH_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
-    "step_coeff"    : 0.0002,
+    "step_coeff"    : 0.0001,
     "scale_factor"  : 0.5
 }
 
@@ -73,22 +62,22 @@ PHASH_HYPERPARAMETERS = {
 AHASH_HYPERPARAMETERS_FINE = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
-    "step_coeff"    : 0.000007,
+    "step_coeff"    : 0.000001,
     "scale_factor"  : 0.4
 }
 
 DHASH_HYPERPARAMETERS_FINE = {
     "alpha"         : 2.9,
-    "beta"          : 0.85,
-    "step_coeff"    : 0.0000013,
-    "scale_factor"  : 0.3
+    "beta"          : 0.9,
+    "step_coeff"    : 0.000001,
+    "scale_factor"  : 5.5
 }
 
 
 PHASH_HYPERPARAMETERS_FINE = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
-    "step_coeff"    : 0.000002,
+    "step_coeff"    : 0.000001,
     "scale_factor"  : 0.5
 }
 
@@ -96,7 +85,7 @@ PHASH_HYPERPARAMETERS_FINE = {
 PDQ_HYPERPARAMETERS_FINE = {
     "alpha"         : 2.9,
     "beta"          : 0.9,
-    "step_coeff"    : 0.00002,
+    "step_coeff"    : 0.00001,
     "scale_factor"  : 0.5
 }
 
@@ -108,18 +97,17 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
 
 def attack_sequence(dev):
     engine = Attack_Engine(verbose="on")
-    images = ['dizzy1.jpeg']
-    image_input_dir = 'sample_images2'
+    image_input_dir = 'sample_images'
     image_output_dir = 'output'
 
     #LPIPS_MODEL = ALEX_ONNX(device=dev)
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("phash_attack", image_input_dir, image_output_dir, PHASH, PHASH_HYPERPARAMETERS, hamming_threshold=28, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
-    engine.add_attack("pdq_attack", image_input_dir, image_output_dir, PDQ, PDQ_HYPERPARAMETERS, hamming_threshold=80, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
-    engine.add_attack("ahash_attack", image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, hamming_threshold=24, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
-    engine.add_attack("dhash_attack", image_input_dir, image_output_dir, DHASH, DHASH_HYPERPARAMETERS, hamming_threshold=24, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
+    engine.add_attack("phash_attack", image_input_dir, image_output_dir, PHASH, PHASH_HYPERPARAMETERS_FINE, hamming_threshold=28, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
+    engine.add_attack("pdq_attack", image_input_dir, image_output_dir, PDQ, PDQ_HYPERPARAMETERS_FINE, hamming_threshold=80, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
+    engine.add_attack("ahash_attack", image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS_FINE, hamming_threshold=24, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
+    engine.add_attack("dhash_attack", image_input_dir, image_output_dir, DHASH, DHASH_HYPERPARAMETERS_FINE, hamming_threshold=24, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=100000, device=dev, delta_scaledown=True)
 
     t1 = time.time()
     engine.run_attacks()

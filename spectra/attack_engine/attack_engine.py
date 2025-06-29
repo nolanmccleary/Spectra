@@ -58,10 +58,10 @@ class Attack_Engine:
 
             if i > 0:
                 self.attack_log[attack_tag]["average_results"] = {
-                    "average_phash_hamming"     : sum_phash_hamming // i,
-                    "average_ahash_hamming"     : sum_ahash_hamming // i,
-                    "average_dhash_hamming"     : sum_dhash_hamming // i,
-                    "average_pdq_hamming"       : sum_pdq_hamming // i,
+                    "average_phash_hamming"     : sum_phash_hamming / i,
+                    "average_ahash_hamming"     : sum_ahash_hamming / i,
+                    "average_dhash_hamming"     : sum_dhash_hamming / i,
+                    "average_pdq_hamming"       : sum_pdq_hamming / i,
                     "average_lpips"             : sum_lpips / i,
                     "average_l2"                : sum_l2 / i
                 }
@@ -201,7 +201,7 @@ class Attack_Object:
             perturbation_scale_factor=self.scale_factor,
             num_perturbations=self.num_pertubations,
             beta=self.beta, acceptance_func=self.acceptance_func)
-            
+
             if accepted or optimal_delta is None:
                 optimal_delta = curr_delta
 
