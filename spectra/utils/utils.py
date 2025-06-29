@@ -14,7 +14,6 @@ def tensor_resize(input_tensor, height, width):
     return tensor_resized.squeeze(0)                #[1, {3, 1}, H, W] -> [{3,1}, H, W]
 
 
-
 def get_rgb_tensor(image_object, rgb_device):
     if image_object.mode == 'RGBA':
         image_object = image_object.convert('RGB')
@@ -23,25 +22,20 @@ def get_rgb_tensor(image_object, rgb_device):
     return tensor
 
 
-
 def rgb_to_grayscale(rgb_tensor):
-    return torch.mean(rgb_tensor, dim = 0, keepdim=True)
-
+        return torch.mean(rgb_tensor, dim = 0, keepdim=True)
 def rgb_to_luma(rgb_tensor):        #[C, H, W] -> [1, H, W]
-        r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
-        gray = 0.299*r + 0.587*g + 0.114*b
-        return gray.unsqueeze(0)
-
+    r, g, b = rgb_tensor[0], rgb_tensor[1], rgb_tensor[2]
+    gray = 0.299*r + 0.587*g + 0.114*b
+    return gray.unsqueeze(0)
 def no_conversion(tensor):
-    return tensor
-
+    return tensor 
 def generate_conversion(conversion_str: str):
-    inversion_table = {"grayscale" : rgb_to_grayscale, "grayscale_local" : rgb_to_grayscale, "luma" : rgb_to_luma, "noinvert" : no_conversion}
-    if conversion_str not in inversion_table.keys():
-        raise ValueError(f"'{conversion_str}' not in set of valid acceptance function handles: {inversion_table.keys()}")
+    conversion_table = {"grayscale" : rgb_to_grayscale, "grayscale_local" : rgb_to_grayscale, "luma" : rgb_to_luma, "noinvert" : no_conversion}
+    if conversion_str not in conversion_table.keys():
+        raise ValueError(f"'{conversion_str}' not in set of valid acceptance function handles: {conversion_table.keys()}")
 
-    return inversion_table[conversion_str]
-
+    return conversion_table[conversion_str]
 
 
 def generate_inversion(inversion_str: str):
@@ -111,7 +105,6 @@ def generate_quant(quant_str):
     return quant_table[quant_str]
 
 
-
 '''
 def generate_seed_perturbation(dim, start_scalar, device):
     return torch.rand((1, dim), dtype=torch.float32, device=device) * start_scalar                                        #Mirror to preserve distribution
@@ -124,20 +117,16 @@ def to_hex(hash_bool):
     return '0x' + ''.join(f'{b:02x}' for b in packed.tolist())  #Format to hex
 
 
-
 def bool_tensor_delta(a, b):
     return a.ne(b)
-
 
 
 def byte_quantize(tensor):
     return torch.round(tensor * 255.0) / (255.0)
 
 
-
 def l2_delta(a, b):
     return torch.sqrt(torch.mean((a - b).pow(2))).item()
-
 
 
 def generate_acceptance(self, acceptance_str):
@@ -190,7 +179,6 @@ def generate_acceptance(self, acceptance_str):
             break_loop = True
 
         return break_loop, accepted
-    
 
     def latching_acceptance_func(tensor):
         self.current_hash = self.func(tensor.to(self.func_device))
@@ -198,7 +186,11 @@ def generate_acceptance(self, acceptance_str):
         self.current_lpips = self.lpips_func(self._tensor, tensor)
         self.current_l2 = l2_delta(self._tensor, tensor)
 
-        return False, True
+        if self.current_hamming >= self.hamming_threshold:
+            return True, True
+        
+        return False, False
+        
 
     acceptance_table = {"lpips" : lpips_acceptance_func, "l2" : l2_acceptance_func, "latch" : latching_acceptance_func}
     if acceptance_str not in acceptance_table.keys():
@@ -209,3 +201,7 @@ def generate_acceptance(self, acceptance_str):
 
 def noop(tensor):
     return tensor
+
+
+def create_sweep(start, stop, step):
+    return [start + step * i for i in range(int((stop + step - start) / step + 1E-6))]

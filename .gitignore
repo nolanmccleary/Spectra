@@ -3,3 +3,4 @@ __pycache__/
 output/
 spectra_out.json
 post_validation.json
+scratch.json

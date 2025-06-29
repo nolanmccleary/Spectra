@@ -6,7 +6,7 @@ from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
 from pathlib import Path
 from PIL import Image
-from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, generate_acceptance, generate_conversion, generate_inversion, generate_quant
+from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, generate_acceptance, generate_conversion, generate_inversion, generate_quant, create_sweep
 import torch
 from torchvision.transforms import ToPILImage
 
@@ -47,7 +47,15 @@ class Attack_Engine:
             sum_pdq_hamming = 0
             sum_lpips = 0.0
             sum_l2 = 0.0
+
+            sum_beta = 0
+            sum_scale_factor = 0
+            sum_num_steps = 0
+
             for image in self.attack_log[attack_tag]["per_image_results"].values():
+                sum_beta            += float(image["pre_validation"]["ideal_beta"])
+                sum_scale_factor    += float(image["pre_validation"]["ideal_scale_factor"])
+                sum_num_steps       += float(image["pre_validation"]["num_steps"])
                 sum_phash_hamming   += int(image["post_validation"]["phash_hamming"])
                 sum_ahash_hamming   += int(image["post_validation"]["ahash_hamming"])
                 sum_dhash_hamming   += int(image["post_validation"]["dhash_hamming"])
@@ -56,15 +64,20 @@ class Attack_Engine:
                 sum_l2              += float(image["post_validation"]["l2"])
                 i                   += 1
 
+
             if i > 0:
                 self.attack_log[attack_tag]["average_results"] = {
-                    "average_phash_hamming"     : sum_phash_hamming / i,
-                    "average_ahash_hamming"     : sum_ahash_hamming / i,
-                    "average_dhash_hamming"     : sum_dhash_hamming / i,
-                    "average_pdq_hamming"       : sum_pdq_hamming / i,
-                    "average_lpips"             : sum_lpips / i,
-                    "average_l2"                : sum_l2 / i
+                    "average_phash_hamming"         : sum_phash_hamming / i,
+                    "average_ahash_hamming"         : sum_ahash_hamming / i,
+                    "average_dhash_hamming"         : sum_dhash_hamming / i,
+                    "average_pdq_hamming"           : sum_pdq_hamming / i,
+                    "average_lpips"                 : sum_lpips / i,
+                    "average_l2"                    : sum_l2 / i,
+                    "average_ideal_beta"            : sum_beta / i,
+                    "average_ideal_scale_factor"    : sum_scale_factor / i,
+                    "average_num_steps"             : sum_num_steps / i         
                 }
+
 
         json_filename = f"{output_name}.json"
         with open(json_filename, 'w') as f:
@@ -110,7 +123,7 @@ class Attack_Object:
         else:
             self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
 
-        self.alpha, self.beta, self.step_coeff, self.scale_factor = hyperparameter_set["alpha"], hyperparameter_set["beta"], hyperparameter_set["step_coeff"], hyperparameter_set["scale_factor"]
+        self.alpha, self.betas, self.step_coeff, self.scale_factors = hyperparameter_set["alpha"], create_sweep(*hyperparameter_set["beta"]), hyperparameter_set["step_coeff"], create_sweep(*hyperparameter_set["scale_factor"])
         self.func_package = (self.func, bool_tensor_delta, self.quant_func)
         self.device_package = (self.func_device, self.device, self.device)
         self.gate = gate
@@ -193,24 +206,38 @@ class Attack_Object:
         self.log("Running attack...\n")
 
         optimal_delta = None
+        min_steps = self.attack_cycles
+        ret_set = (None, None, None, None)
 
-        for _ in range(self.num_reps):
-            curr_delta, accepted = self.optimizer.get_delta(
-            step_coeff=self.step_coeff,
-            num_steps=self.attack_cycles,
-            perturbation_scale_factor=self.scale_factor,
-            num_perturbations=self.num_pertubations,
-            beta=self.beta, acceptance_func=self.acceptance_func)
+        self.log(f"Beta sweep across: {self.betas}\n")
+        self.log(f"Perturbation scale factor sweep across: {self.scale_factors}\n")
 
-            if accepted or optimal_delta is None:
-                optimal_delta = curr_delta
-
+        for beta in self.betas:
+            for scale_factor in self.scale_factors:
             
+                step_count = self.attack_cycles
+                
+                for _ in range(self.num_reps):
+                    step_count, curr_delta, accepted = self.optimizer.get_delta(
+                    step_coeff=self.step_coeff,
+                    num_steps=self.attack_cycles,
+                    perturbation_scale_factor=scale_factor,
+                    num_perturbations=self.num_pertubations,
+                    beta=beta, acceptance_func=self.acceptance_func)
+                    
+                    if accepted or optimal_delta is None:
+                        optimal_delta = curr_delta
+
+                        if step_count < min_steps:
+                            ret_set = (beta, scale_factor, step_count, optimal_delta)
+                            min_steps = step_count
+
+
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
-        upsampled_delta = optimal_delta
+        upsampled_delta = ret_set[3]
         
         if self.resize_flag:
-            optimal_delta = optimal_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
+            optimal_delta = ret_set[3].view(3 if self.colormode == "rgb" else 1, self.height, self.width)
             upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
         
         rgb_delta = self.inversion_func(self.rgb_tensor, upsampled_delta)
@@ -276,12 +303,15 @@ class Attack_Object:
 
         return {
             "pre_validation": {
-                "success"           : self.attack_success,
-                "original_hash"     : to_hex(self.original_hash),
-                "output_hash"       : to_hex(self.output_hash) if self.output_hash is not None else None,
-                "hamming_distance"  : self.output_hamming,
-                "lpips"             : self.output_lpips,
-                "l2"                : self.output_l2
+                "success"               : self.attack_success,
+                "original_hash"         : to_hex(self.original_hash),
+                "output_hash"           : to_hex(self.output_hash) if self.output_hash is not None else None,
+                "hamming_distance"      : self.output_hamming,
+                "lpips"                 : self.output_lpips,
+                "l2"                    : self.output_l2,
+                "num_steps"             : ret_set[2],
+                "ideal_scale_factor"    : ret_set[1],
+                "ideal_beta"            : ret_set[0]
             },
             "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, self.verbose)
         }
