@@ -205,8 +205,7 @@ class Attack_Object:
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
-        optimal_delta = None
-        min_steps = self.attack_cycles
+        self.min_steps = self.attack_cycles
         ret_set = (None, None, None, None)
 
         self.log(f"Beta sweep across: {self.betas}\n")
@@ -214,23 +213,19 @@ class Attack_Object:
 
         for beta in self.betas:
             for scale_factor in self.scale_factors:
-            
-                step_count = self.attack_cycles
                 
-                for _ in range(self.num_reps):
+                for rep in range(self.num_reps):
                     step_count, curr_delta, accepted = self.optimizer.get_delta(
                     step_coeff=self.step_coeff,
                     num_steps=self.attack_cycles,
                     perturbation_scale_factor=scale_factor,
                     num_perturbations=self.num_pertubations,
                     beta=beta, acceptance_func=self.acceptance_func)
-                    
-                    if accepted or optimal_delta is None:
-                        optimal_delta = curr_delta
 
-                        if step_count < min_steps:
-                            ret_set = (beta, scale_factor, step_count, optimal_delta)
-                            min_steps = step_count
+                    print((rep, step_count, self.min_steps, beta, scale_factor))
+                    if accepted or ret_set[3] is None:
+                        ret_set = (beta, scale_factor, step_count, curr_delta)
+
 
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################

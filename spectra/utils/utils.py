@@ -131,7 +131,7 @@ def l2_delta(a, b):
 
 def generate_acceptance(self, acceptance_str):
 
-    def lpips_acceptance_func(tensor):
+    def lpips_acceptance_func(tensor, step_number):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
         self.current_lpips = self.lpips_func(self._tensor, tensor)
@@ -155,8 +155,7 @@ def generate_acceptance(self, acceptance_str):
 
         return break_loop, accepted
 
-
-    def l2_acceptance_func(tensor):
+    def l2_acceptance_func(tensor, step_number):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
         self.current_lpips = self.lpips_func(self._tensor, tensor)
@@ -180,7 +179,7 @@ def generate_acceptance(self, acceptance_str):
 
         return break_loop, accepted
 
-    def latching_acceptance_func(tensor):
+    def latching_acceptance_func(tensor, step_number):
         self.current_hash = self.func(tensor.to(self.func_device))
         self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
         self.current_lpips = self.lpips_func(self._tensor, tensor)
@@ -191,8 +190,22 @@ def generate_acceptance(self, acceptance_str):
         
         return False, False
         
+    def step_acceptance_func(tensor, step_number):
+        self.current_hash = self.func(tensor.to(self.func_device))
+        self.current_hamming = int((self.original_hash != self.current_hash).sum().item())
+        self.current_lpips = self.lpips_func(self._tensor, tensor)
+        self.current_l2 = l2_delta(self._tensor, tensor)
 
-    acceptance_table = {"lpips" : lpips_acceptance_func, "l2" : l2_acceptance_func, "latch" : latching_acceptance_func}
+        if self.current_hamming >= self.hamming_threshold:
+            if step_number < self.min_steps:
+                self.min_steps = step_number
+                return True, True
+            return True, False
+
+        return False, False
+
+
+    acceptance_table = {"lpips" : lpips_acceptance_func, "l2" : l2_acceptance_func, "latch" : latching_acceptance_func, "step" : step_acceptance_func}
     if acceptance_str not in acceptance_table.keys():
         raise ValueError(f"'{acceptance_str}' not in set of valid acceptance function handles: {acceptance_table.keys()}")
 
@@ -204,4 +217,8 @@ def noop(tensor):
 
 
 def create_sweep(start, stop, step):
-    return [start + step * i for i in range(int((stop + step - start) / step + 1E-6))]
+    if stop == None or step == None:
+        ret = [start]
+    else:     
+        ret = [start + step * i for i in range(int((stop + step - start) / step + 1E-6))]
+    return ret
