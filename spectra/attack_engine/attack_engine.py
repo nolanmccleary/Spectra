@@ -176,9 +176,10 @@ class Attack_Object:
         
         self.output_hash = None
         self.output_hamming = None
+
         self.output_lpips = 1
         self.output_l2 = 1
-        
+
         self.current_hash = None
         self.current_hamming = None
         self.current_lpips = 1
@@ -211,13 +212,13 @@ class Attack_Object:
         self.log(f"Beta sweep across: {self.betas}\n")
         self.log(f"Perturbation scale factor sweep across: {self.scale_factors}\n")
 
+        best_output = (None, None)
+
         for beta in self.betas:
             for scale_factor in self.scale_factors:
                 
                 sum_steps = 0
-                sum_hamming = 0
 
-                best_output = (None, None)
                 self.min_steps = self.attack_cycles
 
                 for rep in range(self.num_reps):
@@ -228,45 +229,35 @@ class Attack_Object:
                     num_perturbations=self.num_pertubations,
                     beta=beta, acceptance_func=self.acceptance_func)
 
-                    self.log((rep, step_count, self.min_steps, beta, scale_factor))
+                    #self.log((rep, step_count, self.min_steps, self.output_lpips, beta, scale_factor))
                     
                     sum_steps += step_count
-                    sum_hamming += self.current_hamming
                     
-                    if accepted or ret_set[3] is None:
+                    if accepted or ret_set[3] is None:          #We get the acceptance best out of our entire sweep space for our output tensor
                         best_output = (step_count, curr_delta)
 
                 average_steps = sum_steps / self.num_reps
-                average_hamming = sum_hamming / self.num_reps
 
-                if average_hamming >= self.hamming_threshold and average_steps < min_avg_steps:
+                if average_steps < min_avg_steps:               #We compute ideal beta / scale factor off the average lowest steps to break hamming, this is independent from our output delta/step count
                     ret_set = best_output + (beta, scale_factor)
                     min_avg_steps = average_steps
 
                 self.log((average_steps, min_avg_steps, beta, scale_factor))
 
-
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
-        upsampled_delta = ret_set[1]
-        
+        output_delta = ret_set[1]
         if self.resize_flag:
             optimal_delta = ret_set[1].view(3 if self.colormode == "rgb" else 1, self.height, self.width)
-            upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
+            output_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
         
-        rgb_delta = self.inversion_func(self.rgb_tensor, upsampled_delta)
-        
-        self.output_tensor = self.rgb_tensor + rgb_delta
+        rgb_delta = self.inversion_func(self.rgb_tensor, output_delta)
+        safe_scale = anal_clamp(self.rgb_tensor, rgb_delta, 0.0, 1.0)
 
-
-        ################################ RTQ - IMAGE SPACE BACK TO HASH SPACE  ########################################
+        self.output_tensor = self.rgb_tensor + rgb_delta * safe_scale
 
         cand_targ = self.conversion_func(self.output_tensor)
-        
         if self.resize_flag:
             cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
-    
-        
-        ################################ END OF ROUND-TRIP QUANTIZATION #####################################
 
         self.output_hash = self.func(self.quant_func(cand_targ))
         self.output_hamming = self.original_hash.ne(self.output_hash.to(self.original_hash.device)).sum().item()
@@ -279,10 +270,7 @@ class Attack_Object:
             
             for scale in scale_factors:
                 cand_delta = rgb_delta * scale
-                safe_scale = anal_clamp(self.rgb_tensor, cand_delta, 0.0, 1.0)
-                safe_delta = cand_delta * safe_scale
-                
-                cand_tensor = self.rgb_tensor + safe_delta
+                cand_tensor = self.rgb_tensor + cand_delta
                 cand_targ = self.conversion_func(cand_tensor.clone())
 
                 if self.resize_flag:

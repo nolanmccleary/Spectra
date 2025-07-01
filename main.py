@@ -156,7 +156,7 @@ def attack_sequence(dev):
     LPIPS_MODEL = ALEX_IMPORT(device=dev)
     F_LPIPS = LPIPS_MODEL.get_lpips
 
-    engine.add_attack("ahash_attack", image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS_SWEEP, hamming_threshold=24, colormode="grayscale", acceptance_func="step", quant_func=None, lpips_func=F_LPIPS, num_reps=10, attack_cycles=50, device=dev, delta_scaledown=False)
+    engine.add_attack("ahash_attack", image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS_SWEEP, hamming_threshold=24, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=50, device=dev, delta_scaledown=False)
     #engine.add_attack("dhash_attack", image_input_dir, image_output_dir, DHASH, DHASH_HYPERPARAMETERS_SWEEP, hamming_threshold=24, colormode="grayscale", acceptance_func="step", quant_func=None, lpips_func=F_LPIPS, num_reps=10, attack_cycles=50, device=dev, delta_scaledown=True)
     #engine.add_attack("phash_attack", image_input_dir, image_output_dir, PHASH, PHASH_HYPERPARAMETERS_SWEEP, hamming_threshold=28, colormode="grayscale", acceptance_func="step", quant_func=None, lpips_func=F_LPIPS, num_reps=10, attack_cycles=50, device=dev, delta_scaledown=True)
     #engine.add_attack("pdq_attack", image_input_dir, image_output_dir, PDQ, PDQ_HYPERPARAMETERS_SWEEP, hamming_threshold=80, colormode="grayscale", acceptance_func="step", quant_func=None, lpips_func=F_LPIPS, num_reps=10, attack_cycles=50, device=dev, delta_scaledown=True)
