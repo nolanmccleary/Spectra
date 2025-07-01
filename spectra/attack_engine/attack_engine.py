@@ -11,7 +11,7 @@ import torch
 from torchvision.transforms import ToPILImage
 
 
-# TODO: Handle fail mode tracking better
+# TODO: Null guard, fix lack of safe scale wothout delta scaledown.
 class Attack_Engine:
 
     def __init__(self, verbose):
@@ -67,7 +67,7 @@ class Attack_Engine:
 
             if i > 0:
                 self.attack_log[attack_tag]["average_results"] = {
-                    "average_phash_hamming"         : sum_phash_hamming / i,
+                    "average_phash_hamming"         : sum_phash_hamming / i,    #TODO: Change naming from 'average' to 'mean'
                     "average_ahash_hamming"         : sum_ahash_hamming / i,
                     "average_dhash_hamming"         : sum_dhash_hamming / i,
                     "average_pdq_hamming"           : sum_pdq_hamming / i,
@@ -205,7 +205,7 @@ class Attack_Object:
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
-        self.min_steps = self.attack_cycles
+        min_avg_steps = self.attack_cycles
         ret_set = (None, None, None, None)
 
         self.log(f"Beta sweep across: {self.betas}\n")
@@ -214,6 +214,12 @@ class Attack_Object:
         for beta in self.betas:
             for scale_factor in self.scale_factors:
                 
+                sum_steps = 0
+                sum_hamming = 0
+
+                best_output = (None, None)
+                self.min_steps = self.attack_cycles
+
                 for rep in range(self.num_reps):
                     step_count, curr_delta, accepted = self.optimizer.get_delta(
                     step_coeff=self.step_coeff,
@@ -222,17 +228,29 @@ class Attack_Object:
                     num_perturbations=self.num_pertubations,
                     beta=beta, acceptance_func=self.acceptance_func)
 
-                    print((rep, step_count, self.min_steps, beta, scale_factor))
+                    self.log((rep, step_count, self.min_steps, beta, scale_factor))
+                    
+                    sum_steps += step_count
+                    sum_hamming += self.current_hamming
+                    
                     if accepted or ret_set[3] is None:
-                        ret_set = (beta, scale_factor, step_count, curr_delta)
+                        best_output = (step_count, curr_delta)
 
+                average_steps = sum_steps / self.num_reps
+                average_hamming = sum_hamming / self.num_reps
+
+                if average_hamming >= self.hamming_threshold and average_steps < min_avg_steps:
+                    ret_set = best_output + (beta, scale_factor)
+                    min_avg_steps = average_steps
+
+                self.log((average_steps, min_avg_steps, beta, scale_factor))
 
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
-        upsampled_delta = ret_set[3]
+        upsampled_delta = ret_set[1]
         
         if self.resize_flag:
-            optimal_delta = ret_set[3].view(3 if self.colormode == "rgb" else 1, self.height, self.width)
+            optimal_delta = ret_set[1].view(3 if self.colormode == "rgb" else 1, self.height, self.width)
             upsampled_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
         
         rgb_delta = self.inversion_func(self.rgb_tensor, upsampled_delta)
@@ -304,9 +322,9 @@ class Attack_Object:
                 "hamming_distance"      : self.output_hamming,
                 "lpips"                 : self.output_lpips,
                 "l2"                    : self.output_l2,
-                "num_steps"             : ret_set[2],
-                "ideal_scale_factor"    : ret_set[1],
-                "ideal_beta"            : ret_set[0]
+                "num_steps"             : ret_set[0],
+                "ideal_scale_factor"    : ret_set[3],
+                "ideal_beta"            : ret_set[2]
             },
             "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, self.verbose)
         }
