@@ -53,16 +53,17 @@ class Attack_Engine:
             sum_num_steps = 0
 
             for image in self.attack_log[attack_tag]["per_image_results"].values():
-                sum_beta            += float(image["pre_validation"]["ideal_beta"])
-                sum_scale_factor    += float(image["pre_validation"]["ideal_scale_factor"])
-                sum_num_steps       += float(image["pre_validation"]["num_steps"])
-                sum_phash_hamming   += int(image["post_validation"]["phash_hamming"])
-                sum_ahash_hamming   += int(image["post_validation"]["ahash_hamming"])
-                sum_dhash_hamming   += int(image["post_validation"]["dhash_hamming"])
-                sum_pdq_hamming     += int(image["post_validation"]["pdq_hamming"])
-                sum_lpips           += float(image["post_validation"]["lpips"])
-                sum_l2              += float(image["post_validation"]["l2"])
-                i                   += 1
+                if image["pre_validation"]["success"] == True:
+                    sum_beta            += float(image["pre_validation"]["ideal_beta"])
+                    sum_scale_factor    += float(image["pre_validation"]["ideal_scale_factor"])
+                    sum_num_steps       += float(image["pre_validation"]["num_steps"])
+                    sum_phash_hamming   += int(image["post_validation"]["phash_hamming"])
+                    sum_ahash_hamming   += int(image["post_validation"]["ahash_hamming"])
+                    sum_dhash_hamming   += int(image["post_validation"]["dhash_hamming"])
+                    sum_pdq_hamming     += int(image["post_validation"]["pdq_hamming"])
+                    sum_lpips           += float(image["post_validation"]["lpips"])
+                    sum_l2              += float(image["post_validation"]["l2"])
+                    i                   += 1
 
 
             if i > 0:
@@ -246,73 +247,83 @@ class Attack_Object:
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
         output_delta = ret_set[1]
-        if self.resize_flag:
-            optimal_delta = ret_set[1].view(3 if self.colormode == "rgb" else 1, self.height, self.width)
-            output_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
         
-        rgb_delta = self.inversion_func(self.rgb_tensor, output_delta)
-        safe_scale = anal_clamp(self.rgb_tensor, rgb_delta, 0.0, 1.0)
+        if output_delta is not None:
 
-        self.output_tensor = self.rgb_tensor + rgb_delta * safe_scale
-
-        cand_targ = self.conversion_func(self.output_tensor)
-        if self.resize_flag:
-            cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
-
-        self.output_hash = self.func(self.quant_func(cand_targ))
-        self.output_hamming = self.original_hash.ne(self.output_hash.to(self.original_hash.device)).sum().item()
-        self.attack_success = self.output_hamming >= self.hamming_threshold
-
-        ################################# DELTA SCALEDOWN (OPTIONAL) #############################################
-
-        if self.delta_scaledown:
-            scale_factors = torch.linspace(0.0, 1.0, steps=50)
+            if self.resize_flag:
+                optimal_delta = output_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
+                output_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
             
-            for scale in scale_factors:
-                cand_delta = rgb_delta * scale
-                cand_tensor = self.rgb_tensor + cand_delta
-                cand_targ = self.conversion_func(cand_tensor.clone())
+            rgb_delta = self.inversion_func(self.rgb_tensor, output_delta)
+            safe_scale = anal_clamp(self.rgb_tensor, rgb_delta, 0.0, 1.0)
 
-                if self.resize_flag:
-                    cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+            self.output_tensor = self.rgb_tensor + rgb_delta * safe_scale
 
-                cand_tensor = self.quant_func(cand_tensor)
-                cand_targ = self.quant_func(cand_targ)
+            cand_targ = self.conversion_func(self.output_tensor)
+            if self.resize_flag:
+                cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
-                cand_hash = self.func(cand_targ.to(self.func_device))
-                cand_ham = cand_hash.ne(self.original_hash).sum().item()
-                if cand_ham >= self.hamming_threshold:
-                    self.output_tensor = cand_tensor
-                    self.output_hash = cand_hash
-                    self.output_hamming = cand_ham
-                    self.attack_success = True
-                    break
+            self.output_hash = self.func(self.quant_func(cand_targ))
+            self.output_hamming = self.original_hash.ne(self.output_hash.to(self.original_hash.device)).sum().item()
+            self.attack_success = self.output_hamming >= self.hamming_threshold
+
+            ################################# DELTA SCALEDOWN (OPTIONAL) #############################################
+
+            if self.delta_scaledown:
+                scale_factors = torch.linspace(0.0, 1.0, steps=50)
+                
+                for scale in scale_factors:
+                    cand_delta = rgb_delta * scale
+                    cand_tensor = self.rgb_tensor + cand_delta
+                    cand_targ = self.conversion_func(cand_tensor.clone())
+
+                    if self.resize_flag:
+                        cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
+
+                    cand_tensor = self.quant_func(cand_tensor)
+                    cand_targ = self.quant_func(cand_targ)
+
+                    cand_hash = self.func(cand_targ.to(self.func_device))
+                    cand_ham = cand_hash.ne(self.original_hash).sum().item()
+                    if cand_ham >= self.hamming_threshold:
+                        self.output_tensor = cand_tensor
+                        self.output_hash = cand_hash
+                        self.output_hamming = cand_ham
+                        self.attack_success = True
+                        break
 
 
-        ################################# END OF DELTA SCALEDOWN  ###################################################
+            ################################# END OF DELTA SCALEDOWN  ###################################################
 
-        self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
-        self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
-        
-        out = self.output_tensor.detach()
-        output_image = ToPILImage()(out)
-        output_image.save(output_image_path)
-        
-        self.log(f"Saved attacked image to {output_image_path}")
+            self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
+            self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
+            
+            out = self.output_tensor.detach()
+            output_image = ToPILImage()(out)
+            output_image.save(output_image_path)
+            
+            self.log(f"Saved attacked image to {output_image_path}")
 
-        self.log(f"Success status: {self.attack_success}")
+            self.log(f"Success status: {self.attack_success}")
+
+
+        def null_guard(input):
+            if input is None:
+                return "N/A"
+            else:
+                return input
 
         return {
             "pre_validation": {
-                "success"               : self.attack_success,
-                "original_hash"         : to_hex(self.original_hash),
-                "output_hash"           : to_hex(self.output_hash) if self.output_hash is not None else None,
-                "hamming_distance"      : self.output_hamming,
-                "lpips"                 : self.output_lpips,
-                "l2"                    : self.output_l2,
-                "num_steps"             : ret_set[0],
-                "ideal_scale_factor"    : ret_set[3],
-                "ideal_beta"            : ret_set[2]
+                "success"               : null_guard(self.attack_success),
+                "original_hash"         : null_guard(to_hex(self.original_hash)),
+                "output_hash"           : null_guard(to_hex(self.output_hash) if self.output_hash is not None else None),
+                "hamming_distance"      : null_guard(self.output_hamming),
+                "lpips"                 : null_guard(self.output_lpips),
+                "l2"                    : null_guard(self.output_l2),
+                "num_steps"             : null_guard(ret_set[0]),
+                "ideal_scale_factor"    : null_guard(ret_set[3]),
+                "ideal_beta"            : null_guard(ret_set[2])
             },
             "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, self.verbose)
         }
