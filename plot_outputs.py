@@ -10,27 +10,29 @@ ATTACKS = [
     ('pdq_attack',  'PDQ',   'yellow'),
 ]
 JSON_FILE = 'spectra_out.json'
-BINS = 20  # you can tweak per‐subplot if you like
+BINS = 40  # you can tweak per‐subplot if you like
 
 def load_data(filename):
     with open(filename, 'r') as f:
         data = json.load(f)
 
     # filter to only those attacks present in the JSON
-    present = [ (k, lab, col) for (k, lab, col) in ATTACKS if k in data ]
-    betas  = {k: [] for k,_,_ in present}
-    scales = {k: [] for k,_,_ in present}
+    present = [ (attack, lab, col) for (attack, lab, col) in ATTACKS if attack in data ]
+    betas  = {attack: [] for attack,_,_ in present}
+    scales = {attack: [] for attack,_,_ in present}
 
-    for key,_,_ in present:
-        per_image = data[key].get("per_image_results", {})
-        for img, res in per_image.items():
-            pre = res.get("pre_validation", {})
-            if "ideal_beta" in pre:
-                betas[key].append(pre["ideal_beta"])
-            if "ideal_scale_factor" in pre:
-                scales[key].append(pre["ideal_scale_factor"])
+    for attack,_,_ in present:
+        per_image_results = data[attack].get("per_image_results", {})
+        for image, result in per_image_results.items():
+            pre = result.get("pre_validation", {})
+            if pre["success"] == True:
+                if "ideal_beta" in pre:
+                    betas[attack].append(pre["ideal_beta"])
+                if "ideal_scale_factor" in pre:
+                    scales[attack].append(pre["ideal_scale_factor"])
 
     return present, betas, scales
+
 
 def annotate_stats(ax, data):
     """Compute & annotate μ, median, σ², σ on the given axes."""

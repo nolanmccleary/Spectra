@@ -234,7 +234,7 @@ class Attack_Object:
                     
                     sum_steps += step_count
                     
-                    if accepted or ret_set[3] is None:          #We get the acceptance best out of our entire sweep space for our output tensor
+                    if accepted or ret_set[1] is None:          #We get the acceptance best out of our entire sweep space for our output tensor
                         best_output = (step_count, curr_delta)
 
                 average_steps = sum_steps / self.num_reps
@@ -313,7 +313,7 @@ class Attack_Object:
             else:
                 return input
 
-        return {
+        out_log = {
             "pre_validation": {
                 "success"               : null_guard(self.attack_success),
                 "original_hash"         : null_guard(to_hex(self.original_hash)),
@@ -327,3 +327,6 @@ class Attack_Object:
             },
             "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, self.verbose)
         }
+
+        self.log(out_log)
+        return out_log
