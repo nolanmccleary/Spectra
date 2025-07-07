@@ -1,0 +1,36 @@
+attacks:
+- acceptance_func: lpips
+  attack_cycles: 10000
+  colormode: grayscale
+  delta_scaledown: true
+  device: cpu
+  gate: null
+  hamming_threshold: 24
+  hyperparameters:
+    alpha: 2.9
+    beta: !!python/tuple
+    - 0.9
+    - null
+    - null
+    scale_factor: !!python/tuple
+    - 0.4
+    - null
+    - null
+    step_coeff: 0.0001
+  input_dir: null
+  lpips_func: null
+  num_reps: 1
+  output_dir: null
+  quant_func: null
+  verbose: false
+description: Example experiment with all hash functions
+device: cpu
+input_dir: sample_images
+metadata:
+  created_at: '2025-07-07T16:07:56.463890'
+  version: '1.0'
+name: Example Experiment
+output_dir: output
+output_name: spectra_out
+save_config: true
+verbose: true

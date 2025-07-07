@@ -18,8 +18,8 @@ SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 
 
 @dataclass
-class AttackConfig:
-    """Configuration for a single attack"""
+class AttackRunConfig:
+    """Configuration for a single attack run"""
     images: List[str]
     input_dir: str
     output_dir: str
@@ -30,7 +30,7 @@ class Attack_Engine:
     """Manages multiple attacks and their execution"""
 
     def __init__(self, verbose: str):
-        self.attacks: Dict[str, AttackConfig] = {}
+        self.attacks: Dict[str, AttackRunConfig] = {}
         self.attack_log: Dict[str, Dict[str, Any]] = {}
         self.verbose = verbose
 
@@ -48,10 +48,33 @@ class Attack_Engine:
         ]
         
         attack_object = Attack_Object(*args, **kwargs, verbose=self.verbose)
-        self.attacks[attack_tag] = AttackConfig(
+        self.attacks[attack_tag] = AttackRunConfig(
             images=images,
             input_dir=input_image_dirname,
             output_dir=output_image_dirname,
+            attack_object=attack_object
+        )
+    
+    def add_attack_from_config(self, attack_tag: str, hash_wrapper, config, lpips_func=None) -> None:
+        """Register a new attack configuration using AttackConfig object"""
+        input_path = Path(config.input_dir or "sample_images")
+        images = [
+            f.name for f in input_path.iterdir() 
+            if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
+        ]
+        
+        # Create a copy of config and set LPIPS function if provided
+        if lpips_func is not None:
+            config_dict = config.dict()
+            config_dict['lpips_func'] = lpips_func
+            from spectra.config import AttackConfig
+            config = AttackConfig(**config_dict)
+        
+        attack_object = Attack_Object(hash_wrapper, config=config)
+        self.attacks[attack_tag] = AttackRunConfig(
+            images=images,
+            input_dir=config.input_dir or "sample_images",
+            output_dir=config.output_dir or "output",
             attack_object=attack_object
         )
 
@@ -126,11 +149,63 @@ class Attack_Object:
     VALID_VERBOSITIES = {"on", "off"}
     DELTA_SCALEDOWN_STEPS = 50
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, 
-                 colormode: str, acceptance_func: str, quant_func: str, lpips_func, num_reps: int, 
-                 attack_cycles: int, device: str, delta_scaledown: bool = False, gate=None, 
-                 verbose: str = "off"):
-        """Initialize attack configuration"""
+    def __init__(self, hash_wrapper: Hash_Wrapper, config=None, **kwargs):
+        """Initialize attack configuration
+        
+        Args:
+            hash_wrapper: Hash function wrapper
+            config: AttackConfig object (preferred) or individual parameters via kwargs
+        """
+        if config is not None:
+            # Use configuration object
+            self._init_from_config(hash_wrapper, config)
+        else:
+            # Use legacy kwargs (for backward compatibility)
+            self._init_from_kwargs(hash_wrapper, **kwargs)
+    
+    def _init_from_config(self, hash_wrapper: Hash_Wrapper, config):
+        """Initialize from AttackConfig object"""
+        from spectra.config import AttackConfig
+        
+        if not isinstance(config, AttackConfig):
+            raise ValueError("config must be an AttackConfig object")
+        
+        # Core attack parameters
+        self.hamming_threshold = config.hamming_threshold
+        self.colormode = config.colormode
+        self.device = config.device
+        self.verbose = "on" if config.verbose else "off"
+        self.delta_scaledown = config.delta_scaledown
+        self.gate = config.gate
+        
+        # Hash function setup
+        self._setup_hash_function(hash_wrapper)
+        
+        # Function generators
+        self.acceptance_func = generate_acceptance(self, config.acceptance_func)
+        self.quant_func = generate_quant(config.quant_func)
+        
+        # Attack parameters
+        self.num_reps = config.num_reps
+        self.attack_cycles = config.attack_cycles
+        self.resize_flag = self.resize_height > 0 and self.resize_width > 0
+        
+        # LPIPS setup
+        self._setup_lpips(config.lpips_func)
+        self.l2_func = l2_delta
+        
+        # Hyperparameters
+        self._setup_hyperparameters_from_config(config.hyperparameters)
+        
+        # Optimization packages
+        self.func_package = (self.func, bool_tensor_delta, self.quant_func)
+        self.device_package = (self.func_device, self.device, self.device)
+    
+    def _init_from_kwargs(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, 
+                         colormode: str, acceptance_func: str, quant_func: str, lpips_func, num_reps: int, 
+                         attack_cycles: int, device: str, delta_scaledown: bool = False, gate=None, 
+                         verbose: str = "off"):
+        """Initialize from individual parameters (legacy support)"""
         self._validate_inputs(device, verbose)
         
         # Core attack parameters
@@ -184,7 +259,12 @@ class Attack_Object:
     def _setup_lpips(self, lpips_func) -> None:
         """Setup LPIPS function for perceptual similarity"""
         if lpips_func is not None:
-            self.lpips_func = lpips_func
+            # Handle both function objects and string names
+            if callable(lpips_func):
+                self.lpips_func = lpips_func
+            else:
+                # Assume it's a string name, use default
+                self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
         else:
             self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
 
@@ -194,6 +274,24 @@ class Attack_Object:
         self.betas = create_sweep(*hyperparameter_set["beta"])
         self.step_coeff = hyperparameter_set["step_coeff"]
         self.scale_factors = create_sweep(*hyperparameter_set["scale_factor"])
+    
+    def _setup_hyperparameters_from_config(self, hyperparameters) -> None:
+        """Setup hyperparameters from HyperparameterConfig object"""
+        self.alpha = hyperparameters.alpha
+        
+        # Handle beta (can be single value or sweep parameters)
+        if isinstance(hyperparameters.beta, (list, tuple)):
+            self.betas = create_sweep(*hyperparameters.beta)
+        else:
+            self.betas = [hyperparameters.beta]
+        
+        self.step_coeff = hyperparameters.step_coeff
+        
+        # Handle scale_factor (can be single value or sweep parameters)
+        if isinstance(hyperparameters.scale_factor, (list, tuple)):
+            self.scale_factors = create_sweep(*hyperparameters.scale_factor)
+        else:
+            self.scale_factors = [hyperparameters.scale_factor]
 
 
     def log(self, msg: str) -> None:

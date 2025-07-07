@@ -1,0 +1,100 @@
+from pydantic import BaseModel, Field, validator
+from typing import List, Optional, Union, Tuple, Any
+from enum import Enum
+
+
+class Device(str, Enum):
+    """Supported devices for computation"""
+    CPU = "cpu"
+    CUDA = "cuda" 
+    MPS = "mps"
+
+
+class ColorMode(str, Enum):
+    """Supported color modes"""
+    RGB = "rgb"
+    GRAYSCALE = "grayscale"
+
+
+class HyperparameterConfig(BaseModel):
+    """Configuration for attack hyperparameters"""
+    alpha: float = Field(..., gt=0, description="Alpha parameter for perturbations")
+    beta: Union[float, Tuple[float, Optional[float], Optional[float]]] = Field(
+        ..., description="Beta value or sweep parameters (start, end, step)"
+    )
+    step_coeff: float = Field(..., gt=0, description="Step coefficient")
+    scale_factor: Union[float, Tuple[float, Optional[float], Optional[float]]] = Field(
+        ..., description="Scale factor value or sweep parameters (start, end, step)"
+    )
+    
+    @validator('beta', 'scale_factor')
+    def validate_sweep_values(cls, v):
+        if isinstance(v, tuple):
+            if len(v) != 3:
+                raise ValueError("Sweep parameters must be (start, end, step)")
+            start, end, step = v
+            if start is None or (end is not None and start >= end):
+                raise ValueError("Invalid sweep range")
+        return v
+
+
+class AttackConfig(BaseModel):
+    """Configuration for a single attack"""
+    # Core parameters
+    hamming_threshold: int = Field(..., ge=0, description="Minimum hamming distance required")
+    colormode: ColorMode = Field(default=ColorMode.GRAYSCALE)
+    device: Device = Field(default=Device.CPU)
+    
+    # Attack parameters
+    num_reps: int = Field(..., gt=0, description="Number of repetitions")
+    attack_cycles: int = Field(..., gt=0, description="Number of attack cycles")
+    
+    # Optional features
+    delta_scaledown: bool = Field(default=False, description="Enable delta scaledown")
+    gate: Optional[str] = Field(default=None, description="Gate function name")
+    verbose: bool = Field(default=False, description="Enable verbose logging")
+    
+    # Function specifications
+    acceptance_func: str = Field(..., description="Acceptance function name")
+    quant_func: Optional[str] = Field(default=None, description="Quantization function name")
+    
+    # Hyperparameters
+    hyperparameters: HyperparameterConfig
+    
+    # LPIPS (optional) - can be string name or function object
+    lpips_func: Optional[Union[str, Any]] = Field(default=None, description="LPIPS function name or function object")
+    
+    # Input/Output paths (optional, can be set later)
+    input_dir: Optional[str] = Field(default=None, description="Input directory path")
+    output_dir: Optional[str] = Field(default=None, description="Output directory path")
+    
+    class Config:
+        """Pydantic configuration"""
+        use_enum_values = True
+        validate_assignment = True
+
+
+class ExperimentConfig(BaseModel):
+    """Configuration for a complete experiment"""
+    name: str = Field(..., description="Experiment name")
+    description: Optional[str] = Field(default=None, description="Experiment description")
+    
+    # Global settings
+    device: Device = Field(default=Device.CPU)
+    verbose: bool = Field(default=False)
+    
+    # Paths
+    input_dir: str = Field(..., description="Input directory path")
+    output_dir: str = Field(..., description="Output directory path")
+    
+    # Attacks
+    attacks: List[AttackConfig] = Field(..., min_items=1, description="List of attack configurations")
+    
+    # Output settings
+    save_config: bool = Field(default=True, description="Save configuration with results")
+    output_name: str = Field(default="spectra_out", description="Output filename prefix")
+    
+    class Config:
+        """Pydantic configuration"""
+        use_enum_values = True
+        validate_assignment = True 

@@ -1,11 +1,3 @@
-"""Image-space conversion / inversion helpers.
-
-This file is purely a code move from the former `spectra/utils/utils.py` so
-behaviour is unchanged.  Keeping these functions together makes the
-monolithic utils.py easier to maintain while all public symbols continue to
-be re-exported from `spectra.utils.utils`.  **No tensor geometry or algorithmic
-behaviour has been altered.**
-"""
 from __future__ import annotations
 
 from typing import Callable, Dict

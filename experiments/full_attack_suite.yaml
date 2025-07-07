@@ -1,0 +1,89 @@
+name: "Full Attack Suite Experiment"
+description: "Comprehensive adversarial attacks on all hash functions"
+device: "cpu"
+verbose: true
+input_dir: "sample_images"
+output_dir: "output"
+save_config: true
+output_name: "full_attack_suite"
+
+attacks:
+  - hamming_threshold: 24
+    colormode: "grayscale"
+    device: "cpu"
+    num_reps: 1
+    attack_cycles: 10000
+    delta_scaledown: true
+    gate: null
+    verbose: true
+    acceptance_func: "lpips"
+    quant_func: null
+    lpips_func: null
+    input_dir: null
+    output_dir: null
+    hyperparameters:
+      alpha: 2.9
+      beta: [0.9, null, null]
+      step_coeff: 0.0001
+      scale_factor: [0.4, null, null]
+
+  - hamming_threshold: 24
+    colormode: "grayscale"
+    device: "cpu"
+    num_reps: 1
+    attack_cycles: 10000
+    delta_scaledown: true
+    gate: null
+    verbose: true
+    acceptance_func: "lpips"
+    quant_func: null
+    lpips_func: null
+    input_dir: null
+    output_dir: null
+    hyperparameters:
+      alpha: 2.9
+      beta: [0.85, null, null]
+      step_coeff: 0.0001
+      scale_factor: [0.3, null, null]
+
+  - hamming_threshold: 28
+    colormode: "grayscale"
+    device: "cpu"
+    num_reps: 1
+    attack_cycles: 10000
+    delta_scaledown: true
+    gate: null
+    verbose: true
+    acceptance_func: "lpips"
+    quant_func: null
+    lpips_func: null
+    input_dir: null
+    output_dir: null
+    hyperparameters:
+      alpha: 2.9
+      beta: [0.9, null, null]
+      step_coeff: 0.00001
+      scale_factor: [0.5, null, null]
+
+  - hamming_threshold: 80
+    colormode: "grayscale"
+    device: "cpu"
+    num_reps: 1
+    attack_cycles: 10000
+    delta_scaledown: true
+    gate: null
+    verbose: true
+    acceptance_func: "lpips"
+    quant_func: null
+    lpips_func: null
+    input_dir: null
+    output_dir: null
+    hyperparameters:
+      alpha: 2.9
+      beta: [0.9, null, null]
+      step_coeff: 0.000002
+      scale_factor: [0.5, null, null]
+
+metadata:
+  created_at: "2024-01-01T00:00:00"
+  version: "1.0" 
