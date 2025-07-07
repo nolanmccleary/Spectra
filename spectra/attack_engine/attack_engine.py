@@ -9,150 +9,250 @@ from PIL import Image
 from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, generate_acceptance, generate_conversion, generate_inversion, generate_quant, create_sweep
 import torch
 from torchvision.transforms import ToPILImage
+from dataclasses import dataclass
+from typing import List, Dict, Any
 
 
-# TODO: Null guard, fix lack of safe scale wothout delta scaledown.
+# Constants
+SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
+
+
+@dataclass
+class AttackConfig:
+    """Configuration for a single attack"""
+    images: List[str]
+    input_dir: str
+    output_dir: str
+    attack_object: 'Attack_Object'
+
+
 class Attack_Engine:
+    """Manages multiple attacks and their execution"""
 
-    def __init__(self, verbose):
-        self.attacks = {}
-        self.attack_log = {}
+    def __init__(self, verbose: str):
+        self.attacks: Dict[str, AttackConfig] = {}
+        self.attack_log: Dict[str, Dict[str, Any]] = {}
         self.verbose = verbose
 
-
-    def log(self, msg):
+    def log(self, msg: str) -> None:
+        """Log message if verbose mode is enabled"""
         if self.verbose == "on":
             print(msg)
 
+    def add_attack(self, attack_tag: str, input_image_dirname: str, output_image_dirname: str, *args, **kwargs) -> None:
+        """Register a new attack configuration"""
+        input_path = Path(input_image_dirname)
+        images = [
+            f.name for f in input_path.iterdir() 
+            if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
+        ]
+        
+        attack_object = Attack_Object(*args, **kwargs, verbose=self.verbose)
+        self.attacks[attack_tag] = AttackConfig(
+            images=images,
+            input_dir=input_image_dirname,
+            output_dir=output_image_dirname,
+            attack_object=attack_object
+        )
 
-    def add_attack(self, attack_tag, input_image_dirname, output_image_dirname, *args, **kwargs):
-        dir = Path(input_image_dirname)
-        images = [f.name for f in dir.iterdir() if f.suffix.lower() in [".png", ".jpg", ".jpeg"]]
-        self.attacks[attack_tag] = (images, input_image_dirname, output_image_dirname, Attack_Object(*args, **kwargs, verbose=self.verbose))
-
-
-    def run_attacks(self, output_name="spectra_out"):
-        # run each registered attack
-        for attack_tag in self.attacks.keys():
-            self.attack_log[attack_tag] = {"per_image_results" : {}, "average_results" : {}}
-            for image in self.attacks[attack_tag][0]:
-                input_image = f"{self.attacks[attack_tag][1]}/{image}"
-                output_image = f"{self.attacks[attack_tag][2]}/{attack_tag}_{image}"
-                self.attack_log[attack_tag]["per_image_results"][image] = self.attacks[attack_tag][3].run_attack(input_image, output_image)
+    def _calculate_averages(self, results: List[Dict[str, Any]]) -> Dict[str, float]:
+        """Calculate average metrics from attack results"""
+        successful_results = [r for r in results if r["pre_validation"]["success"] is True]
+        
+        if not successful_results:
+            return {}
+        
+        metrics = {
+            "phash_hamming": 0,
+            "ahash_hamming": 0,
+            "dhash_hamming": 0,
+            "pdq_hamming": 0,
+            "lpips": 0.0,
+            "l2": 0.0,
+            "ideal_beta": 0,
+            "ideal_scale_factor": 0,
+            "num_steps": 0
+        }
+        
+        for result in successful_results:
+            pre_val = result["pre_validation"]
+            post_val = result["post_validation"]
             
-            i = 0
-            sum_phash_hamming = 0
-            sum_ahash_hamming = 0
-            sum_dhash_hamming = 0
-            sum_pdq_hamming = 0
-            sum_lpips = 0.0
-            sum_l2 = 0.0
+            metrics["phash_hamming"] += int(post_val["phash_hamming"])
+            metrics["ahash_hamming"] += int(post_val["ahash_hamming"])
+            metrics["dhash_hamming"] += int(post_val["dhash_hamming"])
+            metrics["pdq_hamming"] += int(post_val["pdq_hamming"])
+            metrics["lpips"] += float(post_val["lpips"])
+            metrics["l2"] += float(post_val["l2"])
+            metrics["ideal_beta"] += float(pre_val["ideal_beta"])
+            metrics["ideal_scale_factor"] += float(pre_val["ideal_scale_factor"])
+            metrics["num_steps"] += float(pre_val["num_steps"])
+        
+        count = len(successful_results)
+        return {f"average_{k}": v / count for k, v in metrics.items()}
 
-            sum_beta = 0
-            sum_scale_factor = 0
-            sum_num_steps = 0
+    def run_attacks(self, output_name: str = "spectra_out") -> None:
+        """Execute all registered attacks and save results"""
+        for attack_tag, config in self.attacks.items():
+            self.attack_log[attack_tag] = {
+                "per_image_results": {},
+                "average_results": {}
+            }
+            
+            # Run attack on each image
+            for image_name in config.images:
+                input_path = f"{config.input_dir}/{image_name}"
+                output_path = f"{config.output_dir}/{attack_tag}_{image_name}"
+                
+                result = config.attack_object.run_attack(input_path, output_path)
+                self.attack_log[attack_tag]["per_image_results"][image_name] = result
+            
+            # Calculate averages
+            results_list = list(self.attack_log[attack_tag]["per_image_results"].values())
+            self.attack_log[attack_tag]["average_results"] = self._calculate_averages(results_list)
 
-            for image in self.attack_log[attack_tag]["per_image_results"].values():
-                if image["pre_validation"]["success"] == True:
-                    sum_beta            += float(image["pre_validation"]["ideal_beta"])
-                    sum_scale_factor    += float(image["pre_validation"]["ideal_scale_factor"])
-                    sum_num_steps       += float(image["pre_validation"]["num_steps"])
-                    sum_phash_hamming   += int(image["post_validation"]["phash_hamming"])
-                    sum_ahash_hamming   += int(image["post_validation"]["ahash_hamming"])
-                    sum_dhash_hamming   += int(image["post_validation"]["dhash_hamming"])
-                    sum_pdq_hamming     += int(image["post_validation"]["pdq_hamming"])
-                    sum_lpips           += float(image["post_validation"]["lpips"])
-                    sum_l2              += float(image["post_validation"]["l2"])
-                    i                   += 1
-
-
-            if i > 0:
-                self.attack_log[attack_tag]["average_results"] = {
-                    "average_phash_hamming"         : sum_phash_hamming / i,    #TODO: Change naming from 'average' to 'mean'
-                    "average_ahash_hamming"         : sum_ahash_hamming / i,
-                    "average_dhash_hamming"         : sum_dhash_hamming / i,
-                    "average_pdq_hamming"           : sum_pdq_hamming / i,
-                    "average_lpips"                 : sum_lpips / i,
-                    "average_l2"                    : sum_l2 / i,
-                    "average_ideal_beta"            : sum_beta / i,
-                    "average_ideal_scale_factor"    : sum_scale_factor / i,
-                    "average_num_steps"             : sum_num_steps / i         
-                }
-
-
+        # Save results to JSON
         json_filename = f"{output_name}.json"
         with open(json_filename, 'w') as f:
             json.dump(self.attack_log, f, indent=4)
         print(f"Attack log saved to {json_filename}")
 
 
-
-#TODO: Refactor input set
 class Attack_Object:
+    """Executes adversarial attacks on images using gradient-based optimization"""
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold, colormode, acceptance_func, quant_func, lpips_func, num_reps, attack_cycles, device, delta_scaledown=False, gate=None, verbose="off"):
-        valid_devices = {"cpu", "cuda", "mps"}
-        valid_verbosities = {"on", "off"}
-        if device not in valid_devices:
-            raise ValueError(f"Invalid device '{device}'. Expected one of: {valid_devices}")
-        if verbose not in valid_verbosities:
-            raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {valid_verbosities}")
+    # Constants
+    VALID_DEVICES = {"cpu", "cuda", "mps"}
+    VALID_VERBOSITIES = {"on", "off"}
+    DELTA_SCALEDOWN_STEPS = 50
 
+    def __init__(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, 
+                 colormode: str, acceptance_func: str, quant_func: str, lpips_func, num_reps: int, 
+                 attack_cycles: int, device: str, delta_scaledown: bool = False, gate=None, 
+                 verbose: str = "off"):
+        """Initialize attack configuration"""
+        self._validate_inputs(device, verbose)
+        
+        # Core attack parameters
         self.hamming_threshold = hamming_threshold
         self.colormode = colormode
-
         self.device = device
         self.verbose = verbose
-
-        self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()
-        if device in available_devices:
-            self.func_device = device
-        else:
-            self.log(f"Warning, current hash function '{hash_wrapper.get_name()}' does not support the chosen device {device}. Defaulting to CPU for hash function calls; this will add overhead.")
-            self.func_device = "cpu"
+        self.delta_scaledown = delta_scaledown
+        self.gate = gate
         
+        # Hash function setup
+        self._setup_hash_function(hash_wrapper)
+        
+        # Function generators
         self.acceptance_func = generate_acceptance(self, acceptance_func)
-        
         self.quant_func = generate_quant(quant_func)
-
+        
+        # Attack parameters
         self.num_reps = num_reps
         self.attack_cycles = attack_cycles
-        self.resize_flag = True if self.resize_height > 0 and self.resize_width > 0 else False
+        self.resize_flag = self.resize_height > 0 and self.resize_width > 0
+        
+        # LPIPS setup
+        self._setup_lpips(lpips_func)
+        self.l2_func = l2_delta
+        
+        # Hyperparameters
+        self._setup_hyperparameters(hyperparameter_set)
+        
+        # Optimization packages
+        self.func_package = (self.func, bool_tensor_delta, self.quant_func)
+        self.device_package = (self.func_device, self.device, self.device)
 
-        if lpips_func != None:
+    def _validate_inputs(self, device: str, verbose: str) -> None:
+        """Validate input parameters"""
+        if device not in self.VALID_DEVICES:
+            raise ValueError(f"Invalid device '{device}'. Expected one of: {self.VALID_DEVICES}")
+        if verbose not in self.VALID_VERBOSITIES:
+            raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {self.VALID_VERBOSITIES}")
+
+    def _setup_hash_function(self, hash_wrapper: Hash_Wrapper) -> None:
+        """Setup hash function and device compatibility"""
+        self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()
+        
+        if self.device in available_devices:
+            self.func_device = self.device
+        else:
+            self.log(f"Warning, current hash function '{hash_wrapper.get_name()}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
+            self.func_device = "cpu"
+
+    def _setup_lpips(self, lpips_func) -> None:
+        """Setup LPIPS function for perceptual similarity"""
+        if lpips_func is not None:
             self.lpips_func = lpips_func
         else:
             self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
-        
-        self.l2_func = l2_delta
 
-        self.alpha, self.betas, self.step_coeff, self.scale_factors = hyperparameter_set["alpha"], create_sweep(*hyperparameter_set["beta"]), hyperparameter_set["step_coeff"], create_sweep(*hyperparameter_set["scale_factor"])
-        self.func_package = (self.func, bool_tensor_delta, self.quant_func)
-        self.device_package = (self.func_device, self.device, self.device)
-        self.gate = gate
-        self.delta_scaledown = delta_scaledown
+    def _setup_hyperparameters(self, hyperparameter_set: dict) -> None:
+        """Setup hyperparameters from configuration"""
+        self.alpha = hyperparameter_set["alpha"]
+        self.betas = create_sweep(*hyperparameter_set["beta"])
+        self.step_coeff = hyperparameter_set["step_coeff"]
+        self.scale_factors = create_sweep(*hyperparameter_set["scale_factor"])
 
 
-    def log(self, msg):
+    def log(self, msg: str) -> None:
+        """Log message if verbose mode is enabled"""
         if self.verbose == "on":
             print(msg)
 
+    def _reset_state(self) -> None:
+        """Reset all state variables for a new attack"""
+        # Input tensors
+        self.rgb_tensor = None
+        self._tensor = None
+        self.original_hash = None
+        
+        # Dimensions
+        self.original_height = None
+        self.original_width = None
+        self.height = None
+        self.width = None
+        
+        # Output tensors
+        self.output_tensor = None
+        self.output_hash = None
+        self.output_hamming = None
+        
+        # Metrics
+        self.output_lpips = 1.0
+        self.output_l2 = 1.0
+        self.min_steps = self.attack_cycles
+        
+        # Current state
+        self.current_hash = None
+        self.current_hamming = None
+        self.current_lpips = 1.0
+        self.current_l2 = 1.0
+        
+        # Attack state
+        self.attack_success = False
+        self.prev_step = None
+        self.optimizer = None
+        self.is_staged = False
 
-
-    def set_tensor(self, input_image_path):
+    def _load_and_process_image(self, input_image_path: str) -> None:
+        """Load image and setup tensors for attack"""
         with Image.open(input_image_path) as img:
             self.rgb_tensor = get_rgb_tensor(img, self.device)
             self.original_height = self.rgb_tensor.size(1)
             self.original_width = self.rgb_tensor.size(2)
+            
             self.log("Setting grayscale image tensor")
-
-            self._tensor = self.rgb_tensor
-
+            
+            # Setup conversion functions
             self.inversion_func = generate_inversion(self.colormode)
             self.conversion_func = generate_conversion(self.colormode)
-
+            
+            # Convert to target color space
             self._tensor = self.conversion_func(self.rgb_tensor)
-
+            
+            # Resize if needed
             if self.resize_flag:
                 self._tensor = tensor_resize(self._tensor, self.resize_height, self.resize_width)
                 self.height = self.resize_height
@@ -160,53 +260,60 @@ class Attack_Object:
             else:
                 self.height = self.original_height
                 self.width = self.original_width
-
+            
+            # Generate original hash
             self.original_hash = self.func(self._tensor.to(self.func_device))
 
 
 
-    def stage_attack(self, input_image_path):
-        # reset state
-        self.rgb_tensor = None
-        self._tensor = None
-        self.original_hash = None
-        self.optimizer = None
-        self.is_staged = False
-        self.original_height = None
-        self.original_width = None
-
-        self.output_tensor = None
-        
-        self.output_hash = None
-        self.output_hamming = None
-
-        self.output_lpips = 1
-        self.output_l2 = 1
-        self.min_steps = self.attack_cycles
-
-        self.current_hash = None
-        self.current_hamming = None
-        self.current_lpips = 1
-        self.current_l2 = 1
-
-        self.attack_success = False
-        self.prev_step = None
-
-
+    def stage_attack(self, input_image_path: str) -> None:
+        """Prepare attack by loading image and setting up optimizer"""
+        self._reset_state()
         self.log("Staging attack...\n")
-        self.set_tensor(input_image_path)
-
-        self.optimizer = NES_Optimizer(func_package=self.func_package, device_package=self.device_package, tensor=self._tensor, vecMin=0.0, vecMax=1.0)
-
-        # calculate number of perturbations
-        self.num_pertubations = self.alpha
+        
+        # Load and process image
+        self._load_and_process_image(input_image_path)
+        
+        # Setup optimizer
+        self.optimizer = NES_Optimizer(
+            func_package=self.func_package, 
+            device_package=self.device_package, 
+            tensor=self._tensor, 
+            vecMin=0.0, 
+            vecMax=1.0
+        )
+        
+        # Calculate number of perturbations (must be even)
+        self.num_perturbations = self.alpha
         for k in self._tensor.shape:
-            self.num_pertubations *= k
-        self.num_pertubations = (int(self.num_pertubations) // 2) * 2
+            self.num_perturbations *= k
+        self.num_perturbations = (int(self.num_perturbations) // 2) * 2
 
+    def _apply_delta_scaledown(self, rgb_delta: torch.Tensor) -> None:
+        """Apply delta scaledown to fine-tune the attack"""
+        scale_factors = torch.linspace(0.0, 1.0, steps=self.DELTA_SCALEDOWN_STEPS)
+        
+        for scale in scale_factors:
+            cand_delta = rgb_delta * scale
+            cand_tensor = self.rgb_tensor + cand_delta
+            cand_targ = self.conversion_func(cand_tensor.clone())
 
+            if self.resize_flag:
+                cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
-    def run_attack(self, input_image_path, output_image_path):
+            cand_tensor = self.quant_func(cand_tensor)
+            cand_targ = self.quant_func(cand_targ)
+
+            cand_hash = self.func(cand_targ.to(self.func_device))
+            cand_ham = cand_hash.ne(self.original_hash).sum().item()
+            if cand_ham >= self.hamming_threshold:
+                self.output_tensor = cand_tensor
+                self.output_hash = cand_hash
+                self.output_hamming = cand_ham
+                self.attack_success = True
+                break
+
+    def run_attack(self, input_image_path: str, output_image_path: str) -> Dict[str, Any]:
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
@@ -222,15 +329,17 @@ class Attack_Object:
 
                 for rep in range(self.num_reps):
                     step_count, curr_delta, accepted = self.optimizer.get_delta(
-                    step_coeff=self.step_coeff,
-                    num_steps=self.attack_cycles,
-                    perturbation_scale_factor=scale_factor,
-                    num_perturbations=self.num_pertubations,
-                    beta=beta, acceptance_func=self.acceptance_func)
+                        step_coeff=self.step_coeff,
+                        num_steps=self.attack_cycles,
+                        perturbation_scale_factor=scale_factor,
+                        num_perturbations=self.num_perturbations,
+                        beta=beta, 
+                        acceptance_func=self.acceptance_func
+                    )
                     
-                    if accepted or ret_set[0] is None:          #We get the acceptance best out of our entire sweep space for our output tensor
+                    if accepted or ret_set[0] is None:  # We get the acceptance best out of our entire sweep space for our output tensor
                         ret_set = (curr_delta, step_count, beta, scale_factor)
-                        self.log((ret_set[1], ret_set[2], ret_set[3]))
+                        self.log(f"Accepted: steps={ret_set[1]}, beta={ret_set[2]}, scale={ret_set[3]}")
 
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
@@ -255,33 +364,9 @@ class Attack_Object:
             self.output_hamming = self.original_hash.ne(self.output_hash.to(self.original_hash.device)).sum().item()
             self.attack_success = self.output_hamming >= self.hamming_threshold
 
-            ################################# DELTA SCALEDOWN (OPTIONAL) #############################################
-
+            # Optional delta scaledown for fine-tuning
             if self.delta_scaledown:
-                scale_factors = torch.linspace(0.0, 1.0, steps=50)
-                
-                for scale in scale_factors:
-                    cand_delta = rgb_delta * scale
-                    cand_tensor = self.rgb_tensor + cand_delta
-                    cand_targ = self.conversion_func(cand_tensor.clone())
-
-                    if self.resize_flag:
-                        cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
-
-                    cand_tensor = self.quant_func(cand_tensor)
-                    cand_targ = self.quant_func(cand_targ)
-
-                    cand_hash = self.func(cand_targ.to(self.func_device))
-                    cand_ham = cand_hash.ne(self.original_hash).sum().item()
-                    if cand_ham >= self.hamming_threshold:
-                        self.output_tensor = cand_tensor
-                        self.output_hash = cand_hash
-                        self.output_hamming = cand_ham
-                        self.attack_success = True
-                        break
-
-
-            ################################# END OF DELTA SCALEDOWN  ###################################################
+                self._apply_delta_scaledown(rgb_delta)
 
             self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
             self.output_l2 = self.l2_func(self.rgb_tensor, self.output_tensor)
