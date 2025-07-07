@@ -1,0 +1,10 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+1. You must explicitly ask for permission to implemenet something that would change the dimensionality of one or more of the tensors already present in this codebase. 
+
+2. If a rework is required and it implements a new tensor pipeline with different geometry or memory access characteristics than what is already present, you must explictly ask for permission to implement it. 
+
+3. If you wish to use an anal clamp anywhere in the codebase, you must explicitly ask for permission to do so. 
