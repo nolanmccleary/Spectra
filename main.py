@@ -8,76 +8,6 @@ from spectra.validation import directory_compare
 from models import ALEX_ONNX, ALEX_IMPORT
 
 
-
-#TODO: 
-# 1) Fix faulty l2/lpips regulator - DONE
-# 2) Smart scaleup lpips - DONE
-# 3) Fast DCT - DONE
-# 4.1) LPIPS constraint - DONE, can gate any acceptance param
-# 4.2) Validate percpetion gate - Discrepency due to grayscale vs RGB LPIPS deltas
-# 4.3 Better batch guards - DONE
-# 4.3 Add PDQ - DONE (Need to see if i can run it on GPU cluster)
-# 4) Pareto integrator
-# 5) CUDA port - Done
-# 6) Cluster integration
-# 7) Mass analysis and HP training
-# 8) Backtrack algorithm
-
-
-
-'''
-AHASH_HYPERPARAMETERS = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.0001,
-    "scale_factor"  : 0.5
-}
-DHASH_HYPERPARAMETERS = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.0001,
-    "scale_factor"  : 5.5
-}
-PHASH_HYPERPARAMETERS = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.0001,
-    "scale_factor"  : 0.5
-}
-PDQ_HYPERPARAMETERS = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.0001,
-    "scale_factor"  : 0.5
-}
-AHASH_HYPERPARAMETERS_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.000001,
-    "scale_factor"  : 0.4
-}
-DHASH_HYPERPARAMETERS_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.000001,
-    "scale_factor"  : 5.5
-}
-PHASH_HYPERPARAMETERS_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.000001,
-    "scale_factor"  : 0.5
-}
-PDQ_HYPERPARAMETERS_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : 0.9,
-    "step_coeff"    : 0.00001,
-    "scale_factor"  : 0.5
-}
-'''
-
-
-
 AHASH_HYPERPARAMETERS_SWEEP = {
     "alpha"         : 2.9,
     "beta"          : (1.0, None, None),
@@ -108,31 +38,32 @@ PDQ_HYPERPARAMETERS_SWEEP = {
 
 
 
+
 AHASH_HYPERPARAMETERS_TARGETED = {
     "alpha"         : 2.9,
     "beta"          : (1.0, None, None),
-    "step_coeff"    : 0.00001,
+    "step_coeff"    : 0.0001,
     "scale_factor"  : (0.95, None, None)
 }
 
 DHASH_HYPERPARAMETERS_TARGETED = {
     "alpha"         : 2.9,
     "beta"          : (1.0, None, None),
-    "step_coeff"    : 0.00001,
+    "step_coeff"    : 0.0001,
     "scale_factor"  : (0.225, None, None)
 }
 
 PHASH_HYPERPARAMETERS_TARGETED = {
     "alpha"         : 2.9,
     "beta"          : (1.0, None, None),
-    "step_coeff"    : 0.000001,
+    "step_coeff"    : 0.00001,
     "scale_factor"  : (0.445, None, None)
 }
 
 PDQ_HYPERPARAMETERS_TARGETED = {
     "alpha"         : 2.9,
     "beta"          : (1.0, None, None),
-    "step_coeff"    : 0.000001,
+    "step_coeff"    : 0.000002,
     "scale_factor"  : (0.075, None, None)
 }
 
@@ -142,77 +73,30 @@ PDQ_HYPERPARAMETERS_TARGETED = {
 AHASH_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : (0.9, None, None),
-    "step_coeff"    : 0.000007,
+    "step_coeff"    : 0.0001,
     "scale_factor"  : (0.4, None, None)
 }
 
 DHASH_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : (0.85, None, None),
-    "step_coeff"    : 0.0000013,
+    "step_coeff"    : 0.0001,
     "scale_factor"  : (0.3, None, None)
 }
 
-
 PHASH_HYPERPARAMETERS = {
+    "alpha"         : 2.9,
+    "beta"          : (0.9, None, None),
+    "step_coeff"    : 0.00001,
+    "scale_factor"  : (0.5, None, None)
+}
+
+PDQ_HYPERPARAMETERS = {
     "alpha"         : 2.9,
     "beta"          : (0.9, None, None),
     "step_coeff"    : 0.000002,
     "scale_factor"  : (0.5, None, None)
 }
-
-
-PDQ_HYPERPARAMETERS = {
-    "alpha"         : 2.9,
-    "beta"          : (0.9, None, None),
-    "step_coeff"    : 0.0002,
-    "scale_factor"  : (0.5, None, None)
-}
-
-
-PDQ_HYPERPARAMETERS_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : (0.9, None, None),
-    "step_coeff"    : 0.00002,
-    "scale_factor"  : (0.5, None, None)
-}
-
-
-
-
-
-
-
-'''
-AHASH_HYPERPARAMETERS_SWEEP_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : (0.8, 1.0, 0.05),
-    "step_coeff"    : 0.000001,
-    "scale_factor"  : (0.5, 1.0, 0.05)
-}
-
-DHASH_HYPERPARAMETERS_SWEEP_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : (0.8, 1.0, 0.05),
-    "step_coeff"    : 0.000001,
-    "scale_factor"  : (5.0, 8.0, 0.1)
-}
-
-PHASH_HYPERPARAMETERS_SWEEP_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : (0.8, 1.0, 0.05),
-    "step_coeff"    : 0.000001,
-    "scale_factor"  : (0.4, 0.7, 0.05)
-}
-
-PDQ_HYPERPARAMETERS_SWEEP_FINE = {
-    "alpha"         : 2.9,
-    "beta"          : (0.8, 1.0, 0.05),
-    "step_coeff"    : 0.000001,
-    "scale_factor"  : (0.4, 0.7, 0.05)
-}
-'''
-
 
 
 
@@ -231,9 +115,9 @@ def attack_sequence(dev):
     F_LPIPS = LPIPS_MODEL.get_lpips
 
     engine.add_attack("ahash_attack", image_input_dir, image_output_dir, AHASH, AHASH_HYPERPARAMETERS, hamming_threshold=24, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, device=dev, delta_scaledown=True)
-    engine.add_attack("dhash_attack", image_input_dir, image_output_dir, DHASH, DHASH_HYPERPARAMETERS, hamming_threshold=24, colormode="grayscale", acceptance_func="step", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, device=dev, delta_scaledown=True)
-    engine.add_attack("phash_attack", image_input_dir, image_output_dir, PHASH, PHASH_HYPERPARAMETERS, hamming_threshold=28, colormode="grayscale", acceptance_func="step", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, device=dev, delta_scaledown=True)
-    engine.add_attack("pdq_attack", image_input_dir, image_output_dir, PDQ, PDQ_HYPERPARAMETERS_FINE, hamming_threshold=80, colormode="grayscale", acceptance_func="step", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, device=dev, delta_scaledown=True)
+    engine.add_attack("dhash_attack", image_input_dir, image_output_dir, DHASH, DHASH_HYPERPARAMETERS, hamming_threshold=24, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, device=dev, delta_scaledown=True)
+    engine.add_attack("phash_attack", image_input_dir, image_output_dir, PHASH, PHASH_HYPERPARAMETERS, hamming_threshold=28, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, device=dev, delta_scaledown=True)
+    engine.add_attack("pdq_attack", image_input_dir, image_output_dir, PDQ, PDQ_HYPERPARAMETERS, hamming_threshold=80, colormode="grayscale", acceptance_func="lpips", quant_func=None, lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, device=dev, delta_scaledown=True)
 
     t1 = time.time()
     engine.run_attacks()
@@ -241,11 +125,11 @@ def attack_sequence(dev):
 
     print(f"\nTest sequence completed in {time_delta:.2f} seconds")
 
-    post_validation = directory_compare(image_input_dir, image_output_dir, F_LPIPS, dev)
-    json_filename = "post_validation.json"
+    #post_validation = directory_compare(image_input_dir, image_output_dir, F_LPIPS, dev)
+    #json_filename = "post_validation.json"
 
-    with open(json_filename, 'w') as f:
-        json.dump(post_validation, f, indent=4)
+    #with open(json_filename, 'w') as f:
+    #    json.dump(post_validation, f, indent=4)
 
 
 if __name__ == '__main__':

@@ -274,7 +274,7 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
 
     if verbose == "on":
         output_msg = f"{img_path_1} - {img_path_2}" + "{" + error_log + "}"
-        print(output_msg)
+        #print(output_msg)
 
 
     return {
@@ -283,9 +283,8 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
         "ahash_hamming" : str(ahash_delta),
         "dhash_hamming" : str(dhash_delta),
         "phash_hamming" : str(phash_delta),
-        "pdq_hamming"   : str(pdq_delta),
-        "error_log"     : error_log
-    }
+        "pdq_hamming"   : str(pdq_delta)
+    }   #Add error log if desired
 
 
 

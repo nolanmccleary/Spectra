@@ -180,6 +180,7 @@ class Attack_Object:
 
         self.output_lpips = 1
         self.output_l2 = 1
+        self.min_steps = self.attack_cycles
 
         self.current_hash = None
         self.current_hamming = None
@@ -213,14 +214,9 @@ class Attack_Object:
         self.log(f"Beta sweep across: {self.betas}\n")
         self.log(f"Perturbation scale factor sweep across: {self.scale_factors}\n")
 
-        best_output = (None, None)
 
         for beta in self.betas:
             for scale_factor in self.scale_factors:
-                
-                sum_steps = 0
-
-                self.min_steps = self.attack_cycles
 
                 for rep in range(self.num_reps):
                     step_count, curr_delta, accepted = self.optimizer.get_delta(
@@ -229,24 +225,14 @@ class Attack_Object:
                     perturbation_scale_factor=scale_factor,
                     num_perturbations=self.num_pertubations,
                     beta=beta, acceptance_func=self.acceptance_func)
-
-                    #self.log((rep, step_count, self.min_steps, self.output_lpips, beta, scale_factor))
                     
-                    sum_steps += step_count
-                    
-                    if accepted or ret_set[1] is None:          #We get the acceptance best out of our entire sweep space for our output tensor
-                        best_output = (step_count, curr_delta)
+                    if accepted or ret_set[0] is None:          #We get the acceptance best out of our entire sweep space for our output tensor
+                        ret_set = (curr_delta, step_count, beta, scale_factor)
+                        self.log((ret_set[1], ret_set[2], ret_set[3]))
 
-                average_steps = sum_steps / self.num_reps
-
-                if average_steps < min_avg_steps:               #We compute ideal beta / scale factor off the average lowest steps to break hamming, this is independent from our output delta/step count
-                    ret_set = best_output + (beta, scale_factor)
-                    min_avg_steps = average_steps
-
-                self.log((average_steps, min_avg_steps, beta, scale_factor))
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
-        output_delta = ret_set[1]
+        output_delta = ret_set[0]
         
         if output_delta is not None:
 
@@ -321,11 +307,11 @@ class Attack_Object:
                 "hamming_distance"      : null_guard(self.output_hamming),
                 "lpips"                 : null_guard(self.output_lpips),
                 "l2"                    : null_guard(self.output_l2),
-                "num_steps"             : null_guard(ret_set[0]),
+                "num_steps"             : null_guard(ret_set[1]),
                 "ideal_scale_factor"    : null_guard(ret_set[3]),
                 "ideal_beta"            : null_guard(ret_set[2])
             },
-            "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, self.verbose)
+            "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, verbose = "off")
         }
 
         self.log(out_log)
