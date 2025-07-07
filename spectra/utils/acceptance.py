@@ -1,0 +1,95 @@
+from typing import Callable, Tuple
+import torch
+
+__all__ = [
+    'create_acceptance'
+]
+
+def _lpips_acceptance(ao) -> Callable[[torch.Tensor, int], Tuple[bool, bool]]:
+    """LPIPS-based acceptance closure bound to an `Attack_Object`."""
+    def _fn(tensor: torch.Tensor, step_number: int):
+        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
+        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
+        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+
+        break_loop, accepted = False, False
+        if ao.gate is not None and ao.current_lpips >= ao.gate:
+            break_loop = True
+
+        if ao.current_hamming >= ao.hamming_threshold:
+            if ao.current_lpips < ao.output_lpips:
+                ao.output_lpips   = ao.current_lpips
+                ao.output_l2      = ao.current_l2
+                ao.output_hash    = ao.current_hash
+                ao.output_hamming = ao.current_hamming
+                accepted = True
+            break_loop = True
+        return break_loop, accepted
+    return _fn
+
+
+def _l2_acceptance(ao):
+    def _fn(tensor: torch.Tensor, step_number: int):
+        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
+        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
+        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+
+        break_loop, accepted = False, False
+        if ao.gate is not None and ao.current_l2 >= ao.gate:
+            break_loop = True
+
+        if ao.current_hamming >= ao.hamming_threshold:
+            if ao.current_l2 < ao.output_l2:
+                ao.output_l2      = ao.current_l2
+                ao.output_lpips   = ao.current_lpips
+                ao.output_hash    = ao.current_hash
+                ao.output_hamming = ao.current_hamming
+                accepted = True
+            break_loop = True
+        return break_loop, accepted
+    return _fn
+
+
+def _latching_acceptance(ao):
+    def _fn(tensor: torch.Tensor, step_number: int):
+        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
+        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
+        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+        if ao.current_hamming >= ao.hamming_threshold:
+            return True, True
+        return False, False
+    return _fn
+
+
+def _step_acceptance(ao):
+    def _fn(tensor: torch.Tensor, step_number: int):
+        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
+        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
+        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+        if ao.current_hamming >= ao.hamming_threshold:
+            if step_number < ao.min_steps:
+                ao.min_steps = step_number
+                return True, True
+            return True, False
+        return False, False
+    return _fn
+
+
+_ACCEPTANCE_MAP = {
+    'lpips' : _lpips_acceptance,
+    'l2'    : _l2_acceptance,
+    'latch' : _latching_acceptance,
+    'step'  : _step_acceptance,
+}
+
+
+def create_acceptance(attack_obj, kind: str):
+    """Return an acceptance-criterion closure bound to `attack_obj`."""
+    if kind not in _ACCEPTANCE_MAP:
+        raise ValueError(
+            f"Unknown acceptance kind '{kind}'. Valid kinds: {list(_ACCEPTANCE_MAP)}")
+    return _ACCEPTANCE_MAP[kind](attack_obj) 

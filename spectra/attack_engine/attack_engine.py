@@ -123,6 +123,8 @@ class Attack_Object:
             self.lpips_func = lpips_func
         else:
             self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
+        
+        self.l2_func = l2_delta
 
         self.alpha, self.betas, self.step_coeff, self.scale_factors = hyperparameter_set["alpha"], create_sweep(*hyperparameter_set["beta"]), hyperparameter_set["step_coeff"], create_sweep(*hyperparameter_set["scale_factor"])
         self.func_package = (self.func, bool_tensor_delta, self.quant_func)
@@ -282,7 +284,7 @@ class Attack_Object:
             ################################# END OF DELTA SCALEDOWN  ###################################################
 
             self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
-            self.output_l2 = l2_delta(self.rgb_tensor, self.output_tensor)
+            self.output_l2 = self.l2_func(self.rgb_tensor, self.output_tensor)
             
             out = self.output_tensor.detach()
             output_image = ToPILImage()(out)
