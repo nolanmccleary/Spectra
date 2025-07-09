@@ -12,7 +12,7 @@ import torch
 from torchvision.transforms import ToPILImage
 from dataclasses import dataclass
 from typing import List, Dict, Any
-
+from models import ALEX_IMPORT, ALEX_ONNX
 
 # Constants
 SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
@@ -42,25 +42,19 @@ class Attack_Engine:
             print(msg)
 
     
-    def add_attack_from_config(self, attack_tag: str, hash_wrapper: Hash_Wrapper, config: AttackConfig, lpips_func=None) -> None:
+    def add_attack_from_config(self, attack_tag: str, hash_wrapper: Hash_Wrapper, config: AttackConfig) -> None:
         """Register a new attack configuration using AttackConfig object"""
-        input_path = Path(config.input_dir or "sample_images")
+        input_path = Path(config.input_dir)
         images = [
             f.name for f in input_path.iterdir() 
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
         ]
         
-        # Create a copy of config and set LPIPS function if provided
-        if lpips_func is not None:
-            config_dict = config.dict()
-            config_dict['lpips_func'] = lpips_func
-            config = AttackConfig(**config_dict)
-        
         attack_object = Attack_Object(hash_wrapper, config=config)
         self.attacks[attack_tag] = AttackRunConfig(
             images=images,
-            input_dir=config.input_dir or "sample_images",
-            output_dir=config.output_dir or "output",
+            input_dir=config.input_dir,
+            output_dir=config.output_dir,
             attack_object=attack_object
         )
 
@@ -206,16 +200,30 @@ class Attack_Object:
 
 
     def _setup_lpips(self, lpips_func) -> None:
+        
         """Setup LPIPS function for perceptual similarity"""
         if lpips_func is not None:
             # Handle both function objects and string names
             if callable(lpips_func):
                 self.lpips_func = lpips_func
+            
             else:
-                # Assume it's a string name, use default
-                self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
+                print(lpips_func)
+                self.lpips_model = None
+                
+                if lpips_func == 'alex_import':
+                    self.lpips_model = ALEX_IMPORT(self.device)
+
+                elif lpips_func == 'alex_onnx':
+                    self.lpips_model = ALEX_ONNX(self.device)
+
+                else:
+                    raise KeyError("Error! Invalid LPIPS function selection")
         else:
-            self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
+            self.log("\nNo LPIPS selected! Defaulting to ALEXNET import!\n")
+            self.lpips_model = ALEX_IMPORT(self.device)
+        
+        self.lpips_func = self.lpips_model.get_lpips
 
 
     def _setup_hyperparameters(self, hyperparameter_set: dict) -> None:
@@ -253,6 +261,8 @@ class Attack_Object:
 
     def _reset_state(self) -> None:
         """Reset all state variables for a new attack"""
+        self.lpips_model = None
+        
         # Input tensors
         self.rgb_tensor = None
         self._tensor = None

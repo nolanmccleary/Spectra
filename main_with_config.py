@@ -29,11 +29,9 @@ def attack_sequence_with_config(dev):
         if i < len(experiment_config.attacks):
             config = experiment_config.attacks[i]
             # Pass LPIPS function directly to add_attack_from_config
-            engine.add_attack_from_config(attack_name, hash_wrapper, config, lpips_func=F_LPIPS)
+            engine.add_attack_from_config(attack_name, hash_wrapper, config)
     
-    engine.add_attack_from_config("ahash_attack_2", AHASH, config_manager.load_attack_config("ahash_example"), lpips_func=F_LPIPS)
-
-
+    engine.add_attack_from_config("ahash_attack_2", AHASH, config_manager.load_attack_config("ahash_example")) #Can explicitly add additional attacks to the experiment if desired
 
     print(f"Loaded experiment: {experiment_config.name}")
     print(f"Description: {experiment_config.description}")
@@ -58,15 +56,18 @@ def create_example_configs():
         device="cpu",
         num_reps=1,
         verbose=True,
+        lpips_func = 'alex_import',
         attack_cycles=10000,
         delta_scaledown=True,
         acceptance_func="lpips",
+        input_dir="sample_images2",
+        output_dir="output",
         quant_func=None,
         hyperparameters=HyperparameterConfig(
             alpha=2.9,
-            beta=(0.9, None, None),
+            beta=0.9,
             step_coeff=0.0001,
-            scale_factor=(0.4, None, None)
+            scale_factor=0.4
         )
     )
     
@@ -81,8 +82,6 @@ def create_example_configs():
         description="Example experiment with all hash functions",
         device="cpu",
         verbose=True,
-        input_dir="sample_images3",
-        output_dir="output",
         attacks=[
             AttackConfig(
                 hamming_threshold=24,
@@ -90,9 +89,12 @@ def create_example_configs():
                 device="cpu",
                 num_reps=1,
                 attack_cycles=10000,
+                verbose=True,
                 delta_scaledown=True,
                 acceptance_func="lpips",
                 quant_func=None,
+                input_dir="sample_images3",
+                output_dir="output",
                 hyperparameters=HyperparameterConfig(
                     alpha=2.9,
                     beta=(0.9, None, None),

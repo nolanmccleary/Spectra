@@ -14,6 +14,7 @@ class ColorMode(str, Enum):
     """Supported color modes"""
     RGB = "rgb"
     GRAYSCALE = "grayscale"
+    GRAYSCALE_LOCAL = "grayscale_local"
     LUMA = "luma"
 
 
@@ -43,17 +44,17 @@ class AttackConfig(BaseModel):
     """Configuration for a single attack in a given experiment"""
     # Core parameters
     hamming_threshold: int = Field(..., ge=0, description="Minimum hamming distance required")
-    colormode: ColorMode = Field(default=ColorMode.GRAYSCALE)
-    device: Device = Field(default=Device.CPU)
+    colormode: ColorMode = Field(...)
+    device: Device = Field(...)
     
     # Attack parameters
     num_reps: int = Field(..., gt=0, description="Number of repetitions")
     attack_cycles: int = Field(..., gt=0, description="Number of attack cycles")
     
     # Optional features
-    delta_scaledown: bool = Field(default=False, description="Enable delta scaledown")
+    delta_scaledown: bool = Field(..., description="Enable delta scaledown")
     gate: Optional[str] = Field(default=None, description="Gate function name")
-    verbose: bool = Field(default=False, description="Enable verbose logging")
+    verbose: bool = Field(..., description="Enable verbose logging")
     
     # Function specifications
     acceptance_func: str = Field(..., description="Acceptance function name")
@@ -66,8 +67,8 @@ class AttackConfig(BaseModel):
     lpips_func: Optional[Union[str, Any]] = Field(default=None, description="LPIPS function name or function object")
     
     # Input/Output paths (optional, can be set later)
-    input_dir: Optional[str] = Field(default=None, description="Input directory path")
-    output_dir: Optional[str] = Field(default=None, description="Output directory path")
+    input_dir: str = Field(..., description="Input directory path")
+    output_dir: str = Field(..., description="Output directory path")
     
     class Config:
         """Pydantic configuration"""
@@ -81,12 +82,8 @@ class ExperimentConfig(BaseModel):
     description: Optional[str] = Field(default=None, description="Experiment description")
     
     # Global settings
-    device: Device = Field(default=Device.CPU)
+    device: Device = Field(...)
     verbose: bool = Field(default=False)
-    
-    # Paths
-    input_dir: str = Field(..., description="Input directory path")
-    output_dir: str = Field(..., description="Output directory path")
     
     # Attacks
     attacks: List[AttackConfig] = Field(..., min_items=1, description="List of attack configurations")

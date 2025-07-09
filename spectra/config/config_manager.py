@@ -15,7 +15,7 @@ class ConfigManager:
     
 
     def load_attack_config(self, config_name: str) -> AttackConfig:
-        """Load configuration from YAML file"""
+        """Load standalone attack into preconfigured experiment"""
         config_path = self.config_dir / f"{config_name}.yaml"
         
         if not config_path.exists():
