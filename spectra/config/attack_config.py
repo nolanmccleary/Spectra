@@ -14,6 +14,7 @@ class ColorMode(str, Enum):
     """Supported color modes"""
     RGB = "rgb"
     GRAYSCALE = "grayscale"
+    LUMA = "luma"
 
 
 class HyperparameterConfig(BaseModel):
@@ -39,7 +40,7 @@ class HyperparameterConfig(BaseModel):
 
 
 class AttackConfig(BaseModel):
-    """Configuration for a single attack"""
+    """Configuration for a single attack in a given experiment"""
     # Core parameters
     hamming_threshold: int = Field(..., ge=0, description="Minimum hamming distance required")
     colormode: ColorMode = Field(default=ColorMode.GRAYSCALE)

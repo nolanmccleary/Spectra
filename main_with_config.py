@@ -17,45 +17,27 @@ def attack_sequence_with_config(dev):
     
     # Load experiment configuration
     config_manager = ConfigManager()
+
+    # Try to load the full experiment config
+    experiment_config = config_manager.load_experiment_config("example_experiment")
     
-    try:
-        # Try to load the full experiment config
-        experiment_config = config_manager.load_experiment_config("full_attack_suite")
-        
-        # Add attacks from configuration
-        hash_functions = [AHASH, DHASH, PHASH, PDQ]
-        attack_names = ["ahash_attack", "dhash_attack", "phash_attack", "pdq_attack"]
-        
-        for i, (hash_func, attack_name) in enumerate(zip(hash_functions, attack_names)):
-            if i < len(experiment_config.attacks):
-                config = experiment_config.attacks[i]
-                # Pass LPIPS function directly to add_attack_from_config
-                engine.add_attack_from_config(attack_name, hash_func, config, lpips_func=F_LPIPS)
-        
-        print(f"Loaded experiment: {experiment_config.name}")
-        print(f"Description: {experiment_config.description}")
-        
-    except FileNotFoundError:
-        print("Configuration file not found, using legacy approach...")
-        # Fallback to legacy approach
-        image_input_dir = 'sample_images'
-        image_output_dir = 'output'
-        
-        # Legacy hyperparameters
-        AHASH_HYPERPARAMETERS = {
-            "alpha": 2.9,
-            "beta": (0.9, None, None),
-            "step_coeff": 0.0001,
-            "scale_factor": (0.4, None, None)
-        }
-        
-        engine.add_attack("ahash_attack", image_input_dir, image_output_dir, 
-                         AHASH, AHASH_HYPERPARAMETERS, hamming_threshold=24, 
-                         colormode="grayscale", acceptance_func="lpips", quant_func=None, 
-                         lpips_func=F_LPIPS, num_reps=1, attack_cycles=10000, 
-                         device=dev, delta_scaledown=True)
+    # Add attacks from configuration
+    hash_wrappers = [AHASH, DHASH, PHASH, PDQ]
+    attack_names = ["ahash_attack", "dhash_attack", "phash_attack", "pdq_attack"]
     
-    # Run attacks
+    for i, (hash_wrapper, attack_name) in enumerate(zip(hash_wrappers, attack_names)):
+        if i < len(experiment_config.attacks):
+            config = experiment_config.attacks[i]
+            # Pass LPIPS function directly to add_attack_from_config
+            engine.add_attack_from_config(attack_name, hash_wrapper, config, lpips_func=F_LPIPS)
+    
+    engine.add_attack_from_config("ahash_attack_2", AHASH, config_manager.load_attack_config("ahash_example"), lpips_func=F_LPIPS)
+
+
+
+    print(f"Loaded experiment: {experiment_config.name}")
+    print(f"Description: {experiment_config.description}")
+        
     t1 = time.time()
     engine.run_attacks()
     time_delta = time.time() - t1
@@ -75,6 +57,7 @@ def create_example_configs():
         colormode="grayscale",
         device="cpu",
         num_reps=1,
+        verbose=True,
         attack_cycles=10000,
         delta_scaledown=True,
         acceptance_func="lpips",
@@ -87,7 +70,7 @@ def create_example_configs():
         )
     )
     
-    config_manager.save_config(ahash_config, "ahash_example")
+    config_manager.save_attack_config(ahash_config, "ahash_example")
     print("Created ahash_example.yaml")
     
     # Create full experiment config
@@ -98,7 +81,7 @@ def create_example_configs():
         description="Example experiment with all hash functions",
         device="cpu",
         verbose=True,
-        input_dir="sample_images",
+        input_dir="sample_images3",
         output_dir="output",
         attacks=[
             AttackConfig(

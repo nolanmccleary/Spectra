@@ -1,8 +1,9 @@
+import json
 from pathlib import Path
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 import yaml
 from datetime import datetime
-from .attack_config import AttackConfig, ExperimentConfig, HyperparameterConfig
+from .attack_config import AttackConfig, ExperimentConfig
 
 
 class ConfigManager:
@@ -12,7 +13,8 @@ class ConfigManager:
         self.config_dir = Path(config_dir)
         self.config_dir.mkdir(exist_ok=True)
     
-    def load_config(self, config_name: str) -> AttackConfig:
+
+    def load_attack_config(self, config_name: str) -> AttackConfig:
         """Load configuration from YAML file"""
         config_path = self.config_dir / f"{config_name}.yaml"
         
@@ -24,6 +26,7 @@ class ConfigManager:
         
         return AttackConfig(**config_data['attack'])
     
+
     def load_experiment_config(self, config_name: str) -> ExperimentConfig:
         """Load experiment configuration from YAML file"""
         config_path = self.config_dir / f"{config_name}.yaml"
@@ -36,34 +39,37 @@ class ConfigManager:
         
         return ExperimentConfig(**config_data)
     
-    def save_config(self, config: AttackConfig, name: str) -> None:
+
+    def save_attack_config(self, config: AttackConfig, name: str) -> None:
         """Save configuration to YAML file"""
         config_path = self.config_dir / f"{name}.yaml"
         
+        attack_data = json.loads(config.json())
+
         config_data = {
-            'attack': config.dict(),
+            'attack': attack_data,
             'metadata': {
                 'created_at': datetime.now().isoformat(),
                 'version': '1.0'
             }
         }
-        
         with open(config_path, 'w') as f:
             yaml.dump(config_data, f, default_flow_style=False, indent=2)
     
+
     def save_experiment_config(self, config: ExperimentConfig, name: str) -> None:
         """Save experiment configuration to YAML file"""
         config_path = self.config_dir / f"{name}.yaml"
         
-        config_data = config.dict()
+        config_data = json.loads(config.json())
         config_data['metadata'] = {
             'created_at': datetime.now().isoformat(),
             'version': '1.0'
         }
-        
         with open(config_path, 'w') as f:
             yaml.dump(config_data, f, default_flow_style=False, indent=2)
     
+
     def list_configs(self) -> List[str]:
         """List all available configuration files"""
         configs = []
@@ -71,9 +77,11 @@ class ConfigManager:
             configs.append(file.stem)
         return sorted(configs)
     
-    def create_from_dict(self, config_dict: Dict[str, Any]) -> AttackConfig:
+
+    def create_attack_from_dict(self, config_dict: Dict[str, Any]) -> AttackConfig:
         """Create configuration from dictionary"""
         return AttackConfig(**config_dict)
+    
     
     def create_experiment_from_dict(self, config_dict: Dict[str, Any]) -> ExperimentConfig:
         """Create experiment configuration from dictionary"""

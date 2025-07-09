@@ -1,5 +1,6 @@
 import json
 import lpips
+from spectra.config import AttackConfig
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
 from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
@@ -28,34 +29,20 @@ class AttackRunConfig:
 
 class Attack_Engine:
     """Manages multiple attacks and their execution"""
-
+    
     def __init__(self, verbose: str):
         self.attacks: Dict[str, AttackRunConfig] = {}
         self.attack_log: Dict[str, Dict[str, Any]] = {}
         self.verbose = verbose
+
 
     def log(self, msg: str) -> None:
         """Log message if verbose mode is enabled"""
         if self.verbose == "on":
             print(msg)
 
-    def add_attack(self, attack_tag: str, input_image_dirname: str, output_image_dirname: str, *args, **kwargs) -> None:
-        """Register a new attack configuration"""
-        input_path = Path(input_image_dirname)
-        images = [
-            f.name for f in input_path.iterdir() 
-            if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
-        ]
-        
-        attack_object = Attack_Object(*args, **kwargs, verbose=self.verbose)
-        self.attacks[attack_tag] = AttackRunConfig(
-            images=images,
-            input_dir=input_image_dirname,
-            output_dir=output_image_dirname,
-            attack_object=attack_object
-        )
     
-    def add_attack_from_config(self, attack_tag: str, hash_wrapper, config, lpips_func=None) -> None:
+    def add_attack_from_config(self, attack_tag: str, hash_wrapper: Hash_Wrapper, config: AttackConfig, lpips_func=None) -> None:
         """Register a new attack configuration using AttackConfig object"""
         input_path = Path(config.input_dir or "sample_images")
         images = [
@@ -67,7 +54,6 @@ class Attack_Engine:
         if lpips_func is not None:
             config_dict = config.dict()
             config_dict['lpips_func'] = lpips_func
-            from spectra.config import AttackConfig
             config = AttackConfig(**config_dict)
         
         attack_object = Attack_Object(hash_wrapper, config=config)
@@ -77,6 +63,7 @@ class Attack_Engine:
             output_dir=config.output_dir or "output",
             attack_object=attack_object
         )
+
 
     def _calculate_averages(self, results: List[Dict[str, Any]]) -> Dict[str, float]:
         """Calculate average metrics from attack results"""
@@ -114,6 +101,7 @@ class Attack_Engine:
         count = len(successful_results)
         return {f"average_{k}": v / count for k, v in metrics.items()}
 
+
     def run_attacks(self, output_name: str = "spectra_out") -> None:
         """Execute all registered attacks and save results"""
         for attack_tag, config in self.attacks.items():
@@ -141,8 +129,8 @@ class Attack_Engine:
         print(f"Attack log saved to {json_filename}")
 
 
+
 class Attack_Object:
-    """Executes adversarial attacks on images using gradient-based optimization"""
 
     # Constants
     VALID_DEVICES = {"cpu", "cuda", "mps"}
@@ -156,13 +144,9 @@ class Attack_Object:
             hash_wrapper: Hash function wrapper
             config: AttackConfig object (preferred) or individual parameters via kwargs
         """
-        if config is not None:
-            # Use configuration object
-            self._init_from_config(hash_wrapper, config)
-        else:
-            # Use legacy kwargs (for backward compatibility)
-            self._init_from_kwargs(hash_wrapper, **kwargs)
-    
+        self._init_from_config(hash_wrapper, config)
+
+
     def _init_from_config(self, hash_wrapper: Hash_Wrapper, config):
         """Initialize from AttackConfig object"""
         from spectra.config import AttackConfig
@@ -200,44 +184,7 @@ class Attack_Object:
         # Optimization packages
         self.func_package = (self.func, bool_tensor_delta, self.quant_func)
         self.device_package = (self.func_device, self.device, self.device)
-    
-    def _init_from_kwargs(self, hash_wrapper: Hash_Wrapper, hyperparameter_set: dict, hamming_threshold: int, 
-                         colormode: str, acceptance_func: str, quant_func: str, lpips_func, num_reps: int, 
-                         attack_cycles: int, device: str, delta_scaledown: bool = False, gate=None, 
-                         verbose: str = "off"):
-        """Initialize from individual parameters (legacy support)"""
-        self._validate_inputs(device, verbose)
-        
-        # Core attack parameters
-        self.hamming_threshold = hamming_threshold
-        self.colormode = colormode
-        self.device = device
-        self.verbose = verbose
-        self.delta_scaledown = delta_scaledown
-        self.gate = gate
-        
-        # Hash function setup
-        self._setup_hash_function(hash_wrapper)
-        
-        # Function generators
-        self.acceptance_func = generate_acceptance(self, acceptance_func)
-        self.quant_func = generate_quant(quant_func)
-        
-        # Attack parameters
-        self.num_reps = num_reps
-        self.attack_cycles = attack_cycles
-        self.resize_flag = self.resize_height > 0 and self.resize_width > 0
-        
-        # LPIPS setup
-        self._setup_lpips(lpips_func)
-        self.l2_func = l2_delta
-        
-        # Hyperparameters
-        self._setup_hyperparameters(hyperparameter_set)
-        
-        # Optimization packages
-        self.func_package = (self.func, bool_tensor_delta, self.quant_func)
-        self.device_package = (self.func_device, self.device, self.device)
+
 
     def _validate_inputs(self, device: str, verbose: str) -> None:
         """Validate input parameters"""
@@ -245,6 +192,7 @@ class Attack_Object:
             raise ValueError(f"Invalid device '{device}'. Expected one of: {self.VALID_DEVICES}")
         if verbose not in self.VALID_VERBOSITIES:
             raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {self.VALID_VERBOSITIES}")
+
 
     def _setup_hash_function(self, hash_wrapper: Hash_Wrapper) -> None:
         """Setup hash function and device compatibility"""
@@ -255,6 +203,7 @@ class Attack_Object:
         else:
             self.log(f"Warning, current hash function '{hash_wrapper.get_name()}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
             self.func_device = "cpu"
+
 
     def _setup_lpips(self, lpips_func) -> None:
         """Setup LPIPS function for perceptual similarity"""
@@ -268,6 +217,7 @@ class Attack_Object:
         else:
             self.lpips_func = lpips.LPIPS(net='alex').to("cpu")
 
+
     def _setup_hyperparameters(self, hyperparameter_set: dict) -> None:
         """Setup hyperparameters from configuration"""
         self.alpha = hyperparameter_set["alpha"]
@@ -275,6 +225,7 @@ class Attack_Object:
         self.step_coeff = hyperparameter_set["step_coeff"]
         self.scale_factors = create_sweep(*hyperparameter_set["scale_factor"])
     
+
     def _setup_hyperparameters_from_config(self, hyperparameters) -> None:
         """Setup hyperparameters from HyperparameterConfig object"""
         self.alpha = hyperparameters.alpha
@@ -298,6 +249,7 @@ class Attack_Object:
         """Log message if verbose mode is enabled"""
         if self.verbose == "on":
             print(msg)
+
 
     def _reset_state(self) -> None:
         """Reset all state variables for a new attack"""
@@ -334,6 +286,7 @@ class Attack_Object:
         self.optimizer = None
         self.is_staged = False
 
+
     def _load_and_process_image(self, input_image_path: str) -> None:
         """Load image and setup tensors for attack"""
         with Image.open(input_image_path) as img:
@@ -363,7 +316,6 @@ class Attack_Object:
             self.original_hash = self.func(self._tensor.to(self.func_device))
 
 
-
     def stage_attack(self, input_image_path: str) -> None:
         """Prepare attack by loading image and setting up optimizer"""
         self._reset_state()
@@ -386,6 +338,7 @@ class Attack_Object:
         for k in self._tensor.shape:
             self.num_perturbations *= k
         self.num_perturbations = (int(self.num_perturbations) // 2) * 2
+
 
     def _apply_delta_scaledown(self, rgb_delta: torch.Tensor) -> None:
         """Apply delta scaledown to fine-tune the attack"""
@@ -411,16 +364,15 @@ class Attack_Object:
                 self.attack_success = True
                 break
 
+
     def run_attack(self, input_image_path: str, output_image_path: str) -> Dict[str, Any]:
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
-        min_avg_steps = self.attack_cycles
         ret_set = (None, None, None, None)
 
         self.log(f"Beta sweep across: {self.betas}\n")
         self.log(f"Perturbation scale factor sweep across: {self.scale_factors}\n")
-
 
         for beta in self.betas:
             for scale_factor in self.scale_factors:
@@ -474,7 +426,6 @@ class Attack_Object:
             output_image.save(output_image_path)
             
             self.log(f"Saved attacked image to {output_image_path}")
-
             self.log(f"Success status: {self.attack_success}")
 
 

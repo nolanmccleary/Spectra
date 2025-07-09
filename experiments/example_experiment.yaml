@@ -8,11 +8,11 @@ attacks:
   hamming_threshold: 24
   hyperparameters:
     alpha: 2.9
-    beta: !!python/tuple
+    beta:
     - 0.9
     - null
     - null
-    scale_factor: !!python/tuple
+    scale_factor:
     - 0.4
     - null
     - null
@@ -25,9 +25,9 @@ attacks:
   verbose: false
 description: Example experiment with all hash functions
 device: cpu
-input_dir: sample_images
+input_dir: sample_images3
 metadata:
-  created_at: '2025-07-07T16:07:56.463890'
+  created_at: '2025-07-08T10:59:17.380336'
   version: '1.0'
 name: Example Experiment
 output_dir: output

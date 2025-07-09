@@ -31,7 +31,7 @@ def rgb_to_luma(rgb_tensor: torch.Tensor) -> torch.Tensor:
     return gray.unsqueeze(0)
 
 
-def no_conversion(tensor: torch.Tensor) -> torch.Tensor:  # noqa: D401
+def no_conversion(tensor: torch.Tensor) -> torch.Tensor:
     """Identity conversion (kept for completeness)."""
     return tensor
 
