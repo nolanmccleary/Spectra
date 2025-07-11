@@ -42,9 +42,9 @@ def run_attacks(args):
             end_time = time.time()
             print(f"\nExperiment completed in {end_time - start_time:.2f} seconds")
             
-        except FileNotFoundError:
-            print(f"Error: Configuration file '{experiment_file}' not found")
-            continue
+        #except FileNotFoundError:
+        #    print(f"Error: Configuration file '{experiment_file}' not found")
+        #    continue
 
         except Exception as e:
             print(f"Error running experiment '{experiment_file}': {str(e)}")

@@ -78,9 +78,6 @@ class AttackConfig(BaseModel):
     # LPIPS (optional) - can be string name or function object
     lpips_func: Optional[Union[str, Any]] = Field(default=None, description="LPIPS function name or function object")
     
-    # Input/Output paths (optional, can be set later)
-    input_dir: str = Field(..., description="Input directory path")
-    output_dir: str = Field(..., description="Output directory path")
     
     def get_hash_wrapper(self) -> Hash_Wrapper:
         hash_wrapper_map = {
@@ -114,6 +111,10 @@ class ExperimentConfig(BaseModel):
     save_config: bool = Field(default=True, description="Save configuration with results")
     output_name: str = Field(default="spectra_out", description="Output filename prefix")
     
+    # Input/Output paths (optional, can be set later)
+    input_dir: str = Field(..., description="Input directory path")
+    output_dir: str = Field(..., description="Output directory path")
+
     class Config:
         """Pydantic configuration"""
         use_enum_values = True

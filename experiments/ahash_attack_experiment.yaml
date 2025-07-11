@@ -21,8 +21,6 @@ attacks:
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null
-    input_dir: "sample_images"
-    output_dir: "output"
     hyperparameters:
       alpha: 2.9
       beta: [0.9, null, null]

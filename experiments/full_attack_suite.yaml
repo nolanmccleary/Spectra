@@ -4,6 +4,8 @@ device: "cpu"
 verbose: true
 save_config: true
 output_name: "full_attack_suite"
+input_dir: "sample_images"
+output_dir: "output"
 
 attacks:
   - attack_name: "ahash_attack"
@@ -19,8 +21,6 @@ attacks:
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null
-    input_dir: "sample_images"
-    output_dir: "output"
     hyperparameters:
       alpha: 2.9
       beta: [0.9, null, null]
@@ -40,9 +40,6 @@ attacks:
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null
-    input_dir: null
-    input_dir: "sample_images"
-    output_dir: "output"
     hyperparameters:
       alpha: 2.9
       beta: [0.85, null, null]
@@ -62,8 +59,6 @@ attacks:
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null
-    input_dir: "sample_images"
-    output_dir: "output"
     hyperparameters:
       alpha: 2.9
       beta: [0.9, null, null]
@@ -83,8 +78,6 @@ attacks:
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null
-    input_dir: "sample_images"
-    output_dir: "output"
     hyperparameters:
       alpha: 2.9
       beta: [0.9, null, null]

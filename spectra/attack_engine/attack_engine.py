@@ -1,4 +1,5 @@
 import json
+import os
 from this import d
 from spectra.config import AttackConfig, ExperimentConfig
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
@@ -53,7 +54,9 @@ class Attack_Engine:
     
     def add_attack_from_config(self, config: AttackConfig) -> None:
         """Register a new attack configuration using AttackConfig object"""
-        input_path = Path(config.input_dir)
+        assert self.experiment is not None, "Experiment not loaded"
+        
+        input_path = Path(self.experiment.input_dir)
         images = [
             f.name for f in input_path.iterdir() 
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
@@ -62,8 +65,8 @@ class Attack_Engine:
         attack_object = Attack_Object(config.get_hash_wrapper(), config=config)
         self.attacks[config.attack_name] = AttackRunConfig(
             images=images,
-            input_dir=config.input_dir,
-            output_dir=config.output_dir,
+            input_dir=self.experiment.input_dir,
+            output_dir=self.experiment.output_dir,
             attack_object=attack_object
         )
 
@@ -112,6 +115,12 @@ class Attack_Engine:
         experiment_date = datetime.now().strftime("%Y-%m-%d")
         experiment_time = datetime.now().strftime("%H:%M:%S")
 
+        # Create output directories
+        images_dir = f"{self.experiment.output_dir}/{self.experiment.name}/images"
+        results_dir = f"{self.experiment.output_dir}/{self.experiment.name}/results"
+        os.makedirs(images_dir, exist_ok=True)
+        os.makedirs(results_dir, exist_ok=True)
+
         self.attack_log = {}
         
         for attack_tag, config in self.attacks.items():
@@ -122,8 +131,8 @@ class Attack_Engine:
             
             # Run attack on each image
             for image_name in config.images:
-                input_path = f"{config.input_dir}/{image_name}"
-                output_path = f"{config.output_dir}/{attack_tag}_{image_name}"
+                input_path = f"{self.experiment.input_dir}/{image_name}"
+                output_path = f"{images_dir}/{attack_tag}_{image_name}"
                 result = config.attack_object.run_attack(input_path, output_path)
                 self.attack_log[attack_tag]["per_image_results"][image_name] = result
             
@@ -132,7 +141,7 @@ class Attack_Engine:
             self.attack_log[attack_tag]["average_results"] = self._calculate_averages(results_list)
 
         # Save results to JSON
-        json_filename = f"{self.experiment.name}.json"
+        json_filename = f"{results_dir}/{self.experiment.name}.json"
 
         experiment_endtime = datetime.now()
         experiment_start_time = datetime.strptime(experiment_date + " " + experiment_time, "%Y-%m-%d %H:%M:%S")
