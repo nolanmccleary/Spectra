@@ -1,11 +1,13 @@
 attacks:
 - acceptance_func: lpips
   attack_cycles: 10000
+  attack_name: example_attack
   colormode: grayscale
   delta_scaledown: true
   device: cpu
   gate: null
   hamming_threshold: 24
+  hash_function: ahash
   hyperparameters:
     alpha: 2.9
     beta:
@@ -26,7 +28,7 @@ attacks:
 description: Example experiment with all hash functions
 device: cpu
 metadata:
-  created_at: '2025-07-10T21:12:46.232615'
+  created_at: '2025-07-10T22:49:25.142412'
   version: '1.0'
 name: Example Experiment
 output_name: spectra_out

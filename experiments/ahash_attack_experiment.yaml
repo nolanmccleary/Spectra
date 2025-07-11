@@ -8,7 +8,9 @@ save_config: true
 output_name: "ahash_attack_results"
 
 attacks:
-  - hamming_threshold: 24
+  - attack_name: "ahash_attack"
+    hash_function: "ahash"
+    hamming_threshold: 24
     colormode: "grayscale"
     device: "cpu"
     num_reps: 1
@@ -19,8 +21,8 @@ attacks:
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null
-    input_dir: null
-    output_dir: null
+    input_dir: "sample_images"
+    output_dir: "output"
     hyperparameters:
       alpha: 2.9
       beta: [0.9, null, null]

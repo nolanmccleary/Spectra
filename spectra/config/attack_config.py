@@ -18,6 +18,14 @@ class ColorMode(str, Enum):
     LUMA = "luma"
 
 
+class HashFunction(str, Enum):
+    """Supported hash functions"""
+    AHASH = "ahash"
+    DHASH = "dhash"
+    PHASH = "phash"
+    PDQ = "pdq"
+
+
 class HyperparameterConfig(BaseModel):
     """Configuration for attack hyperparameters"""
     alpha: float = Field(..., gt=0, description="Alpha parameter for perturbations")
@@ -42,6 +50,10 @@ class HyperparameterConfig(BaseModel):
 
 class AttackConfig(BaseModel):
     """Configuration for a single attack in a given experiment"""
+    # Attack identification
+    attack_name: str = Field(..., description="Unique name for this attack")
+    hash_function: HashFunction = Field(..., description="Hash function to attack")
+    
     # Core parameters
     hamming_threshold: int = Field(..., ge=0, description="Minimum hamming distance required")
     colormode: ColorMode = Field(...)

@@ -3,8 +3,7 @@ import sys
 import time
 import torch
 from spectra import Attack_Engine, PHASH, AHASH, DHASH, PDQ
-from spectra.config import ConfigManager, ExperimentConfig
-
+from spectra.config import ConfigManager, ExperimentConfig, HashFunction
 
 
 def attack_sequence_with_config(dev):
@@ -17,15 +16,18 @@ def attack_sequence_with_config(dev):
     # Try to load the full experiment config
     experiment_config = config_manager.load_experiment_config("full_attack_suite")
     
-    # Add attacks from configuration
-    hash_wrappers = [AHASH, DHASH, PHASH, PDQ]
-    attack_names = ["ahash_attack", "dhash_attack", "phash_attack", "pdq_attack"]
+    # Hash function mapping
+    hash_function_map = {
+        HashFunction.AHASH: AHASH,
+        HashFunction.DHASH: DHASH,
+        HashFunction.PHASH: PHASH,
+        HashFunction.PDQ: PDQ
+    }
     
-    for i, (hash_wrapper, attack_name) in enumerate(zip(hash_wrappers, attack_names)):
-        if i < len(experiment_config.attacks):
-            config = experiment_config.attacks[i]
-            # Pass LPIPS function directly to add_attack_from_config
-            engine.add_attack_from_config(attack_name, hash_wrapper, config)
+    # Add attacks from configuration using the new fields
+    for attack_config in experiment_config.attacks:
+        hash_wrapper = hash_function_map[attack_config.hash_function]
+        engine.add_attack_from_config(attack_config.attack_name, hash_wrapper, attack_config)
     
     #engine.add_attack_from_config("ahash_attack_2", AHASH, config_manager.load_attack_config("ahash_example")) #Can explicitly add additional attacks to the experiment if desired
 
@@ -44,9 +46,11 @@ def create_example_configs():
     config_manager = ConfigManager()
     
     # Create AHASH attack config
-    from spectra.config import AttackConfig, HyperparameterConfig
+    from spectra.config import AttackConfig, HyperparameterConfig, HashFunction
     
     ahash_config = AttackConfig(
+        attack_name="ahash_attack",
+        hash_function=HashFunction.AHASH,
         hamming_threshold=24,
         colormode="grayscale",
         device="cpu",
@@ -80,6 +84,8 @@ def create_example_configs():
         verbose=True,
         attacks=[
             AttackConfig(
+                attack_name="example_attack",
+                hash_function=HashFunction.AHASH,
                 hamming_threshold=24,
                 colormode="grayscale",
                 device="cpu",
