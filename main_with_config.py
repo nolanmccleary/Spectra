@@ -4,22 +4,18 @@ import time
 import torch
 from spectra import Attack_Engine, PHASH, AHASH, DHASH, PDQ
 from spectra.config import ConfigManager, ExperimentConfig
-from models import ALEX_IMPORT
+
 
 
 def attack_sequence_with_config(dev):
     """Run attacks using the new configuration system"""
     engine = Attack_Engine(verbose="on")
     
-    # Setup LPIPS
-    LPIPS_MODEL = ALEX_IMPORT(device=dev)
-    F_LPIPS = LPIPS_MODEL.get_lpips
-    
     # Load experiment configuration
     config_manager = ConfigManager()
 
     # Try to load the full experiment config
-    experiment_config = config_manager.load_experiment_config("example_experiment")
+    experiment_config = config_manager.load_experiment_config("full_attack_suite")
     
     # Add attacks from configuration
     hash_wrappers = [AHASH, DHASH, PHASH, PDQ]
@@ -31,7 +27,7 @@ def attack_sequence_with_config(dev):
             # Pass LPIPS function directly to add_attack_from_config
             engine.add_attack_from_config(attack_name, hash_wrapper, config)
     
-    engine.add_attack_from_config("ahash_attack_2", AHASH, config_manager.load_attack_config("ahash_example")) #Can explicitly add additional attacks to the experiment if desired
+    #engine.add_attack_from_config("ahash_attack_2", AHASH, config_manager.load_attack_config("ahash_example")) #Can explicitly add additional attacks to the experiment if desired
 
     print(f"Loaded experiment: {experiment_config.name}")
     print(f"Description: {experiment_config.description}")

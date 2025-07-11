@@ -1,5 +1,4 @@
 import json
-import lpips
 from spectra.config import AttackConfig
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
 from spectra.deltagrad.utils import anal_clamp
@@ -12,7 +11,7 @@ import torch
 from torchvision.transforms import ToPILImage
 from dataclasses import dataclass
 from typing import List, Dict, Any
-from models import ALEX_IMPORT, ALEX_ONNX
+from spectra.lpips import ALEX_IMPORT, ALEX_ONNX
 
 # Constants
 SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
