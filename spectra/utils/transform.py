@@ -52,7 +52,6 @@ def generate_conversion(kind: str) -> Callable[[torch.Tensor], torch.Tensor]:
         )
     return _CONVERSION_TABLE[kind]
 
-# ─────────────────── inversion (single-channel → RGB) ───────────────────
 
 def inverse_delta(tensor: torch.Tensor, delta: torch.Tensor, eps: float = EPS) -> torch.Tensor:
     """Global-mean luminance inversion used by original code."""
@@ -69,6 +68,7 @@ def inverse_delta(tensor: torch.Tensor, delta: torch.Tensor, eps: float = EPS) -
     return result.view(C, H, W)
 
 
+# ─────────────────── inversion (single-channel → RGB) ───────────────────
 def inverse_delta_local(tensor: torch.Tensor, delta: torch.Tensor, eps: float = EPS) -> torch.Tensor:
     """Local-mean variant of *inverse_delta*."""
     C, H, W = tensor.shape

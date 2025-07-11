@@ -14,13 +14,6 @@ def run_attacks(args):
     # Load experiment configuration
     config_manager = ConfigManager()
 
-    # Hash function mapping
-    hash_function_map = {
-        HashFunction.AHASH: AHASH,
-        HashFunction.DHASH: DHASH,
-        HashFunction.PHASH: PHASH,
-        HashFunction.PDQ: PDQ
-    }
     
     total_experiments = len(args.files)
     
@@ -40,22 +33,19 @@ def run_attacks(args):
             print(f"Number of attacks: {len(experiment_config.attacks)}")
             
             # Add attacks from configuration
-            for attack_config in experiment_config.attacks:
-                hash_wrapper = hash_function_map[attack_config.hash_function]
-                engine.add_attack_from_config(attack_config.attack_name, hash_wrapper, attack_config)
-                print(f"  Added attack: {attack_config.attack_name} ({attack_config.hash_function})")
+            engine.load_experiment_from_config(experiment_config)
             
             # Run attacks for this experiment
             print(f"\nStarting attacks...")
             start_time = time.time()
             engine.run_attacks()
             end_time = time.time()
-            
             print(f"\nExperiment completed in {end_time - start_time:.2f} seconds")
             
         except FileNotFoundError:
             print(f"Error: Configuration file '{experiment_file}' not found")
             continue
+
         except Exception as e:
             print(f"Error running experiment '{experiment_file}': {str(e)}")
             continue

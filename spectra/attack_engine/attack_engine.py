@@ -1,5 +1,6 @@
 import json
-from spectra.config import AttackConfig
+from this import d
+from spectra.config import AttackConfig, ExperimentConfig
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
 from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
@@ -9,6 +10,7 @@ from PIL import Image
 from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, generate_acceptance, generate_conversion, generate_inversion, generate_quant, create_sweep
 import torch
 from torchvision.transforms import ToPILImage
+from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Dict, Any
 from spectra.lpips import ALEX_IMPORT, ALEX_ONNX
@@ -33,6 +35,7 @@ class Attack_Engine:
         self.attacks: Dict[str, AttackRunConfig] = {}
         self.attack_log: Dict[str, Dict[str, Any]] = {}
         self.verbose = verbose
+        self.experiment = None
 
 
     def log(self, msg: str) -> None:
@@ -40,8 +43,15 @@ class Attack_Engine:
         if self.verbose == "on":
             print(msg)
 
+
+    def load_experiment_from_config(self, config: ExperimentConfig) -> None:
+        """Load an experiment from a configuration file"""
+        self.experiment = config
+        for attack_config in config.attacks:
+            self.add_attack_from_config(attack_config)
+
     
-    def add_attack_from_config(self, attack_tag: str, hash_wrapper: Hash_Wrapper, config: AttackConfig) -> None:
+    def add_attack_from_config(self, config: AttackConfig) -> None:
         """Register a new attack configuration using AttackConfig object"""
         input_path = Path(config.input_dir)
         images = [
@@ -49,8 +59,8 @@ class Attack_Engine:
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
         ]
         
-        attack_object = Attack_Object(hash_wrapper, config=config)
-        self.attacks[attack_tag] = AttackRunConfig(
+        attack_object = Attack_Object(config.get_hash_wrapper(), config=config)
+        self.attacks[config.attack_name] = AttackRunConfig(
             images=images,
             input_dir=config.input_dir,
             output_dir=config.output_dir,
@@ -97,6 +107,13 @@ class Attack_Engine:
 
     def run_attacks(self, output_name: str = "spectra_out") -> None:
         """Execute all registered attacks and save results"""
+        assert self.experiment is not None, "Experiment not loaded"
+        
+        experiment_date = datetime.now().strftime("%Y-%m-%d")
+        experiment_time = datetime.now().strftime("%H:%M:%S")
+
+        self.attack_log = {}
+        
         for attack_tag, config in self.attacks.items():
             self.attack_log[attack_tag] = {
                 "per_image_results": {},
@@ -107,7 +124,6 @@ class Attack_Engine:
             for image_name in config.images:
                 input_path = f"{config.input_dir}/{image_name}"
                 output_path = f"{config.output_dir}/{attack_tag}_{image_name}"
-                
                 result = config.attack_object.run_attack(input_path, output_path)
                 self.attack_log[attack_tag]["per_image_results"][image_name] = result
             
@@ -116,9 +132,23 @@ class Attack_Engine:
             self.attack_log[attack_tag]["average_results"] = self._calculate_averages(results_list)
 
         # Save results to JSON
-        json_filename = f"{output_name}.json"
+        json_filename = f"{self.experiment.name}.json"
+
+        experiment_endtime = datetime.now()
+        experiment_start_time = datetime.strptime(experiment_date + " " + experiment_time, "%Y-%m-%d %H:%M:%S")
+        experiment_runtime = experiment_endtime - experiment_start_time
+
+        self.attack_log["metadata"] = {
+            "experiment_name": self.experiment.name,
+            "experiment_description": self.experiment.description,
+            "experiment_date": experiment_date,
+            "experiment_time": experiment_time,
+            "experiment_runtime": str(experiment_runtime)
+        }
+
         with open(json_filename, 'w') as f:
             json.dump(self.attack_log, f, indent=4)
+        
         print(f"Attack log saved to {json_filename}")
 
 

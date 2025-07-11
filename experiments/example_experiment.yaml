@@ -28,7 +28,7 @@ attacks:
 description: Example experiment with all hash functions
 device: cpu
 metadata:
-  created_at: '2025-07-10T22:49:25.142412'
+  created_at: '2025-07-11T08:39:14.762727'
   version: '1.0'
 name: Example Experiment
 output_name: spectra_out

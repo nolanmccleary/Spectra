@@ -15,7 +15,7 @@ cd spectra
 pip install -r requirements.txt
 ```
 
-### Basic Use
+### Basic Usage
 
 Run attacks using the configuration system:
 
@@ -93,12 +93,12 @@ hyperparameters:
 
 ## Supported Hash Functions
 
-The system supports four major perceptual hash algorithms:
+The system currently supports four major perceptual hash algorithms:
 
 1. **AHASH** - Average Hash
 2. **DHASH** - Difference Hash  
 3. **PHASH** - Perceptual Hash
-4. **PDQ** - DCT-Based Perceptual Hash, Similar to PHash
+4. **PDQ**   - DCT-Based Perceptual Hash, Similar to PHash
 
 ## Input/Output
 
@@ -167,7 +167,7 @@ hyperparameters:
 
 ### Batch Processing
 
-Process multiple experiments in sequence:
+Run multiple experiments in sequence:
 
 ```bash
 # Create a batch script
@@ -213,7 +213,7 @@ gradient_injection/
 ├── spectra/                 # Core attack engine
 │   ├── config/             # Configuration system
 │   ├── utils/              # Utility functions
-    ├── deltagrad/          # Gradient compute engine
+│   ├── deltagrad/          # Gradient compute engine
 │   └── attack_engine.py    # Main attack orchestration
 ├── experiments/            # Configuration files
 ├── sample_images/          # Test images

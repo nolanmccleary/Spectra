@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Union, Tuple, Any
 from enum import Enum
-
+from spectra.hashes import Hash_Wrapper, AHASH, DHASH, PHASH, PDQ
 
 class Device(str, Enum):
     """Supported devices for computation"""
@@ -82,6 +82,16 @@ class AttackConfig(BaseModel):
     input_dir: str = Field(..., description="Input directory path")
     output_dir: str = Field(..., description="Output directory path")
     
+    def get_hash_wrapper(self) -> Hash_Wrapper:
+        hash_wrapper_map = {
+            HashFunction.AHASH: AHASH,
+            HashFunction.DHASH: DHASH,
+            HashFunction.PHASH: PHASH,
+            HashFunction.PDQ: PDQ
+        }
+        return hash_wrapper_map[self.hash_function]
+
+
     class Config:
         """Pydantic configuration"""
         use_enum_values = True
