@@ -1,4 +1,4 @@
-name: "AHASH Attack Experiment"
+name: "ahash_example"
 description: "Adversarial attack on AHASH using gradient-based optimization"
 device: "cpu"
 verbose: true
@@ -18,8 +18,8 @@ attack:
   hash_function: ahash
   hyperparameters:
     alpha: 2.9
-    beta: 0.9
-    scale_factor: 0.4
+    beta: 1.0
+    scale_factor: 2.0
     step_coeff: 0.0001
   lpips_func: alex_import
   num_reps: 1

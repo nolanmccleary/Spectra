@@ -13,7 +13,6 @@ def run_attacks(args):
     
     # Load experiment configuration
     config_manager = ConfigManager()
-
     
     total_experiments = len(args.files)
     
@@ -42,9 +41,9 @@ def run_attacks(args):
             end_time = time.time()
             print(f"\nExperiment completed in {end_time - start_time:.2f} seconds")
             
-        #except FileNotFoundError:
-        #    print(f"Error: Configuration file '{experiment_file}' not found")
-        #    continue
+        except FileNotFoundError:
+            print(f"Error: Configuration file '{experiment_file}' not found")
+            continue
 
         except Exception as e:
             print(f"Error running experiment '{experiment_file}': {str(e)}")
@@ -59,7 +58,6 @@ if __name__ == '__main__':
     # Set default dtype
     torch.set_default_dtype(torch.float32)
     sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
-    
     parser = argparse.ArgumentParser(description='Run adversarial attacks from experiment configurations')
     parser.add_argument('-d', '--device', type=str, default='cpu', help="Specify target hardware (currently not used - device is set in config)")
     parser.add_argument('-f', '--files', nargs='+', required=True, help='Target experiment YAML files (without .yaml extension)')

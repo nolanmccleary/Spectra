@@ -1,4 +1,4 @@
-name: "AHASH Attack Experiment"
+name: "ahash_attack_experiment"
 description: "Adversarial attack on AHASH using gradient-based optimization"
 device: "cpu"
 verbose: true
@@ -13,7 +13,7 @@ attacks:
     hamming_threshold: 24
     colormode: "grayscale"
     device: "cpu"
-    num_reps: 1
+    num_reps: 3
     attack_cycles: 10000
     delta_scaledown: true
     gate: null
@@ -23,9 +23,9 @@ attacks:
     lpips_func: null
     hyperparameters:
       alpha: 2.9
-      beta: [0.9, null, null]
+      beta: [1.0, null, null]
       step_coeff: 0.0001
-      scale_factor: [0.4, null, null]
+      scale_factor: [1.0, 4.0, 0.1]
 
 metadata:
   created_at: "2024-01-01T00:00:00"

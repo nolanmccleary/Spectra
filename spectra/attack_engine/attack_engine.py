@@ -116,8 +116,9 @@ class Attack_Engine:
         experiment_time = datetime.now().strftime("%H:%M:%S")
 
         # Create output directories
-        images_dir = f"{self.experiment.output_dir}/{self.experiment.name}/images"
-        results_dir = f"{self.experiment.output_dir}/{self.experiment.name}/results"
+        experiment_dir = f"{self.experiment.output_dir}/{self.experiment.name}_{str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))}"
+        images_dir = f"{experiment_dir}/images"
+        results_dir = f"{experiment_dir}/results"
         os.makedirs(images_dir, exist_ok=True)
         os.makedirs(results_dir, exist_ok=True)
 
@@ -141,7 +142,7 @@ class Attack_Engine:
             self.attack_log[attack_tag]["average_results"] = self._calculate_averages(results_list)
 
         # Save results to JSON
-        json_filename = f"{results_dir}/{self.experiment.name}.json"
+        json_filename = f"{results_dir}/results.json"
 
         experiment_endtime = datetime.now()
         experiment_start_time = datetime.strptime(experiment_date + " " + experiment_time, "%Y-%m-%d %H:%M:%S")
