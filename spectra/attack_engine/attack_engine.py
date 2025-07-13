@@ -45,15 +45,20 @@ class Attack_Engine:
             print(msg)
 
 
-    def load_experiment_from_config(self, config: ExperimentConfig) -> None:
-        """Load an experiment from a configuration file"""
+    def load_experiment_from_config(self, config: ExperimentConfig, force_engine_verbose: bool = False, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False) -> None:
+        """Load an experiment from a configuration file with optional verbosity overrides"""
         self.experiment = config
+        
+        # Apply engine verbosity override
+        if force_engine_verbose:
+            self.verbose = "on"
+        
         for attack_config in config.attacks:
-            self.add_attack_from_config(attack_config)
+            self.add_attack_from_config(attack_config, force_attack_verbose, force_deltagrad_verbose)
 
     
-    def add_attack_from_config(self, config: AttackConfig) -> None:
-        """Register a new attack configuration using AttackConfig object"""
+    def add_attack_from_config(self, config: AttackConfig, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False) -> None:
+        """Register a new attack configuration using AttackConfig object with optional verbosity overrides"""
         assert self.experiment is not None, "Experiment not loaded"
         
         input_path = Path(self.experiment.input_dir)
@@ -63,6 +68,13 @@ class Attack_Engine:
         ]
         
         attack_object = Attack_Object(config.get_hash_wrapper(), config=config)
+        
+        # Apply verbosity overrides
+        if force_attack_verbose:
+            attack_object.verbose = "on"
+        if force_deltagrad_verbose:
+            attack_object.deltagrad_verbose = "on"
+        
         self.attacks[config.attack_name] = AttackRunConfig(
             images=images,
             input_dir=self.experiment.input_dir,
@@ -108,7 +120,7 @@ class Attack_Engine:
         return {f"average_{k}": v / count for k, v in metrics.items()}
 
 
-    def run_attacks(self, output_name: str = "spectra_out") -> None:
+    def run_attacks(self) -> None:
         """Execute all registered attacks and save results"""
         assert self.experiment is not None, "Experiment not loaded"
         
@@ -148,18 +160,20 @@ class Attack_Engine:
         experiment_start_time = datetime.strptime(experiment_date + " " + experiment_time, "%Y-%m-%d %H:%M:%S")
         experiment_runtime = experiment_endtime - experiment_start_time
 
-        self.attack_log["metadata"] = {
-            "experiment_name": self.experiment.name,
-            "experiment_description": self.experiment.description,
-            "experiment_date": experiment_date,
-            "experiment_time": experiment_time,
-            "experiment_runtime": str(experiment_runtime)
-        }
-
-        with open(json_filename, 'w') as f:
-            json.dump(self.attack_log, f, indent=4)
         
-        print(f"Attack log saved to {json_filename}")
+        if self.experiment.save_config:
+            self.attack_log["metadata"] = {
+                "experiment_name": self.experiment.name,
+                "experiment_description": self.experiment.description,
+                "experiment_date": experiment_date,
+                "experiment_time": experiment_time,
+                "experiment_runtime": str(experiment_runtime)
+            }
+
+            with open(json_filename, 'w') as f:
+                json.dump(self.attack_log, f, indent=4)
+        
+            self.log(f"Attack log saved to {json_filename}")
 
 
 

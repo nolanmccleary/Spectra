@@ -3,7 +3,6 @@ description: "Comprehensive adversarial attacks on all hash functions"
 device: "cpu"
 verbose: true
 save_config: true
-output_name: "full_attack_suite"
 input_dir: "sample_images"
 output_dir: "output"
 
@@ -14,18 +13,18 @@ attacks:
     colormode: "grayscale"
     device: "cpu"
     num_reps: 1
-    attack_cycles: 10000
+    attack_cycles: 100
     delta_scaledown: true
     gate: null
     verbose: true
-    deltagrad_verbose: true
+    deltagrad_verbose: false
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
-      step_coeff: 0.001
+      step_coeff: 0.01
       scale_factor: [1.0, null, null]
 
   - attack_name: "dhash_attack"
@@ -34,7 +33,7 @@ attacks:
     colormode: "grayscale"
     device: "cpu"
     num_reps: 1
-    attack_cycles: 10000
+    attack_cycles: 100
     delta_scaledown: true
     gate: null
     verbose: true
@@ -45,7 +44,7 @@ attacks:
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
-      step_coeff: 0.0001
+      step_coeff: 0.01
       scale_factor: [1.0, null, null]
 
   - attack_name: "phash_attack"
@@ -54,7 +53,7 @@ attacks:
     colormode: "grayscale"
     device: "cpu"
     num_reps: 1
-    attack_cycles: 10000
+    attack_cycles: 100
     delta_scaledown: true
     gate: null
     verbose: true
@@ -65,7 +64,7 @@ attacks:
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
-      step_coeff: 0.00001
+      step_coeff: 0.1
       scale_factor: [1.0, null, null]
 
   - attack_name: "pdq_attack"
@@ -74,7 +73,7 @@ attacks:
     colormode: "grayscale"
     device: "cpu"
     num_reps: 1
-    attack_cycles: 10000
+    attack_cycles: 100
     delta_scaledown: true
     gate: null
     verbose: true
@@ -85,7 +84,7 @@ attacks:
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
-      step_coeff: 0.000002
+      step_coeff: 0.1
       scale_factor: [1.0, null, null]
 
 metadata:

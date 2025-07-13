@@ -110,7 +110,6 @@ class ExperimentConfig(BaseModel):
     
     # Output settings
     save_config: bool = Field(default=True, description="Save configuration with results")
-    output_name: str = Field(default="spectra_out", description="Output filename prefix")
     
     # Input/Output paths (optional, can be set later)
     input_dir: str = Field(..., description="Input directory path")

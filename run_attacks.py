@@ -31,8 +31,11 @@ def run_attacks(args):
             print(f"Device: {experiment_config.device}")
             print(f"Number of attacks: {len(experiment_config.attacks)}")
             
-            # Add attacks from configuration
-            engine.load_experiment_from_config(experiment_config)
+            # Add attacks from configuration with verbosity overrides
+            engine.load_experiment_from_config(experiment_config, 
+                                             force_engine_verbose=args.v1,
+                                             force_attack_verbose=args.v2,
+                                             force_deltagrad_verbose=args.v3)
             
             # Run attacks for this experiment
             print(f"\nStarting attacks...")
@@ -61,6 +64,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run adversarial attacks from experiment configurations')
     parser.add_argument('-d', '--device', type=str, default='cpu', help="Specify target hardware (currently not used - device is set in config)")
     parser.add_argument('-f', '--files', nargs='+', required=True, help='Target experiment YAML files (without .yaml extension)')
+    parser.add_argument('-v1', '--v1', action='store_true', help='Force attack engine verbosity to high')
+    parser.add_argument('-v2', '--v2', action='store_true', help='Force attack verbosity to high')
+    parser.add_argument('-v3', '--v3', action='store_true', help='Force deltagrad verbosity to high')
     args = parser.parse_args()
     
     run_attacks(args)
