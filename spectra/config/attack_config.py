@@ -67,6 +67,7 @@ class AttackConfig(BaseModel):
     delta_scaledown: bool = Field(..., description="Enable delta scaledown")
     gate: Optional[str] = Field(default=None, description="Gate function name")
     verbose: bool = Field(..., description="Enable verbose logging")
+    deltagrad_verbose: bool = Field(default=False, description="Enable verbose logging for deltagrad components")
     
     # Function specifications
     acceptance_func: str = Field(..., description="Acceptance function name")

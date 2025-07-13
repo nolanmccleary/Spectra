@@ -25,6 +25,7 @@ attack:
   num_reps: 1
   quant_func: null
   verbose: true
+  deltagrad_verbose: false
 metadata:
   created_at: '2025-07-11T08:39:14.761450'
   version: '1.0'

@@ -18,6 +18,7 @@ attacks:
     delta_scaledown: true
     gate: null
     verbose: true
+    deltagrad_verbose: true
     acceptance_func: "lpips"
     quant_func: null
     lpips_func: null

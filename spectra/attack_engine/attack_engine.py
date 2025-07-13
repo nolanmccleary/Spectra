@@ -192,6 +192,7 @@ class Attack_Object:
         self.colormode = config.colormode
         self.device = config.device
         self.verbose = "on" if config.verbose else "off"
+        self.deltagrad_verbose = "on" if config.deltagrad_verbose else "off"
         self.delta_scaledown = config.delta_scaledown
         self.gate = config.gate
         
@@ -378,6 +379,7 @@ class Attack_Object:
             func_package=self.func_package, 
             device_package=self.device_package, 
             tensor=self._tensor, 
+            verbose=self.deltagrad_verbose,
             vecMin=0.0, 
             vecMax=1.0
         )
