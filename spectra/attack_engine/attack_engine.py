@@ -45,20 +45,25 @@ class Attack_Engine:
             print(msg)
 
 
-    def load_experiment_from_config(self, config: ExperimentConfig, force_engine_verbose: bool = False, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False) -> None:
-        """Load an experiment from a configuration file with optional verbosity overrides"""
+    def load_experiment_from_config(self, config: ExperimentConfig, force_engine_verbose: bool = False, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None) -> None:
+        """Load an experiment from a configuration file with optional verbosity and device overrides"""
         self.experiment = config
         
         # Apply engine verbosity override
         if force_engine_verbose:
             self.verbose = "on"
         
+        # Apply device override to experiment config
+        if force_device is not None:
+            from spectra.config import Device
+            self.experiment.device = Device(force_device)
+        
         for attack_config in config.attacks:
-            self.add_attack_from_config(attack_config, force_attack_verbose, force_deltagrad_verbose)
+            self.add_attack_from_config(attack_config, force_attack_verbose, force_deltagrad_verbose, force_device)
 
     
-    def add_attack_from_config(self, config: AttackConfig, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False) -> None:
-        """Register a new attack configuration using AttackConfig object with optional verbosity overrides"""
+    def add_attack_from_config(self, config: AttackConfig, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None) -> None:
+        """Register a new attack configuration using AttackConfig object with optional verbosity and device overrides"""
         assert self.experiment is not None, "Experiment not loaded"
         
         input_path = Path(self.experiment.input_dir)
@@ -66,6 +71,11 @@ class Attack_Engine:
             f.name for f in input_path.iterdir() 
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
         ]
+        
+        # Apply device override to attack config
+        if force_device is not None:
+            from spectra.config import Device
+            config.device = Device(force_device)
         
         attack_object = Attack_Object(config.get_hash_wrapper(), config=config)
         
@@ -161,7 +171,7 @@ class Attack_Engine:
         experiment_runtime = experiment_endtime - experiment_start_time
 
         
-        if self.experiment.save_config:
+        if self.experiment.save_log:
             self.attack_log["metadata"] = {
                 "experiment_name": self.experiment.name,
                 "experiment_description": self.experiment.description,

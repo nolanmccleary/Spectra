@@ -31,11 +31,12 @@ def run_attacks(args):
             print(f"Device: {experiment_config.device}")
             print(f"Number of attacks: {len(experiment_config.attacks)}")
             
-            # Add attacks from configuration with verbosity overrides
+            # Add attacks from configuration with verbosity and device overrides
             engine.load_experiment_from_config(experiment_config, 
                                              force_engine_verbose=args.v1,
                                              force_attack_verbose=args.v2,
-                                             force_deltagrad_verbose=args.v3)
+                                             force_deltagrad_verbose=args.v3,
+                                             force_device=args.device)
             
             # Run attacks for this experiment
             print(f"\nStarting attacks...")
@@ -62,7 +63,7 @@ if __name__ == '__main__':
     torch.set_default_dtype(torch.float64)
     sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
     parser = argparse.ArgumentParser(description='Run adversarial attacks from experiment configurations')
-    parser.add_argument('-d', '--device', type=str, default='cpu', help="Specify target hardware (currently not used - device is set in config)")
+    parser.add_argument('-d', '--device', type=str, default=None, help="Override device setting in config (cpu, cuda, mps)")
     parser.add_argument('-f', '--files', nargs='+', required=True, help='Target experiment YAML files (without .yaml extension)')
     parser.add_argument('-v1', '--v1', action='store_true', help='Force attack engine verbosity to high')
     parser.add_argument('-v2', '--v2', action='store_true', help='Force attack verbosity to high')

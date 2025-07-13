@@ -109,7 +109,7 @@ class ExperimentConfig(BaseModel):
     attacks: List[AttackConfig] = Field(..., min_items=1, description="List of attack configurations")
     
     # Output settings
-    save_config: bool = Field(default=True, description="Save configuration with results")
+    save_log: bool = Field(default=True, description="Save log with results")
     
     # Input/Output paths (optional, can be set later)
     input_dir: str = Field(..., description="Input directory path")
