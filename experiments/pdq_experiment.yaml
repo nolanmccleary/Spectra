@@ -2,7 +2,6 @@ name: "pdq_experiment"
 description: "Comprehensive adversarial attacks on all hash functions"
 device: "cpu"
 verbose: false
-save_log: true
 input_dir: "sample_images"
 output_dir: "output"
 
@@ -24,7 +23,7 @@ attacks:
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: 0.1
       scale_factor: [1.0, null, null]
 
 metadata:

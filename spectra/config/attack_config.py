@@ -79,6 +79,7 @@ class AttackConfig(BaseModel):
     # LPIPS (optional) - can be string name or function object
     lpips_func: Optional[Union[str, Any]] = Field(default=None, description="LPIPS function name or function object")
     
+    dry_run: bool = Field(default=False, description="Dry run, don't save output")
     
     def get_hash_wrapper(self) -> Hash_Wrapper:
         hash_wrapper_map = {
@@ -109,7 +110,7 @@ class ExperimentConfig(BaseModel):
     attacks: List[AttackConfig] = Field(..., min_items=1, description="List of attack configurations")
     
     # Output settings
-    save_log: bool = Field(default=True, description="Save log with results")
+    dry_run: bool = Field(default=False, description="Dry run, don't save output")
     
     # Input/Output paths (optional, can be set later)
     input_dir: str = Field(..., description="Input directory path")

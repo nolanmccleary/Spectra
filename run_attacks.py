@@ -36,7 +36,8 @@ def run_attacks(args):
                                              force_engine_verbose=args.v1,
                                              force_attack_verbose=args.v2,
                                              force_deltagrad_verbose=args.v3,
-                                             force_device=args.device)
+                                             force_device=args.device,
+                                             force_dry_run=args.dry)
             
             # Run attacks for this experiment
             print(f"\nStarting attacks...")
@@ -68,6 +69,7 @@ if __name__ == '__main__':
     parser.add_argument('-v1', '--v1', action='store_true', help='Force attack engine verbosity to high')
     parser.add_argument('-v2', '--v2', action='store_true', help='Force attack verbosity to high')
     parser.add_argument('-v3', '--v3', action='store_true', help='Force deltagrad verbosity to high')
+    parser.add_argument('--dry', action='store_true', help="dry run, don't save output")
     args = parser.parse_args()
     
     run_attacks(args)

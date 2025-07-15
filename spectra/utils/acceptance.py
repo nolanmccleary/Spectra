@@ -8,7 +8,7 @@ __all__ = [
 def _lpips_acceptance(ao) -> Callable[[torch.Tensor, int], Tuple[bool, bool]]:
     """LPIPS-based acceptance closure bound to an `Attack_Object`."""
     def _fn(tensor: torch.Tensor, step_number: int):
-        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
         ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
         ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
         ao.current_l2      = ao.l2_func(ao._tensor, tensor)
@@ -31,7 +31,7 @@ def _lpips_acceptance(ao) -> Callable[[torch.Tensor, int], Tuple[bool, bool]]:
 
 def _l2_acceptance(ao):
     def _fn(tensor: torch.Tensor, step_number: int):
-        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
         ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
         ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
         ao.current_l2      = ao.l2_func(ao._tensor, tensor)
@@ -54,7 +54,7 @@ def _l2_acceptance(ao):
 
 def _latching_acceptance(ao):
     def _fn(tensor: torch.Tensor, step_number: int):
-        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
         ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
         ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
         ao.current_l2      = ao.l2_func(ao._tensor, tensor)
@@ -66,7 +66,7 @@ def _latching_acceptance(ao):
 
 def _step_acceptance(ao):
     def _fn(tensor: torch.Tensor, step_number: int):
-        ao.current_hash    = ao.func(tensor.to(ao.func_device))
+        ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
         ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
         ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
         ao.current_l2      = ao.l2_func(ao._tensor, tensor)

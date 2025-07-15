@@ -2,7 +2,7 @@ import json
 import os
 from this import d
 from spectra.config import AttackConfig, ExperimentConfig
-from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer
+from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer, Optimizer_Config, Delta_Config
 from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
@@ -45,7 +45,7 @@ class Attack_Engine:
             print(msg)
 
 
-    def load_experiment_from_config(self, config: ExperimentConfig, force_engine_verbose: bool = False, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None) -> None:
+    def load_experiment_from_config(self, config: ExperimentConfig, force_engine_verbose: bool = False, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None, force_dry_run: bool = False) -> None:
         """Load an experiment from a configuration file with optional verbosity and device overrides"""
         self.experiment = config
         
@@ -58,11 +58,14 @@ class Attack_Engine:
             from spectra.config import Device
             self.experiment.device = Device(force_device)
         
+        if force_dry_run:
+            config.dry_run = True
+        
         for attack_config in config.attacks:
-            self.add_attack_from_config(attack_config, force_attack_verbose, force_deltagrad_verbose, force_device)
+            self.add_attack_from_config(attack_config, force_attack_verbose, force_deltagrad_verbose, force_device, force_dry_run)
 
     
-    def add_attack_from_config(self, config: AttackConfig, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None) -> None:
+    def add_attack_from_config(self, config: AttackConfig, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None, force_dry_run: bool = False) -> None:
         """Register a new attack configuration using AttackConfig object with optional verbosity and device overrides"""
         assert self.experiment is not None, "Experiment not loaded"
         
@@ -77,11 +80,15 @@ class Attack_Engine:
             from spectra.config import Device
             config.device = Device(force_device)
         
+        if force_dry_run:
+            config.dry_run = True
+        
         attack_object = Attack_Object(config.get_hash_wrapper(), config=config)
         
-        # Apply verbosity overrides
+        # Apply verbosity overrides 
         if force_attack_verbose:
             attack_object.verbose = "on"
+        
         if force_deltagrad_verbose:
             attack_object.deltagrad_verbose = "on"
         
@@ -171,7 +178,7 @@ class Attack_Engine:
         experiment_runtime = experiment_endtime - experiment_start_time
 
         
-        if self.experiment.save_log:
+        if self.experiment.dry_run == False:
             self.attack_log["metadata"] = {
                 "experiment_name": self.experiment.name,
                 "experiment_description": self.experiment.description,
@@ -194,7 +201,7 @@ class Attack_Object:
     VALID_VERBOSITIES = {"on", "off"}
     DELTA_SCALEDOWN_STEPS = 50
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, config=None, **kwargs):
+    def __init__(self, hash_wrapper: Hash_Wrapper, config: AttackConfig = None, **kwargs):
         """Initialize attack configuration
         
         Args:
@@ -204,13 +211,13 @@ class Attack_Object:
         self._init_from_config(hash_wrapper, config)
 
 
-    def _init_from_config(self, hash_wrapper: Hash_Wrapper, config):
+    def _init_from_config(self, hash_wrapper: Hash_Wrapper, config: AttackConfig):
         """Initialize from AttackConfig object"""
-        from spectra.config import AttackConfig
-        
         if not isinstance(config, AttackConfig):
             raise ValueError("config must be an AttackConfig object")
         
+        self.config = config
+
         # Core attack parameters
         self.hamming_threshold = config.hamming_threshold
         self.colormode = config.colormode
@@ -226,7 +233,10 @@ class Attack_Object:
         # Function generators
         self.acceptance_func = generate_acceptance(self, config.acceptance_func)
         self.quant_func = generate_quant(config.quant_func)
-        
+        self.loss_func = bool_tensor_delta
+        self.quant_func_device = self.device
+        self.loss_func_device = self.device
+
         # Attack parameters
         self.num_reps = config.num_reps
         self.attack_cycles = config.attack_cycles
@@ -239,10 +249,6 @@ class Attack_Object:
         # Hyperparameters
         self._setup_hyperparameters_from_config(config.hyperparameters)
         
-        # Optimization packages
-        self.func_package = (self.func, bool_tensor_delta, self.quant_func)
-        self.device_package = (self.func_device, self.device, self.device)
-
 
     def _validate_inputs(self, device: str, verbose: str) -> None:
         """Validate input parameters"""
@@ -254,13 +260,13 @@ class Attack_Object:
 
     def _setup_hash_function(self, hash_wrapper: Hash_Wrapper) -> None:
         """Setup hash function and device compatibility"""
-        self.func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()
+        self.hash_func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()
         
         if self.device in available_devices:
-            self.func_device = self.device
+            self.hash_func_device = self.device
         else:
             self.log(f"Warning, current hash function '{hash_wrapper.get_name()}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
-            self.func_device = "cpu"
+            self.hash_func_device = "cpu"
 
 
     def _setup_lpips(self, lpips_func) -> None:
@@ -387,7 +393,7 @@ class Attack_Object:
                 self.width = self.original_width
             
             # Generate original hash
-            self.original_hash = self.func(self._tensor.to(self.func_device))
+            self.original_hash = self.hash_func(self._tensor.to(self.hash_func_device))
 
 
     def stage_attack(self, input_image_path: str) -> None:
@@ -398,15 +404,18 @@ class Attack_Object:
         # Load and process image
         self._load_and_process_image(input_image_path)
         
+
+        optimizer_config = Optimizer_Config(
+            func=self.hash_func,
+            loss_func=self.loss_func,
+            quant_func=self.quant_func,
+            func_device=self.hash_func_device,
+            loss_func_device=self.loss_func_device,
+            quant_func_device=self.quant_func_device,
+            verbose=self.deltagrad_verbose)
+
         # Setup optimizer
-        self.optimizer = NES_Optimizer(
-            func_package=self.func_package, 
-            device_package=self.device_package, 
-            tensor=self._tensor, 
-            verbose=self.deltagrad_verbose,
-            vecMin=0.0, 
-            vecMax=1.0
-        )
+        self.optimizer = NES_Optimizer(config=optimizer_config)
         
         # Calculate number of perturbations (must be even)
         self.num_perturbations = self.alpha
@@ -430,7 +439,7 @@ class Attack_Object:
             cand_tensor = self.quant_func(cand_tensor)
             cand_targ = self.quant_func(cand_targ)
 
-            cand_hash = self.func(cand_targ.to(self.func_device))
+            cand_hash = self.hash_func(cand_targ.to(self.hash_func_device))
             cand_ham = cand_hash.ne(self.original_hash).sum().item()
             if cand_ham >= self.hamming_threshold:
                 self.output_tensor = cand_tensor
@@ -453,13 +462,19 @@ class Attack_Object:
             for scale_factor in self.scale_factors:
 
                 for rep in range(self.num_reps):
+                    
                     step_count, curr_delta, accepted = self.optimizer.get_delta(
-                        step_coeff=self.step_coeff,
-                        num_steps=self.attack_cycles,
-                        perturbation_scale_factor=scale_factor,
-                        num_perturbations=self.num_perturbations,
-                        beta=beta, 
-                        acceptance_func=self.acceptance_func
+                        tensor=self._tensor,
+                        config=Delta_Config(
+                            step_coeff=self.step_coeff,
+                            num_steps=self.attack_cycles,
+                            perturbation_scale_factor=scale_factor,
+                            num_perturbations=self.num_perturbations,
+                            beta=beta, 
+                            acceptance_func=self.acceptance_func,
+                            vecMin=0.0,
+                            vecMax=1.0
+                        )
                     )
                     
                     if accepted or ret_set[0] is None:  # We get the acceptance best out of our entire sweep space for our output tensor
@@ -485,7 +500,7 @@ class Attack_Object:
             if self.resize_flag:
                 cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
-            self.output_hash = self.func(self.quant_func(cand_targ))
+            self.output_hash = self.hash_func(self.quant_func(cand_targ))
             self.output_hamming = self.original_hash.ne(self.output_hash.to(self.original_hash.device)).sum().item()
             self.attack_success = self.output_hamming >= self.hamming_threshold
 
@@ -496,12 +511,13 @@ class Attack_Object:
             self.output_lpips = self.lpips_func(self.rgb_tensor, self.output_tensor)
             self.output_l2 = self.l2_func(self.rgb_tensor, self.output_tensor)
             
-            out = self.output_tensor.detach()
-            output_image = ToPILImage()(out)
-            output_image.save(output_image_path)
+            if not self.config.dry_run:
+                out = self.output_tensor.detach()
+                output_image = ToPILImage()(out)
+                output_image.save(output_image_path)
             
-            self.log(f"Saved attacked image to {output_image_path}")
-            self.log(f"Success status: {self.attack_success}")
+                self.log(f"Saved attacked image to {output_image_path}")
+                self.log(f"Success status: {self.attack_success}")
 
 
         def null_guard(input):
@@ -509,6 +525,11 @@ class Attack_Object:
                 return "N/A"
             else:
                 return input
+
+        # For dry runs, we can't do post-validation since we don't save the image
+        post_validation = {}
+        if self.config.dry_run == False:
+            post_validation = image_compare(input_image_path, output_image_path, self.lpips_func, self.device, verbose = "off")
 
         out_log = {
             "pre_validation": {
@@ -522,7 +543,7 @@ class Attack_Object:
                 "ideal_scale_factor"    : null_guard(ret_set[3]),
                 "ideal_beta"            : null_guard(ret_set[2])
             },
-            "post_validation": image_compare(input_image_path, output_image_path, self.lpips_func, self.device, verbose = "off")
+            "post_validation": post_validation
         }
 
         self.log(out_log)
