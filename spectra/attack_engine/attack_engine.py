@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 from this import d
 from spectra.config import AttackConfig, ExperimentConfig
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer, Optimizer_Config, Delta_Config
@@ -260,7 +261,7 @@ class Attack_Object:
 
     def _setup_hash_function(self, hash_wrapper: Hash_Wrapper) -> None:
         """Setup hash function and device compatibility"""
-        self.hash_func, self.resize_height, self.resize_width, available_devices = hash_wrapper.get_info()
+        self.hash_func, self.resize_height, self.resize_width, available_devices = hash_wrapper.func, hash_wrapper.resize_height, hash_wrapper.resize_width, hash_wrapper.available_devices
         
         if self.device in available_devices:
             self.hash_func_device = self.device

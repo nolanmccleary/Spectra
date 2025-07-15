@@ -1,35 +1,13 @@
+from pydantic import BaseModel, Field
+from typing import Callable
+
 from .PDQ import PDQHasher
 
 
-class Hash_Wrapper:
-    
-    def __init__(self, name: str, func, resize_height: int=-1, resize_width: int=-1, available_devices: set[str]={"cpu"}):
-        self.name = name
-        self.func = func
-        self.resize_height = resize_height
-        self.resize_width = resize_width
-        self.available_devices = available_devices
-
-
-    def get_name(self):
-        return self.name
-
-    def get_info(self):
-        return self.func, self.resize_height, self.resize_width, self.available_devices
-    
-
-
-class PDQ_Wrapper(Hash_Wrapper):
-    
-    def __init__(self, name: str, func, resize_height: int=-1, resize_width: int=-1, available_devices: set[str]={"cpu"}):
-        self.PDQ = PDQHasher()
-        self.func = self.generate_pdq
-        self.name = name
-        self.resize_height = resize_height
-        self.resize_width = resize_width
-        self.available_devices = available_devices
-
-
-
-    def generate_pdq(self, tensor): #[1, H, W] -> [64]
-        return 
+class Hash_Wrapper(BaseModel):
+    """Parameterized wrapper for hash functions"""
+    name: str = Field(..., description="Name of the hash function")
+    func: Callable = Field(..., description="Hash function")
+    resize_height: int = Field(default=-1, description="Resize height")
+    resize_width: int = Field(default=-1, description="Resize width")
+    available_devices: set[str] = Field(default={"cpu"}, description="Available devices")

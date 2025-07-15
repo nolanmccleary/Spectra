@@ -3,6 +3,7 @@ import time
 import torch
 import sys
 import os
+import traceback
 from spectra import Attack_Engine, PHASH, AHASH, DHASH, PDQ
 from spectra.config import ConfigManager, HashFunction
 
@@ -52,6 +53,8 @@ def run_attacks(args):
 
         except Exception as e:
             print(f"Error running experiment '{experiment_file}': {str(e)}")
+            print("Full traceback:")
+            traceback.print_exc()
             continue
     
     print(f"\n{'='*60}")

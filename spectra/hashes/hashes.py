@@ -1,4 +1,4 @@
-from .hash_wrapper import Hash_Wrapper, PDQ_Wrapper
+from .hash_wrapper import Hash_Wrapper
 from .hash_algos import generate_phash_torch_batched, generate_phash_rgb_batched, generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched, generate_pdq_batched
 
 AHASH = Hash_Wrapper(name="ahash", func=generate_ahash_batched, resize_height=8, resize_width=8, available_devices={"cpu", "cuda", "mps"}) #Cannonical ahash resizes to 8x8
