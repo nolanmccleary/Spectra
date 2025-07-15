@@ -21,38 +21,32 @@ def run_attacks(args):
         print(f"Running experiment {i+1}/{total_experiments}: {experiment_file}")
         print(f"{'='*60}")
         
-        try:
-            # Load experiment configuration
-            experiment_config = config_manager.load_experiment_config(experiment_file)
+        
+        # Load experiment configuration
+        experiment_config = config_manager.load_experiment_config(experiment_file)
+        
+        print(f"Experiment: {experiment_config.name}")
+        if experiment_config.description:
+            print(f"Description: {experiment_config.description}")
+        print(f"Device: {experiment_config.device}")
+        print(f"Number of attacks: {len(experiment_config.attacks)}")
+        
+        # Add attacks from configuration with verbosity and device overrides
+        engine.load_experiment_from_config(experiment_config, 
+                                            force_engine_verbose=args.v1,
+                                            force_attack_verbose=args.v2,
+                                            force_deltagrad_verbose=args.v3,
+                                            force_device=args.device,
+                                            force_dry_run=args.dry)
+        
+        # Run attacks for this experiment
+        print(f"\nStarting attacks...")
+        start_time = time.time()
+        engine.run_attacks()
+        end_time = time.time()
+        print(f"\nExperiment completed in {end_time - start_time:.2f} seconds")
             
-            print(f"Experiment: {experiment_config.name}")
-            if experiment_config.description:
-                print(f"Description: {experiment_config.description}")
-            print(f"Device: {experiment_config.device}")
-            print(f"Number of attacks: {len(experiment_config.attacks)}")
-            
-            # Add attacks from configuration with verbosity and device overrides
-            engine.load_experiment_from_config(experiment_config, 
-                                             force_engine_verbose=args.v1,
-                                             force_attack_verbose=args.v2,
-                                             force_deltagrad_verbose=args.v3,
-                                             force_device=args.device,
-                                             force_dry_run=args.dry)
-            
-            # Run attacks for this experiment
-            print(f"\nStarting attacks...")
-            start_time = time.time()
-            engine.run_attacks()
-            end_time = time.time()
-            print(f"\nExperiment completed in {end_time - start_time:.2f} seconds")
-            
-        except FileNotFoundError:
-            print(f"Error: Configuration file '{experiment_file}' not found")
-            continue
 
-        except Exception as e:
-            print(f"Error running experiment '{experiment_file}': {str(e)}")
-            continue
     
     print(f"\n{'='*60}")
     print("All experiments completed!")

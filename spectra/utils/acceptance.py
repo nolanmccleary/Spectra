@@ -8,21 +8,21 @@ __all__ = [
 def _lpips_acceptance(ao) -> Callable[[torch.Tensor, int], Tuple[bool, bool]]:
     """LPIPS-based acceptance closure bound to an `Attack_Object`."""
     def _fn(tensor: torch.Tensor, step_number: int):
-        ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
-        ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
-        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
-        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+        ao.metrics.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
+        ao.metrics.current_hamming = int((ao.input_tensors.original_hash != ao.metrics.current_hash).sum().item())
+        ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
+        ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
 
         break_loop, accepted = False, False
-        if ao.gate is not None and ao.current_lpips >= ao.gate:
+        if ao.gate is not None and ao.metrics.current_lpips >= ao.gate:
             break_loop = True
 
-        if ao.current_hamming >= ao.hamming_threshold:
-            if ao.current_lpips < ao.output_lpips:
-                ao.output_lpips   = ao.current_lpips
-                ao.output_l2      = ao.current_l2
-                ao.output_hash    = ao.current_hash
-                ao.output_hamming = ao.current_hamming
+        if ao.metrics.current_hamming >= ao.hamming_threshold:
+            if ao.metrics.current_lpips < ao.metrics.output_lpips:
+                ao.metrics.output_lpips   = ao.metrics.current_lpips
+                ao.metrics.output_l2      = ao.metrics.current_l2
+                ao.metrics.output_hash    = ao.metrics.current_hash
+                ao.metrics.output_hamming = ao.metrics.current_hamming
                 accepted = True
             break_loop = True
         return break_loop, accepted
@@ -33,19 +33,19 @@ def _l2_acceptance(ao):
     def _fn(tensor: torch.Tensor, step_number: int):
         ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
         ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
-        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
-        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+        ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
+        ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
 
         break_loop, accepted = False, False
         if ao.gate is not None and ao.current_l2 >= ao.gate:
             break_loop = True
 
         if ao.current_hamming >= ao.hamming_threshold:
-            if ao.current_l2 < ao.output_l2:
-                ao.output_l2      = ao.current_l2
-                ao.output_lpips   = ao.current_lpips
-                ao.output_hash    = ao.current_hash
-                ao.output_hamming = ao.current_hamming
+            if ao.current_l2 < ao.metrics.output_l2:
+                ao.metrics.output_l2      = ao.metrics.current_l2
+                ao.metrics.output_lpips   = ao.metrics.current_lpips
+                ao.metrics.output_hash    = ao.metrics.current_hash
+                ao.metrics.output_hamming = ao.metrics.current_hamming
                 accepted = True
             break_loop = True
         return break_loop, accepted
@@ -56,8 +56,8 @@ def _latching_acceptance(ao):
     def _fn(tensor: torch.Tensor, step_number: int):
         ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
         ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
-        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
-        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+        ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
+        ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
         if ao.current_hamming >= ao.hamming_threshold:
             return True, True
         return False, False
@@ -68,8 +68,8 @@ def _step_acceptance(ao):
     def _fn(tensor: torch.Tensor, step_number: int):
         ao.current_hash    = ao.hash_func(tensor.to(ao.hash_func_device))
         ao.current_hamming = int((ao.original_hash != ao.current_hash).sum().item())
-        ao.current_lpips   = ao.lpips_func(ao._tensor, tensor)
-        ao.current_l2      = ao.l2_func(ao._tensor, tensor)
+        ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
+        ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
         if ao.current_hamming >= ao.hamming_threshold:
             if step_number < ao.min_steps:
                 ao.min_steps = step_number
