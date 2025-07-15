@@ -9,7 +9,6 @@ attacks:
   - attack_name: "ahash_attack"
     hash_function: "ahash"
     hamming_threshold: 24
-    colormode: "grayscale"
     device: "cpu"
     num_reps: 1
     attack_cycles: 100
@@ -29,7 +28,6 @@ attacks:
   - attack_name: "dhash_attack"
     hash_function: "dhash"
     hamming_threshold: 24
-    colormode: "grayscale"
     device: "cpu"
     num_reps: 1
     attack_cycles: 100
@@ -49,7 +47,6 @@ attacks:
   - attack_name: "phash_attack"
     hash_function: "phash"
     hamming_threshold: 28
-    colormode: "grayscale"
     device: "cpu"
     num_reps: 1
     attack_cycles: 200
@@ -69,7 +66,6 @@ attacks:
   - attack_name: "pdq_attack"
     hash_function: "pdq"
     hamming_threshold: 80
-    colormode: "grayscale"
     device: "cpu"
     num_reps: 1
     attack_cycles: 200

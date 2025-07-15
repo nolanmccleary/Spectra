@@ -221,7 +221,6 @@ class Attack_Object:
 
         # Core attack parameters
         self.hamming_threshold = config.hamming_threshold
-        self.colormode = config.colormode
         self.device = config.device
         self.verbose = "on" if config.verbose else "off"
         self.deltagrad_verbose = "on" if config.deltagrad_verbose else "off"
@@ -261,12 +260,16 @@ class Attack_Object:
 
     def _setup_hash_function(self, hash_wrapper: Hash_Wrapper) -> None:
         """Setup hash function and device compatibility"""
-        self.hash_func, self.resize_height, self.resize_width, available_devices = hash_wrapper.func, hash_wrapper.resize_height, hash_wrapper.resize_width, hash_wrapper.available_devices
+        self.hash_func = hash_wrapper.func
+        self.resize_height = hash_wrapper.resize_height
+        self.resize_width = hash_wrapper.resize_width
+        available_devices = hash_wrapper.available_devices
+        self.colormode = hash_wrapper.colormode
         
         if self.device in available_devices:
             self.hash_func_device = self.device
         else:
-            self.log(f"Warning, current hash function '{hash_wrapper.get_name()}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
+            self.log(f"Warning, current hash function '{hash_wrapper.name}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
             self.hash_func_device = "cpu"
 
 

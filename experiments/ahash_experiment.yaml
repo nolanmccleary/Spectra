@@ -9,7 +9,6 @@ attacks:
   - attack_name: "ahash_attack"
     hash_function: "ahash"
     hamming_threshold: 24
-    colormode: "grayscale"
     device: "cpu"
     num_reps: 1
     attack_cycles: 100

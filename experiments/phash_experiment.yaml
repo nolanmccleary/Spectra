@@ -10,7 +10,6 @@ attacks:
   - attack_name: "phash_attack"
     hash_function: "phash"
     hamming_threshold: 28
-    colormode: "grayscale"
     device: "cpu"
     num_reps: 1
     attack_cycles: 100

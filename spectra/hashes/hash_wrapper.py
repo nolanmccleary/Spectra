@@ -11,3 +11,4 @@ class Hash_Wrapper(BaseModel):
     resize_height: int = Field(default=-1, description="Resize height")
     resize_width: int = Field(default=-1, description="Resize width")
     available_devices: set[str] = Field(default={"cpu"}, description="Available devices")
+    colormode: str = Field(default="grayscale", description="Color mode for this hash function")

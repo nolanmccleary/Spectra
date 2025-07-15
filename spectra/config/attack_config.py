@@ -10,14 +10,6 @@ class Device(str, Enum):
     MPS = "mps"
 
 
-class ColorMode(str, Enum):
-    """Supported color modes"""
-    RGB = "rgb"
-    GRAYSCALE = "grayscale"
-    GRAYSCALE_LOCAL = "grayscale_local"
-    LUMA = "luma"
-
-
 class HashFunction(str, Enum):
     """Supported hash functions"""
     AHASH = "ahash"
@@ -56,7 +48,6 @@ class AttackConfig(BaseModel):
     
     # Core parameters
     hamming_threshold: int = Field(..., ge=0, description="Minimum hamming distance required")
-    colormode: ColorMode = Field(...)
     device: Device = Field(...)
     
     # Attack parameters
