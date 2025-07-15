@@ -1,7 +1,7 @@
 name: "ahash_experiment"
 description: "Comprehensive adversarial attacks on all hash functions"
 device: "cpu"
-verbose: true
+verbose: false
 input_dir: "sample_images"
 output_dir: "output"
 
@@ -14,7 +14,7 @@ attacks:
     attack_cycles: 100
     delta_scaledown: true
     gate: null
-    verbose: true
+    verbose: false
     deltagrad_verbose: false
     acceptance_func: "lpips"
     quant_func: null

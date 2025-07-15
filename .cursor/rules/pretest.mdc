@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+You should always try to run ahash_experiment locally before adding a chnage to make sure the system still runs.

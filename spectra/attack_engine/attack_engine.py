@@ -30,6 +30,28 @@ class AttackRunConfig:
     attack_object: 'Attack_Object'
 
 
+@dataclass
+class AttackRetSet:
+    curr_delta: torch.Tensor
+    step_count: int
+    beta: float
+    scale_factor: float
+
+
+@dataclass
+class AttackResult:
+    success: bool
+    original_hash: str
+    output_hash: str
+    hamming_distance: int
+    lpips: float
+    l2: float
+    num_steps: int
+    ideal_scale_factor: float
+    ideal_beta: float
+
+
+
 class Attack_Engine:
     """Manages multiple attacks and their execution"""
     
@@ -457,7 +479,7 @@ class Attack_Object:
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
-        ret_set = (None, None, None, None)
+        ret_set = AttackRetSet(None, 0, 0, 0)
 
         self.log(f"Beta sweep across: {self.betas}\n")
         self.log(f"Perturbation scale factor sweep across: {self.scale_factors}\n")
@@ -481,30 +503,37 @@ class Attack_Object:
                         )
                     )
                     
-                    if accepted or ret_set[0] is None:  # We get the acceptance best out of our entire sweep space for our output tensor
-                        ret_set = (curr_delta, step_count, beta, scale_factor)
-                        self.log(f"Accepted: steps={ret_set[1]}, beta={ret_set[2]}, scale={ret_set[3]}")
+                    if accepted or ret_set.curr_delta is None:  # We get the acceptance best out of our entire sweep space for our output tensor
+                        ret_set.curr_delta = curr_delta
+                        ret_set.step_count = step_count
+                        ret_set.beta = beta
+                        ret_set.scale_factor = scale_factor
+                        self.log(f"Accepted: steps={ret_set.step_count}, beta={ret_set.beta}, scale={ret_set.scale_factor}")
 
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
-        output_delta = ret_set[0]
-        
+        output_delta = ret_set.curr_delta.clone()
         if output_delta is not None:
+
+            ret_delta = output_delta.clone()
 
             if self.resize_flag:
                 optimal_delta = output_delta.view(3 if self.colormode == "rgb" else 1, self.height, self.width)
-                output_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
-            
-            rgb_delta = self.inversion_func(self.rgb_tensor, output_delta)
-            safe_scale = anal_clamp(self.rgb_tensor, rgb_delta, 0.0, 1.0)
+                ret_delta = tensor_resize(optimal_delta, self.original_height, self.original_width)
+
+            rgb_delta = self.inversion_func(self.rgb_tensor, ret_delta).to(self.device)
+            safe_scale = anal_clamp(self.rgb_tensor, rgb_delta, 0.0, 1.0).to(self.device)
 
             self.output_tensor = self.rgb_tensor + rgb_delta * safe_scale
+
+            self.log(f"Cosine similarity: {torch.cosine_similarity(self.output_tensor.flatten(), self.rgb_tensor.flatten(), dim=0):.10f}")
 
             cand_targ = self.conversion_func(self.output_tensor)
             if self.resize_flag:
                 cand_targ = tensor_resize(cand_targ, self.resize_height, self.resize_width)
 
             self.output_hash = self.hash_func(self.quant_func(cand_targ))
+
             self.output_hamming = self.original_hash.ne(self.output_hash.to(self.original_hash.device)).sum().item()
             self.attack_success = self.output_hamming >= self.hamming_threshold
 
@@ -543,9 +572,9 @@ class Attack_Object:
                 "hamming_distance"      : null_guard(self.output_hamming),
                 "lpips"                 : null_guard(self.output_lpips),
                 "l2"                    : null_guard(self.output_l2),
-                "num_steps"             : null_guard(ret_set[1]),
-                "ideal_scale_factor"    : null_guard(ret_set[3]),
-                "ideal_beta"            : null_guard(ret_set[2])
+                "num_steps"             : null_guard(ret_set.step_count),
+                "ideal_scale_factor"    : null_guard(ret_set.scale_factor),
+                "ideal_beta"            : null_guard(ret_set.beta)
             },
             "post_validation": post_validation
         }
