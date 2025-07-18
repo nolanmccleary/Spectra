@@ -56,11 +56,11 @@ def noop(tensor):
     return tensor
 
 
-def create_sweep(start, stop, step):
-    print(start, stop, step)
+def create_sweep(hp_tuple: Tuple[float, Optional[float], Optional[float]]):
+    start, stop, step = hp_tuple
     
     if stop == None or step == None:
         ret = [start]
-    else:     
+    else:
         ret = [start + step * i for i in range(int((stop + step - start) / step + 1E-6))]
     return ret

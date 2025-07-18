@@ -370,9 +370,8 @@ class Attack_Object:
         """Setup hyperparameters from HyperparameterConfig object"""
         self.alpha = config.hyperparameters.alpha
         self.step_coeff = config.hyperparameters.step_coeff
-        print(config.hyperparameters.beta)
-        self.betas = create_sweep(*config.hyperparameters.beta)
-        self.scale_factors = create_sweep(*config.hyperparameters.scale_factor)
+        self.betas = create_sweep(config.hyperparameters.beta)
+        self.scale_factors = create_sweep(config.hyperparameters.scale_factor)
 
 
     def log(self, msg: str) -> None:
