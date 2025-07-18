@@ -325,14 +325,18 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
     return {
         "lpips" : str(lpips_score),
         "l2" : str(l2_score),
-        "ahash_hamming" : str(ahash_delta),
-        "dhash_hamming" : str(dhash_delta),
-        "phash_hamming" : str(phash_delta),
-        "pdq_hamming"   : str(pdq_delta),
+        "ahash_hamming_imagehash" : str(ahash_delta),
+        "dhash_hamming_imagehash" : str(dhash_delta),
+        "pdq_hamming_imagehash"   : str(pdq_delta),
+        "phash_hamming_imagehash" : str(phash_delta),
         "ahash_hamming_torch" : str(ahash_delta_torch),
         "dhash_hamming_torch" : str(dhash_delta_torch),
+        "pdq_hamming_torch"   : str(pdq_delta_torch),
         "phash_hamming_torch" : str(phash_delta_torch),
-        "pdq_hamming_torch"   : str(pdq_delta_torch)
+        "ahash_discrepency" : str(int(ahash_delta_torch) - int(ahash_delta)),
+        "dhash_discrepency" : str(int(dhash_delta_torch) - int(dhash_delta)),
+        "phash_discrepency" : str(int(phash_delta_torch) - int(phash_delta)),
+        "pdq_discrepency"   : str(int(pdq_delta_torch) - int(pdq_delta))
     }   #Add error log if desired
 
 

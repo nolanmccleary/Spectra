@@ -26,8 +26,9 @@ def tensor_resize(input_tensor, height, width):
     tensor_resized = F.interpolate(                 #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
         tensor,
         size=(height, width),
-        mode='bilinear',
-        align_corners=False
+        mode='bicubic',
+        align_corners=False,
+        antialias=True
     )
     return tensor_resized.squeeze(0)                #[1, {3, 1}, H, W] -> [{3,1}, H, W]
 
@@ -121,7 +122,7 @@ def no_inversion(_: torch.Tensor, delta: torch.Tensor) -> torch.Tensor:  # noqa:
 _INVERSION_TABLE: Dict[str, Callable[[torch.Tensor, torch.Tensor], torch.Tensor]] = {
     'grayscale': inverse_delta,
     'grayscale_local': inverse_delta_local,
-    'luma': inverse_luma,
+    'luma': inverse_delta,  #change to inverse_luma if desired
     'noinvert': no_inversion,
     'rgb': no_inversion
 }

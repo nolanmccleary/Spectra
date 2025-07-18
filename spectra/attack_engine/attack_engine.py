@@ -155,10 +155,18 @@ class Attack_Engine:
             return {}
         
         metrics = {
-            "phash_hamming": 0,
-            "ahash_hamming": 0,
-            "dhash_hamming": 0,
-            "pdq_hamming": 0,
+            "ahash_hamming_torch": 0,
+            "dhash_hamming_torch": 0,
+            "phash_hamming_torch": 0,
+            "pdq_hamming_torch": 0,
+            "ahash_hamming_imagehash": 0,
+            "dhash_hamming_imagehash": 0,
+            "pdq_hamming_imagehash": 0,
+            "phash_hamming_imagehash": 0,
+            "ahash_discrepency": 0,
+            "dhash_discrepency": 0,
+            "phash_discrepency": 0,
+            "pdq_discrepency": 0,
             "lpips": 0.0,
             "l2": 0.0,
             "ideal_beta": 0,
@@ -170,10 +178,18 @@ class Attack_Engine:
             pre_val = result["pre_validation"]
             post_val = result["post_validation"]
             
-            metrics["phash_hamming"] += int(post_val["phash_hamming"])
-            metrics["ahash_hamming"] += int(post_val["ahash_hamming"])
-            metrics["dhash_hamming"] += int(post_val["dhash_hamming"])
-            metrics["pdq_hamming"] += int(post_val["pdq_hamming"])
+            metrics["ahash_hamming_torch"] += int(post_val["ahash_hamming_torch"])
+            metrics["dhash_hamming_torch"] += int(post_val["dhash_hamming_torch"])
+            metrics["pdq_hamming_torch"] += int(post_val["pdq_hamming_torch"])
+            metrics["phash_hamming_torch"] += int(post_val["phash_hamming_torch"])
+            metrics["ahash_hamming_imagehash"] += int(post_val["ahash_hamming_imagehash"])
+            metrics["dhash_hamming_imagehash"] += int(post_val["dhash_hamming_imagehash"])
+            metrics["pdq_hamming_imagehash"] += int(post_val["pdq_hamming_imagehash"])
+            metrics["phash_hamming_imagehash"] += int(post_val["phash_hamming_imagehash"])
+            metrics["ahash_discrepency"] += int(post_val["ahash_discrepency"])
+            metrics["dhash_discrepency"] += int(post_val["dhash_discrepency"])
+            metrics["phash_discrepency"] += int(post_val["phash_discrepency"])
+            metrics["pdq_discrepency"] += int(post_val["pdq_discrepency"])
             metrics["lpips"] += float(post_val["lpips"])
             metrics["l2"] += float(post_val["l2"])
             metrics["ideal_beta"] += float(pre_val["ideal_beta"])
@@ -182,6 +198,7 @@ class Attack_Engine:
         
         count = len(successful_results)
         return {f"average_{k}": v / count for k, v in metrics.items()}
+
 
 
     def run_attacks(self) -> None:
