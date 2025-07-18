@@ -28,7 +28,6 @@ def run_attacks(args):
         print(f"Experiment: {experiment_config.name}")
         if experiment_config.description:
             print(f"Description: {experiment_config.description}")
-        print(f"Device: {experiment_config.device}")
         print(f"Number of attacks: {len(experiment_config.attacks)}")
         
         # Add attacks from configuration with verbosity and device overrides

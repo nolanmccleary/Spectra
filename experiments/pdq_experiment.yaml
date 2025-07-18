@@ -1,7 +1,5 @@
 name: "pdq_experiment"
 description: "Comprehensive adversarial attacks on all hash functions"
-device: "cpu"
-verbose: false
 input_dir: "sample_images"
 output_dir: "output"
 

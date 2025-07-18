@@ -1,7 +1,5 @@
 import json
 import os
-import traceback
-from this import d
 from spectra.config import AttackConfig, ExperimentConfig
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer, Optimizer_Config, Delta_Config
 from spectra.deltagrad.utils import anal_clamp
@@ -100,19 +98,24 @@ class Attack_Engine:
         if force_engine_verbose:
             self.verbose = "on"
         
-        # Apply device override to experiment config
-        if force_device is not None:
-            from spectra.config import Device
-            self.experiment.device = Device(force_device)
-        
-        if force_dry_run:
-            config.dry_run = True
-        
         for attack_config in config.attacks:
-            self.add_attack_from_config(attack_config, force_attack_verbose, force_deltagrad_verbose, force_device, force_dry_run)
+            if force_device is not None:
+                from spectra.config import Device
+                attack_config.device = Device(force_device)
+            
+            if force_dry_run:
+                attack_config.dry_run = True
+
+            if force_attack_verbose:
+                attack_config.verbose = True
+            
+            if force_deltagrad_verbose:
+                attack_config.deltagrad_verbose = True
+
+            self.add_attack_from_config(attack_config)
 
     
-    def add_attack_from_config(self, config: AttackConfig, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None, force_dry_run: bool = False) -> None:
+    def add_attack_from_config(self, config: AttackConfig) -> None:
         """Register a new attack configuration using AttackConfig object with optional verbosity and device overrides"""
         assert self.experiment is not None, "Experiment not loaded"
         
@@ -122,22 +125,7 @@ class Attack_Engine:
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
         ]
         
-        # Apply device override to attack config
-        if force_device is not None:
-            from spectra.config import Device
-            config.device = Device(force_device)
-        
-        if force_dry_run:
-            config.dry_run = True
-        
         attack_object = Attack_Object(config.get_hash_wrapper(), config=config)
-        
-        # Apply verbosity overrides 
-        if force_attack_verbose:
-            attack_object.verbose = "on"
-        
-        if force_deltagrad_verbose:
-            attack_object.deltagrad_verbose = "on"
         
         self.attacks[config.attack_name] = AttackRunConfig(
             images=images,
@@ -200,7 +188,6 @@ class Attack_Engine:
         return {f"average_{k}": v / count for k, v in metrics.items()}
 
 
-
     def run_attacks(self) -> None:
         """Execute all registered attacks and save results"""
         assert self.experiment is not None, "Experiment not loaded"
@@ -232,7 +219,8 @@ class Attack_Engine:
             
             # Calculate averages
             results_list = list(self.attack_log[attack_tag]["per_image_results"].values())
-            self.attack_log[attack_tag]["average_results"] = self._calculate_averages(results_list)
+            if config.attack_object.config.dry_run == False:
+                self.attack_log[attack_tag]["average_results"] = self._calculate_averages(results_list)
 
         # Save results to JSON
         json_filename = f"{results_dir}/results.json"
@@ -242,19 +230,18 @@ class Attack_Engine:
         experiment_runtime = experiment_endtime - experiment_start_time
 
         
-        if self.experiment.dry_run == False:
-            self.attack_log["metadata"] = {
-                "experiment_name": self.experiment.name,
-                "experiment_description": self.experiment.description,
-                "experiment_date": experiment_date,
-                "experiment_time": experiment_time,
-                "experiment_runtime": str(experiment_runtime)
-            }
+        self.attack_log["metadata"] = {
+            "experiment_name": self.experiment.name,
+            "experiment_description": self.experiment.description,
+            "experiment_date": experiment_date,
+            "experiment_time": experiment_time,
+            "experiment_runtime": str(experiment_runtime)
+        }
 
-            with open(json_filename, 'w') as f:
-                json.dump(self.attack_log, f, indent=4)
-        
-            self.log(f"Attack log saved to {json_filename}")
+        with open(json_filename, 'w') as f:
+            json.dump(self.attack_log, f, indent=4)
+    
+        self.log(f"Attack log saved to {json_filename}")
 
 
 
@@ -408,8 +395,6 @@ class Attack_Object:
         
         # Output tensors
         self.output_tensors = OutputTensors()
-
-
 
         # Metrics
         self.metrics = Metrics(min_steps=self.attack_cycles)

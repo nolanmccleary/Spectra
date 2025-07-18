@@ -87,7 +87,6 @@ class AttackConfig(BaseModel):
         }
         return hash_wrapper_map[self.hash_function]
 
-
     class Config:
         """Pydantic configuration"""
         use_enum_values = True
@@ -99,15 +98,8 @@ class ExperimentConfig(BaseModel):
     name: str = Field(..., description="Experiment name")
     description: Optional[str] = Field(default=None, description="Experiment description")
     
-    # Global settings
-    device: Device = Field(...)
-    verbose: bool = Field(default=False)
-    
     # Attacks
     attacks: List[AttackConfig] = Field(..., min_items=1, description="List of attack configurations")
-    
-    # Output settings
-    dry_run: bool = Field(default=False, description="Dry run, don't save output")
     
     # Input/Output paths (optional, can be set later)
     input_dir: str = Field(..., description="Input directory path")
