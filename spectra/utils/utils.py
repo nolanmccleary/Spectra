@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 from spectra.utils.acceptance import create_acceptance as _create_acceptance
-
+from typing import Tuple, Optional
 
 def get_rgb_tensor(image_object, rgb_device):
     if image_object.mode == 'RGBA':
@@ -57,6 +57,8 @@ def noop(tensor):
 
 
 def create_sweep(start, stop, step):
+    print(start, stop, step)
+    
     if stop == None or step == None:
         ret = [start]
     else:     

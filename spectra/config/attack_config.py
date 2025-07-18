@@ -24,11 +24,11 @@ class HashFunction(str, Enum):
 class HyperparameterConfig(BaseModel):
     """Configuration for attack hyperparameters"""
     alpha: float = Field(..., gt=0, description="Alpha parameter for perturbations")
-    beta: Union[float, Tuple[float, Optional[float], Optional[float]]] = Field(
+    beta: Tuple[float, Optional[float], Optional[float]] = Field(
         ..., description="Beta value or sweep parameters (start, end, step)"
     )
     step_coeff: float = Field(..., gt=0, description="Step coefficient")
-    scale_factor: Union[float, Tuple[float, Optional[float], Optional[float]]] = Field(
+    scale_factor: Tuple[float, Optional[float], Optional[float]] = Field(
         ..., description="Scale factor value or sweep parameters (start, end, step)"
     )
     
@@ -58,9 +58,9 @@ class AttackConfig(BaseModel):
     attack_cycles: int = Field(..., gt=0, description="Number of attack cycles")
     
     # Optional features
-    delta_scaledown: bool = Field(..., description="Enable delta scaledown")
+    delta_scaledown: bool = Field(default=False, description="Enable delta scaledown")
     gate: Optional[str] = Field(default=None, description="Gate function name")
-    verbose: bool = Field(..., description="Enable verbose logging")
+    attack_verbose: bool = Field(default=False, description="Enable verbose logging")
     deltagrad_verbose: bool = Field(default=False, description="Enable verbose logging for deltagrad components")
     
     # Function specifications

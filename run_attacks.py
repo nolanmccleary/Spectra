@@ -3,8 +3,31 @@ import time
 import torch
 import sys
 import os
+import ast
+from typing import Union, Tuple, Optional
 from spectra import Attack_Engine, PHASH, AHASH, DHASH, PDQ
 from spectra.config import ConfigManager, HashFunction
+
+
+def parse_float_or_tuple(value: Union[str, float]) -> Union[float, Tuple[float, Optional[float], Optional[float]]]:
+    """Parse a string as either a float or a tuple of floats"""
+    try:
+        ret = None
+        if isinstance(value, str) and value.startswith('(') and value.endswith(')'):
+            tuple_str = value[1:-1]
+            parts = [part.strip() for part in tuple_str.split(',')]
+            
+            if len(parts) == 3:
+                ret = (float(parts[0]), float(parts[1]), float(parts[2]))
+            else:
+                raise ValueError(f"Invalid tuple format: {value}")
+        else:
+            ret = (float(value), None, None)
+    
+    except (ValueError, SyntaxError) as e:
+        raise argparse.ArgumentTypeError(f"Invalid value '{value}': {e}")
+    
+    return ret
 
 
 def run_attacks(args):
@@ -21,7 +44,6 @@ def run_attacks(args):
         print(f"Running experiment {i+1}/{total_experiments}: {experiment_file}")
         print(f"{'='*60}")
         
-        
         # Load experiment configuration
         experiment_config = config_manager.load_experiment_config(experiment_file)
         
@@ -31,13 +53,30 @@ def run_attacks(args):
         print(f"Number of attacks: {len(experiment_config.attacks)}")
         
         # Add attacks from configuration with verbosity and device overrides
-        engine.load_experiment_from_config(experiment_config, 
-                                            force_engine_verbose=args.v1,
-                                            force_attack_verbose=args.v2,
-                                            force_deltagrad_verbose=args.v3,
-                                            force_device=args.device,
-                                            force_dry_run=args.dry)
+        overrides = {
+            'force_engine_verbose': args.v1,
+            'force_attack_verbose': args.v2,
+            'force_deltagrad_verbose': args.v3,
+            'force_device': args.device,
+            'force_dry_run': args.dry,
+            'force_attack_cycles': args.attack_cycles,
+            'force_num_reps': args.num_reps,
+            'force_hamming_threshold': args.hamming_threshold,
+            'force_gate': args.gate,
+            'force_acceptance_func': args.acceptance_func,
+            'force_quant_func': args.quant_func,
+            'force_lpips_func': args.lpips_func,
+            'force_hyperparameters_alpha': args.alpha,
+            'force_hyperparameters_beta': args.beta,
+            'force_hyperparameters_step_coeff': args.step_coeff,
+            'force_hyperparameters_scale_factor': args.scale_factor
+        }
         
+        # Filter out None values to avoid overriding with None
+        overrides = {k: v for k, v in overrides.items() if v is not None}
+        
+        engine.load_experiment_from_config(experiment_config, **overrides)
+
         # Run attacks for this experiment
         print(f"\nStarting attacks...")
         start_time = time.time()
@@ -45,11 +84,10 @@ def run_attacks(args):
         end_time = time.time()
         print(f"\nExperiment completed in {end_time - start_time:.2f} seconds")
             
-
-    
     print(f"\n{'='*60}")
     print("All experiments completed!")
     print(f"{'='*60}")
+
 
 
 if __name__ == '__main__':
@@ -62,6 +100,17 @@ if __name__ == '__main__':
     parser.add_argument('-v1', '--v1', action='store_true', help='Force attack engine verbosity to high')
     parser.add_argument('-v2', '--v2', action='store_true', help='Force attack verbosity to high')
     parser.add_argument('-v3', '--v3', action='store_true', help='Force deltagrad verbosity to high')
+    parser.add_argument('-attack_cycles', type=int, default=None, help='Override attack cycles in config')
+    parser.add_argument('-num_reps', type=int, default=None, help='Override num_reps in config')
+    parser.add_argument('-hamming_threshold', type=int, default=None, help='Override hamming threshold in config')
+    parser.add_argument('-gate', type=str, default=None, help='Override gate in config')
+    parser.add_argument('-acceptance_func', type=str, default=None, help='Override acceptance function in config')
+    parser.add_argument('-quant_func', type=str, default=None, help='Override quantization function in config')
+    parser.add_argument('-lpips_func', type=str, default=None, help='Override lpips function in config')
+    parser.add_argument('-alpha', type=float, default=None, help='Override alpha in hyperparameters in config')
+    parser.add_argument('-beta', type=parse_float_or_tuple, default=None, help='Override beta in hyperparameters in config')
+    parser.add_argument('-step_coeff', type=parse_float_or_tuple, default=None, help='Override step_coeff in hyperparameters in config')
+    parser.add_argument('-scale_factor', type=float, default=None, help='Override scale_factor in hyperparameters in config')
     parser.add_argument('--dry', action='store_true', help="dry run, don't save output")
     args = parser.parse_args()
     

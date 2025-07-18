@@ -1,6 +1,7 @@
 import json
 import os
-from spectra.config import AttackConfig, ExperimentConfig
+
+from spectra.config import AttackConfig, ExperimentConfig, HyperparameterConfig
 from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer, Optimizer_Config, Delta_Config
 from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
@@ -90,31 +91,46 @@ class Attack_Engine:
             print(msg)
 
 
-    def load_experiment_from_config(self, config: ExperimentConfig, force_engine_verbose: bool = False, force_attack_verbose: bool = False, force_deltagrad_verbose: bool = False, force_device: str = None, force_dry_run: bool = False) -> None:
-        """Load an experiment from a configuration file with optional verbosity and device overrides"""
+    def load_experiment_from_config(self, config: ExperimentConfig, **overrides) -> None:
+        """Load an experiment from a configuration object with optional parameter overrides"""
         self.experiment = config
         
-        # Apply engine verbosity override
-        if force_engine_verbose:
+        # Apply engine-level overrides
+        if overrides.get('force_engine_verbose'):
             self.verbose = "on"
         
         for attack_config in config.attacks:
-            if force_device is not None:
-                from spectra.config import Device
-                attack_config.device = Device(force_device)
-            
-            if force_dry_run:
-                attack_config.dry_run = True
-
-            if force_attack_verbose:
-                attack_config.verbose = True
-            
-            if force_deltagrad_verbose:
-                attack_config.deltagrad_verbose = True
-
+            # Apply attack-level overrides
+            self._apply_overrides_to_config(attack_config, overrides)
             self.add_attack_from_config(attack_config)
 
-    
+    def _apply_overrides_to_config(self, config: AttackConfig, overrides: dict) -> None:
+        """Apply overrides to attack configuration"""
+        # Direct parameter overrides
+        direct_params = ['device', 'dry_run',
+                        'attack_cycles', 'num_reps', 'gate', 'acceptance_func', 
+                        'quant_func', 'lpips_func', 'attack_verbose', 'deltagrad_verbose', 'hamming_threshold']
+        
+        for param in direct_params:
+            override_key = f'force_{param}'
+            if override_key in overrides and overrides[override_key] is not None:
+                if param == 'device':
+                    from spectra.config import Device
+                    setattr(config, param, Device(overrides[override_key]))
+                else:
+                    setattr(config, param, overrides[override_key])
+        
+        # Hyperparameter overrides
+        hyperparam_mapping = {
+            'force_hyperparameters_alpha': 'alpha',
+            'force_hyperparameters_beta': 'beta', 
+            'force_hyperparameters_step_coeff': 'step_coeff',
+            'force_hyperparameters_scale_factor': 'scale_factor'
+        }
+        for override_key, hyperparam in hyperparam_mapping.items():
+            if override_key in overrides and overrides[override_key] is not None:
+                setattr(config.hyperparameters, hyperparam, overrides[override_key])
+
     def add_attack_from_config(self, config: AttackConfig) -> None:
         """Register a new attack configuration using AttackConfig object with optional verbosity and device overrides"""
         assert self.experiment is not None, "Experiment not loaded"
@@ -272,7 +288,7 @@ class Attack_Object:
         # Core attack parameters
         self.hamming_threshold = config.hamming_threshold
         self.device = config.device
-        self.verbose = "on" if config.verbose else "off"
+        self.verbose = "on" if config.attack_verbose else "off"
         self.deltagrad_verbose = "on" if config.deltagrad_verbose else "off"
         self.delta_scaledown = config.delta_scaledown
         self.gate = config.gate
@@ -297,7 +313,7 @@ class Attack_Object:
         self.l2_func = l2_delta
         
         # Hyperparameters
-        self._setup_hyperparameters_from_config(config.hyperparameters)
+        self._setup_hyperparameters_from_config(config)
         
 
     def _validate_inputs(self, device: str, verbose: str) -> None:
@@ -350,31 +366,13 @@ class Attack_Object:
         self.lpips_func = self.lpips_model.get_lpips
 
 
-    def _setup_hyperparameters(self, hyperparameter_set: dict) -> None:
-        """Setup hyperparameters from configuration"""
-        self.alpha = hyperparameter_set["alpha"]
-        self.betas = create_sweep(*hyperparameter_set["beta"])
-        self.step_coeff = hyperparameter_set["step_coeff"]
-        self.scale_factors = create_sweep(*hyperparameter_set["scale_factor"])
-    
-
-    def _setup_hyperparameters_from_config(self, hyperparameters) -> None:
+    def _setup_hyperparameters_from_config(self, config: AttackConfig) -> None:
         """Setup hyperparameters from HyperparameterConfig object"""
-        self.alpha = hyperparameters.alpha
-        
-        # Handle beta (can be single value or sweep parameters)
-        if isinstance(hyperparameters.beta, (list, tuple)):
-            self.betas = create_sweep(*hyperparameters.beta)
-        else:
-            self.betas = [hyperparameters.beta]
-        
-        self.step_coeff = hyperparameters.step_coeff
-        
-        # Handle scale_factor (can be single value or sweep parameters)
-        if isinstance(hyperparameters.scale_factor, (list, tuple)):
-            self.scale_factors = create_sweep(*hyperparameters.scale_factor)
-        else:
-            self.scale_factors = [hyperparameters.scale_factor]
+        self.alpha = config.hyperparameters.alpha
+        self.step_coeff = config.hyperparameters.step_coeff
+        print(config.hyperparameters.beta)
+        self.betas = create_sweep(*config.hyperparameters.beta)
+        self.scale_factors = create_sweep(*config.hyperparameters.scale_factor)
 
 
     def log(self, msg: str) -> None:
