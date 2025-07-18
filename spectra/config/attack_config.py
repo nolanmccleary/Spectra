@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Union, Tuple, Any
 from enum import Enum
-from spectra.hashes import Hash_Wrapper, AHASH, DHASH, PHASH, PDQ
+from spectra.hashes import Hash_Wrapper, AHASH, DHASH, PHASH, PDQ, AHASH_RGB, DHASH_RGB, PHASH_RGB
 
 class Device(str, Enum):
     """Supported devices for computation"""
@@ -16,6 +16,9 @@ class HashFunction(str, Enum):
     DHASH = "dhash"
     PHASH = "phash"
     PDQ = "pdq"
+    AHASH_RGB = "ahash_rgb"
+    DHASH_RGB = "dhash_rgb"
+    PHASH_RGB = "phash_rgb"
 
 
 class HyperparameterConfig(BaseModel):
@@ -77,7 +80,10 @@ class AttackConfig(BaseModel):
             HashFunction.AHASH: AHASH,
             HashFunction.DHASH: DHASH,
             HashFunction.PHASH: PHASH,
-            HashFunction.PDQ: PDQ
+            HashFunction.PDQ: PDQ,
+            HashFunction.AHASH_RGB: AHASH_RGB,
+            HashFunction.DHASH_RGB: DHASH_RGB,
+            HashFunction.PHASH_RGB: PHASH_RGB
         }
         return hash_wrapper_map[self.hash_function]
 

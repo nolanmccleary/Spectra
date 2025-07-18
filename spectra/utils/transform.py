@@ -41,6 +41,7 @@ _CONVERSION_TABLE: Dict[str, Callable[[torch.Tensor], torch.Tensor]] = {
     'grayscale_local': rgb_to_grayscale,
     'luma': rgb_to_luma,
     'noinvert': no_conversion,
+    'rgb': no_conversion
 }
 
 
@@ -106,6 +107,7 @@ _INVERSION_TABLE: Dict[str, Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
     'grayscale_local': inverse_delta_local,
     'luma': inverse_luma,
     'noinvert': no_inversion,
+    'rgb': no_inversion
 }
 
 
