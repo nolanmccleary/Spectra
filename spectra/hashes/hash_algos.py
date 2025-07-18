@@ -50,7 +50,7 @@ def generate_dhash_rgb_batched(batched_tensor):
 
 
 def _generate_dhash(tensor):
-    diff = tensor[:, 1:] > tensor[:, :-1]
+    diff = tensor[:, 1:] >= tensor[:, :-1]
     return diff.to(torch.bool).view(-1)
 
 

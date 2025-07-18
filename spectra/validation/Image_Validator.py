@@ -5,8 +5,8 @@ import struct
 import zlib
 from spectra.utils import get_rgb_tensor, l2_delta
 from spectra.hashes.PDQ import PDQHasher
-
-
+from spectra.hashes.hash_algos import _generate_ahash, _generate_dhash, _generate_phash, _generate_pdq
+from spectra.utils.transform import tensor_resize, rgb_to_grayscale
 
 
 ########################################## HASH COMPARISON ######################################################
@@ -38,9 +38,49 @@ def PDQ_compare(img1, img2):
     return {"original" : hash1, "output" : hash2, "hamming" : hash1.hammingDistance(hash2)}
 
 
+def ahash_compare_torch(img1, img2):
+    img1 = tensor_resize(img1, 8, 8)
+    img2 = tensor_resize(img2, 8, 8)
+    gray1 = rgb_to_grayscale(img1)
+    gray2 = rgb_to_grayscale(img2)
+    hash1 = _generate_ahash(gray1)
+    hash2 = _generate_ahash(gray2)
+    return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
+
+
+def dhash_compare_torch(img1, img2):
+    img1 = tensor_resize(img1, 8, 8)
+    img2 = tensor_resize(img2, 8, 8)
+    gray1 = rgb_to_grayscale(img1)
+    gray2 = rgb_to_grayscale(img2)
+    hash1 = _generate_dhash(gray1)
+    hash2 = _generate_dhash(gray2)
+    return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
+
+
+def phash_compare_torch(img1, img2):
+    img1 = tensor_resize(img1, 8, 8)
+    img2 = tensor_resize(img2, 8, 8)
+    gray1 = rgb_to_grayscale(img1)
+    gray2 = rgb_to_grayscale(img2)
+    hash1 = _generate_phash(gray1)
+    hash2 = _generate_phash(gray2)
+    return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
+
+
+def pdq_compare_torch(img1, img2):
+    img1 = tensor_resize(img1, 256, 256)
+    img2 = tensor_resize(img2, 256, 256)
+    gray1 = rgb_to_grayscale(img1)
+    gray2 = rgb_to_grayscale(img2)
+    hash1 = _generate_pdq(gray1, 16)
+    hash2 = _generate_pdq(gray2, 16)
+    return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
+
+
+
 
 ################################## FILE METADATA COMPARISON ######################################################
-
 
 
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
@@ -230,6 +270,7 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
     lpips_score = lpips_func(img_1, img_2)
     l2_score = l2_delta(img_1, img_2)
 
+    '''
     md1 = {}
     md2 = {}
 
@@ -261,8 +302,7 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
 
             elif md1[key] != md2[key]:
                 error_log += f"\nMISMATCH:: First Image: {md1[key]}, Second Image: {md2[key]}"
-        
-
+    '''
     img1 = Image.open(img_path_1)
     img2 = Image.open(img_path_2)
 
@@ -271,11 +311,16 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
     phash_delta = phash_compare(img1, img2)["hamming"]
     pdq_delta = PDQ_compare(img_path_1, img_path_2)["hamming"]
 
+    ahash_delta_torch = ahash_compare_torch(img_1, img_2)["hamming"]
+    dhash_delta_torch = dhash_compare_torch(img_1, img_2)["hamming"]
+    phash_delta_torch = phash_compare_torch(img_1, img_2)["hamming"]
+    pdq_delta_torch = pdq_compare_torch(img_1, img_2)["hamming"]
 
+    '''
     if verbose == "on":
         output_msg = f"{img_path_1} - {img_path_2}" + "{" + error_log + "}"
         #print(output_msg)
-
+    '''
 
     return {
         "lpips" : str(lpips_score),
@@ -283,7 +328,11 @@ def image_compare(img_path_1, img_path_2, lpips_func, device, verbose):
         "ahash_hamming" : str(ahash_delta),
         "dhash_hamming" : str(dhash_delta),
         "phash_hamming" : str(phash_delta),
-        "pdq_hamming"   : str(pdq_delta)
+        "pdq_hamming"   : str(pdq_delta),
+        "ahash_hamming_torch" : str(ahash_delta_torch),
+        "dhash_hamming_torch" : str(dhash_delta_torch),
+        "phash_hamming_torch" : str(phash_delta_torch),
+        "pdq_hamming_torch"   : str(pdq_delta_torch)
     }   #Add error log if desired
 
 

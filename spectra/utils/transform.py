@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, Dict
 import torch
+import torch.nn.functional as F
 
 __all__ = [
     'rgb_to_grayscale',
@@ -13,9 +14,24 @@ __all__ = [
     'inverse_luma',
     'no_inversion',
     'generate_inversion',
+    'tensor_resize'
 ]
 
 EPS = 1e-6
+
+
+
+def tensor_resize(input_tensor, height, width):
+    tensor = input_tensor.clone().unsqueeze(0)      #[{3,1}, H, W] -> [1, {3, 1}, H, W]
+    tensor_resized = F.interpolate(                 #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
+        tensor,
+        size=(height, width),
+        mode='bilinear',
+        align_corners=False
+    )
+    return tensor_resized.squeeze(0)                #[1, {3, 1}, H, W] -> [{3,1}, H, W]
+
+
 
 # ────────────────── conversion (RGB → single-channel) ────────────────────
 

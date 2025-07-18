@@ -55,7 +55,7 @@ def run_attacks(args):
 
 if __name__ == '__main__':
     # Set default dtype
-    torch.set_default_dtype(torch.float32)
+    torch.set_default_dtype(torch.float64)
     sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
     parser = argparse.ArgumentParser(description='Run adversarial attacks from experiment configurations')
     parser.add_argument('-d', '--device', type=str, default=None, help="Override device setting in config (cpu, cuda, mps)")

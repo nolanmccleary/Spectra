@@ -1,29 +1,6 @@
 import numpy as np
 import torch
-import torch.nn.functional as F
 from spectra.utils.acceptance import create_acceptance as _create_acceptance
-from spectra.utils.transform import (
-    rgb_to_grayscale,
-    rgb_to_luma,
-    no_conversion,
-    generate_conversion,
-    generate_inversion,
-    inverse_delta,
-    inverse_delta_local,
-    inverse_luma,
-    no_inversion,
-)
-
-
-def tensor_resize(input_tensor, height, width):
-    tensor = input_tensor.clone().unsqueeze(0)      #[{3,1}, H, W] -> [1, {3, 1}, H, W]
-    tensor_resized = F.interpolate(                 #Interpolate needs to know batch and channel dimensions thus a 4-d tensor is required
-        tensor,
-        size=(height, width),
-        mode='bilinear',
-        align_corners=False
-    )
-    return tensor_resized.squeeze(0)                #[1, {3, 1}, H, W] -> [{3,1}, H, W]
 
 
 def get_rgb_tensor(image_object, rgb_device):
