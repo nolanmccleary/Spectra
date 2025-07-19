@@ -4,11 +4,6 @@ from enum import Enum
 from spectra.hashes import Hash_Wrapper, AHASH, DHASH, PHASH, PDQ, AHASH_RGB, DHASH_RGB, PHASH_RGB
 from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Signed_Optimizer, Colinear_Optimizer, Optimizer_Config
 
-class Device(str, Enum):
-    """Supported devices for computation"""
-    CPU = "cpu"
-    CUDA = "cuda" 
-    MPS = "mps"
 
 
 class HashFunction(str, Enum):
@@ -52,7 +47,7 @@ class AttackConfig(BaseModel):
     
     # Core parameters
     hamming_threshold: Optional[int] = Field(default=None, description="Minimum hamming distance required")
-    device: Optional[Device] = Field(default=Device.CPU, description="Device to use")
+    device: Optional[str] = Field(default="cpu", description="Device to use")
     
     # Attack parameters
     num_reps: Optional[int] = Field(default=None, description="Number of repetitions")
@@ -60,7 +55,7 @@ class AttackConfig(BaseModel):
     
     # Optional features
     delta_scaledown: Optional[bool] = Field(default=False, description="Enable delta scaledown")
-    gate: Optional[str] = Field(default=None, description="Gate function name")
+    gate: Optional[float] = Field(default=None, description="Gate function name")
     attack_verbose: Optional[bool] = Field(default=False, description="Enable verbose logging")
     deltagrad_verbose: Optional[bool] = Field(default=False, description="Enable verbose logging for deltagrad components")
     

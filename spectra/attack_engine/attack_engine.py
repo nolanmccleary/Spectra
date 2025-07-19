@@ -98,7 +98,7 @@ class Attack_Engine:
         for param in direct_params:
             override_key = f'force_{param}'
             if override_key in overrides and overrides[override_key] is not None:
-                print(f"Overriding {param} to {overrides[override_key]}")
+                self.log(f"Overriding {param} to {overrides[override_key]}")
                 setattr(self.experiment, param, overrides[override_key])
 
         for attack_config in config.attacks:
@@ -119,12 +119,8 @@ class Attack_Engine:
         for param in direct_params:
             override_key = f'force_{param}'
             if override_key in overrides and overrides[override_key] is not None:
-                if param == 'device':
-                    from spectra.config import Device
-                    setattr(config, param, Device(overrides[override_key]))
-                else:
-                    print(f"Overriding {param} to {overrides[override_key]}")
-                    setattr(config, param, overrides[override_key])
+                self.log(f"Overriding {param} to {overrides[override_key]}")
+                setattr(config, param, overrides[override_key])
         
         # Hyperparameter overrides
         hyperparam_mapping = {
@@ -316,7 +312,7 @@ class Attack_Object:
         self.resize_flag = self.resize_height > 0 and self.resize_width > 0
         
         # LPIPS setup
-        self._setup_lpips(config.lpips_func)
+        self._setup_lpips()
         self.l2_func = l2_delta
         
         # Hyperparameters
@@ -346,9 +342,10 @@ class Attack_Object:
             self.hash_func_device = "cpu"
 
 
-    def _setup_lpips(self, lpips_func) -> None:
-        
+    def _setup_lpips(self) -> None:
         """Setup LPIPS function for perceptual similarity"""
+        lpips_func = self.config.lpips_func
+        
         if lpips_func is not None:
             # Handle both function objects and string names
             if callable(lpips_func):
@@ -450,7 +447,6 @@ class Attack_Object:
         
         # Load and process image
         self._load_and_process_image(input_image_path)
-        
 
         optimizer_config = Optimizer_Config(
             func=self.hash_func,

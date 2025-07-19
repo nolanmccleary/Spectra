@@ -5,8 +5,8 @@ import sys
 import os
 import ast
 from typing import Union, Tuple, Optional
-from spectra import Attack_Engine, PHASH, AHASH, DHASH, PDQ
-from spectra.config import ConfigManager, HashFunction
+from spectra import Attack_Engine
+from spectra.config import ConfigManager
 
 
 def parse_float_or_tuple(value: Union[str, float]) -> Union[float, Tuple[float, Optional[float], Optional[float]]]:
@@ -47,7 +47,6 @@ def run_attacks(args):
         # Load experiment configuration
         experiment_config = config_manager.load_experiment_config(experiment_file)
         
-        
         # Add attacks from configuration with verbosity and device overrides
         overrides = {
             'force_engine_verbose': args.v1,
@@ -86,7 +85,6 @@ def run_attacks(args):
             print(f"Description: {engine.experiment.experiment_description}")
         print(f"Number of attacks: {len(engine.experiment.attacks)}")
 
-
         # Run attacks for this experiment
         print(f"\nStarting attacks...")
         start_time = time.time()
@@ -106,20 +104,18 @@ if __name__ == '__main__':
     sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
     parser = argparse.ArgumentParser(description='Run adversarial attacks from experiment configurations')
     parser.add_argument('-d', '--device', type=str, default=None, help="Override device setting in config (cpu, cuda, mps)")
-    
     parser.add_argument('-f', '--files', nargs='+', required=True, help='Target experiment YAML files (without .yaml extension)')
     parser.add_argument('-experiment_name', type=str, default=None, help='Override experiment name in config')
     parser.add_argument('-experiment_description', type=str, default=None, help='Override experiment description in config')
     parser.add_argument('-input_dir', type=str, default=None, help='Override experiment input directory in config')
     parser.add_argument('-output_dir', type=str, default=None, help='Override experiment output directory in config')
-    
     parser.add_argument('-v1', '--v1', action='store_true', help='Force attack engine verbosity to high')
     parser.add_argument('-v2', '--v2', action='store_true', help='Force attack verbosity to high')
     parser.add_argument('-v3', '--v3', action='store_true', help='Force deltagrad verbosity to high')
     parser.add_argument('-attack_cycles', type=int, default=None, help='Override attack cycles in config')
     parser.add_argument('-num_reps', type=int, default=None, help='Override num_reps in config')
     parser.add_argument('-hamming_threshold', type=int, default=None, help='Override hamming threshold in config')
-    parser.add_argument('-gate', type=str, default=None, help='Override gate in config')
+    parser.add_argument('-gate', type=float, default=None, help='Override gate in config')
     parser.add_argument('-acceptance_func', type=str, default=None, help='Override acceptance function in config')
     parser.add_argument('-quant_func', type=str, default=None, help='Override quantization function in config')
     parser.add_argument('-lpips_func', type=str, default=None, help='Override lpips function in config')
