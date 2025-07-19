@@ -72,7 +72,11 @@ def run_attacks(args):
             'force_experiment_name': args.experiment_name,
             'force_experiment_description': args.experiment_description,
             'force_experiment_input_dir': args.input_dir,
-            'force_experiment_output_dir': args.output_dir
+            'force_experiment_output_dir': args.output_dir,
+            'force_resize_width': args.resize_width,
+            'force_resize_height': args.resize_height,
+            'force_colormode': args.colormode,
+            'force_available_devices': args.available_devices
         }
         
         # Filter out None values to avoid overriding with None
@@ -128,6 +132,10 @@ if __name__ == '__main__':
     parser.add_argument('-attack_name', type=str, default=None, help='Override attack name in config')
     parser.add_argument('-hash_function', type=str, default=None, help='Override hash function in config')
     parser.add_argument('-delta_scaledown', action='store_true', help='Override delta scaledown in config')
+    parser.add_argument('-resize_width', type=int, default=None, help='Override resize width in config')
+    parser.add_argument('-resize_height', type=int, default=None, help='Override resize height in config')
+    parser.add_argument('-colormode', type=str, default=None, help='Override colormode in config')
+    parser.add_argument('-available_devices', type=str, nargs='+', default=None, help='Override available devices in config')
 
     args = parser.parse_args()
     

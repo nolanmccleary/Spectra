@@ -1,2 +1,11 @@
-from .hash_wrapper import Hash_Wrapper
-from .hashes import AHASH, AHASH_RGB, DHASH, DHASH_RGB, PHASH, PHASH_RGB, PDQ
+from .hash_algos import generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched, generate_phash_batched, generate_phash_rgb_batched, generate_pdq_batched
+
+__all__ = [
+    'generate_ahash_batched',
+    'generate_ahash_rgb_batched',
+    'generate_dhash_batched',
+    'generate_dhash_rgb_batched',
+    'generate_phash_batched',
+    'generate_phash_rgb_batched',
+    'generate_pdq_batched'
+]

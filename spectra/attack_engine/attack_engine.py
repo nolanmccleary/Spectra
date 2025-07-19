@@ -1,10 +1,9 @@
 import json
 import os
 
-from spectra.config import AttackConfig, ExperimentConfig, HyperparameterConfig
-from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer, Colinear_Optimizer, Optimizer_Config, Delta_Config
+from spectra.config import AttackConfig, ExperimentConfig
+from spectra.deltagrad import Optimizer_Config, Delta_Config
 from spectra.deltagrad.utils import anal_clamp
-from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
 from pathlib import Path
 from PIL import Image
@@ -107,14 +106,14 @@ class Attack_Engine:
             self.add_attack_from_config(attack_config)
 
 
-
     def _apply_overrides_to_config(self, config: AttackConfig, overrides: dict) -> None:
         """Apply overrides to attack configuration"""
         # Direct parameter overrides
         direct_params = ['device', 'dry_run',
                         'attack_cycles', 'num_reps', 'gate', 'acceptance_func', 
                         'quant_func', 'lpips_func', 'attack_verbose', 'deltagrad_verbose', 
-                        'hamming_threshold', 'attack_type', 'attack_name', 'hash_function', 'delta_scaledown']
+                        'hamming_threshold', 'attack_type', 'attack_name', 'hash_function', 'delta_scaledown',
+                        'resize_width', 'resize_height', 'colormode', 'available_devices']
         
         for param in direct_params:
             override_key = f'force_{param}'
@@ -133,18 +132,19 @@ class Attack_Engine:
             if override_key in overrides and overrides[override_key] is not None:
                 setattr(config.hyperparameters, hyperparam, overrides[override_key])
 
+
     def add_attack_from_config(self, config: AttackConfig) -> None:
         """Register a new attack configuration using AttackConfig object with optional verbosity and device overrides"""
         assert self.experiment is not None, "Experiment not loaded"
         
-        print(f"Experiment input dir: {self.experiment.experiment_input_dir}")
+        self.log(f"Experiment input dir: {self.experiment.experiment_input_dir}")
         input_path = Path(str(self.experiment.experiment_input_dir))
         images = [
             f.name for f in input_path.iterdir() 
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
         ]
         
-        attack_object = Attack_Object(config.get_hash_wrapper(), config=config)
+        attack_object = Attack_Object(config=config)
         
         self.attacks[config.attack_name] = AttackRunConfig(
             images=images,
@@ -271,17 +271,17 @@ class Attack_Object:
     VALID_VERBOSITIES = {"on", "off"}
     DELTA_SCALEDOWN_STEPS = 50
 
-    def __init__(self, hash_wrapper: Hash_Wrapper, config: AttackConfig = None, **kwargs):
+    def __init__(self, config: AttackConfig = None, **kwargs):
         """Initialize attack configuration
         
         Args:
             hash_wrapper: Hash function wrapper
             config: AttackConfig object (preferred) or individual parameters via kwargs
         """
-        self._init_from_config(hash_wrapper, config)
+        self._init_from_config(config)
 
 
-    def _init_from_config(self, hash_wrapper: Hash_Wrapper, config: AttackConfig):
+    def _init_from_config(self, config: AttackConfig):
         """Initialize from AttackConfig object"""
         if not isinstance(config, AttackConfig):
             raise ValueError("config must be an AttackConfig object")
@@ -297,7 +297,7 @@ class Attack_Object:
         self.gate = config.gate
         
         # Hash function setup
-        self._setup_hash_function(hash_wrapper)
+        self._setup_hash_params()
         
         # Function generators
         self.acceptance_func = generate_acceptance(self, config.acceptance_func)
@@ -327,18 +327,18 @@ class Attack_Object:
             raise ValueError(f"Invalid verbosity '{verbose}'. Expected one of: {self.VALID_VERBOSITIES}")
 
 
-    def _setup_hash_function(self, hash_wrapper: Hash_Wrapper) -> None:
+    def _setup_hash_params(self) -> None:
         """Setup hash function and device compatibility"""
-        self.hash_func = hash_wrapper.func
-        self.resize_height = hash_wrapper.resize_height
-        self.resize_width = hash_wrapper.resize_width
-        available_devices = hash_wrapper.available_devices
-        self.colormode = hash_wrapper.colormode
+        self.hash_func = self.config.get_hash_function()
+        self.resize_height = self.config.resize_height
+        self.resize_width = self.config.resize_width
+        available_devices = self.config.available_devices
+        self.colormode = self.config.colormode
         
         if self.device in available_devices:
             self.hash_func_device = self.device
         else:
-            self.log(f"Warning, current hash function '{hash_wrapper.name}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
+            self.log(f"Warning, current hash function '{self.config.hash_function}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
             self.hash_func_device = "cpu"
 
 

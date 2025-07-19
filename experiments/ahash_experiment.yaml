@@ -1,7 +1,7 @@
-name: "ahash_experiment"
-description: "Comprehensive adversarial attacks on all hash functions"
-input_dir: "sample_images"
-output_dir: "output"
+experiment_name: "ahash_experiment"
+experiment_description: "Comprehensive adversarial attacks on all hash functions"
+experiment_input_dir: "sample_images"
+experiment_output_dir: "output"
 
 attacks:
   - attack_name: "ahash_attack"
@@ -12,11 +12,15 @@ attacks:
     attack_cycles: 100
     delta_scaledown: true
     gate: null
-    verbose: false
+    attack_verbose: false
     deltagrad_verbose: false
     acceptance_func: "lpips"
     quant_func: null
-    lpips_func: null
+    lpips_func: alex_import
+    resize_width: 8
+    resize_height: 8
+    colormode: "grayscale"
+    available_devices: ["cpu", "cuda", "mps"]
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]

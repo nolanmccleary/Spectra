@@ -1,20 +1,11 @@
 from pydantic import BaseModel, Field, validator
-from typing import List, Optional, Union, Tuple, Any
-from enum import Enum
-from spectra.hashes import Hash_Wrapper, AHASH, DHASH, PHASH, PDQ, AHASH_RGB, DHASH_RGB, PHASH_RGB
+from typing import List, Optional, Union, Tuple, Any, Callable
+from spectra.hashes import generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched, generate_phash_batched, generate_phash_rgb_batched, generate_pdq_batched
 from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Signed_Optimizer, Colinear_Optimizer, Optimizer_Config
 
 
 
-class HashFunction(str, Enum):
-    """Supported hash functions"""
-    AHASH = "ahash"
-    DHASH = "dhash"
-    PHASH = "phash"
-    PDQ = "pdq"
-    AHASH_RGB = "ahash_rgb"
-    DHASH_RGB = "dhash_rgb"
-    PHASH_RGB = "phash_rgb"
+
 
 
 class HyperparameterConfig(BaseModel):
@@ -43,7 +34,7 @@ class AttackConfig(BaseModel):
     """Configuration for a single attack in a given experiment"""
     # Attack identification
     attack_name: Optional[str] = Field(default=None, description="Unique name for this attack")
-    hash_function: Optional[HashFunction] = Field(default=None, description="Hash function to attack")
+    hash_function: Optional[str] = Field(default=None, description="Hash function to attack")
     
     # Core parameters
     hamming_threshold: Optional[int] = Field(default=None, description="Minimum hamming distance required")
@@ -72,26 +63,38 @@ class AttackConfig(BaseModel):
     lpips_func: Optional[Union[str, Any]] = Field(default="alex", description="LPIPS function name or function object")
     
     dry_run: Optional[bool] = Field(default=False, description="Dry run, don't save output")
+
+
+    resize_width: Optional[int] = Field(default=None, description="Resize width")
+    resize_height: Optional[int] = Field(default=None, description="Resize height")
+    colormode: Optional[str] = Field(default=None, description="Color mode")
+    available_devices: Optional[List[str]] = Field(default=["cpu", "cuda", "mps"], description="Available devices")
     
-    def get_hash_wrapper(self) -> Hash_Wrapper:
-        hash_wrapper_map = {
-            HashFunction.AHASH: AHASH,
-            HashFunction.DHASH: DHASH,
-            HashFunction.PHASH: PHASH,
-            HashFunction.PDQ: PDQ,
-            HashFunction.AHASH_RGB: AHASH_RGB,
-            HashFunction.DHASH_RGB: DHASH_RGB,
-            HashFunction.PHASH_RGB: PHASH_RGB
+    def get_hash_function(self) -> Callable:
+        if self.hash_function is None:
+            raise ValueError("Hash function not specified")
+        hash_function_map = {
+            "ahash": generate_ahash_batched,
+            "ahash_rgb": generate_ahash_rgb_batched,
+            "dhash": generate_dhash_batched,
+            "dhash_rgb": generate_dhash_rgb_batched,
+            "phash": generate_phash_batched,
+            "phash_rgb": generate_phash_rgb_batched,
+            "pdq": generate_pdq_batched
         }
-        return hash_wrapper_map[self.hash_function]
+        return hash_function_map[self.hash_function]
+
 
     def get_optimizer(self, config: Optimizer_Config) -> Optimizer:
+        if self.attack_type is None:
+            raise ValueError("Attack type not specified")
         optimizer_map = {
             "nes": NES_Optimizer,
             "nes_signed": NES_Signed_Optimizer,
             "colinear": Colinear_Optimizer
         }
         return optimizer_map[self.attack_type](config=config)
+
 
     class Config:
         """Pydantic configuration"""
