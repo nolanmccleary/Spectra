@@ -12,7 +12,7 @@ def get_rgb_tensor(image_object, rgb_device):
 
 
 def generate_quant(quant_str):
-    if quant_str is None:
+    if quant_str == "noop":
         return noop
     else:
         quant_table = {"byte_quantize" : byte_quantize}

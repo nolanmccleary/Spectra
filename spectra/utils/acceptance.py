@@ -13,11 +13,12 @@ def _lpips_acceptance(ao) -> Callable[[torch.Tensor, int], Tuple[bool, bool]]:
         ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
         ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
 
+
         break_loop, accepted = False, False
         if ao.gate is not None and ao.metrics.current_lpips >= ao.gate:
             break_loop = True
-
-        if ao.metrics.current_hamming >= ao.hamming_threshold:
+        
+        if ao.metrics.current_hamming >= ao.config.hamming_threshold:
             if ao.metrics.current_lpips < ao.metrics.output_lpips:
                 ao.metrics.output_lpips   = ao.metrics.current_lpips
                 ao.metrics.output_l2      = ao.metrics.current_l2
@@ -40,7 +41,7 @@ def _l2_acceptance(ao):
         if ao.gate is not None and ao.metrics.current_l2 >= ao.gate:
             break_loop = True
 
-        if ao.metrics.current_hamming >= ao.hamming_threshold:
+        if ao.metrics.current_hamming >= ao.config.hamming_threshold:
             if ao.metrics.current_l2 < ao.metrics.output_l2:
                 ao.metrics.output_l2      = ao.metrics.current_l2
                 ao.metrics.output_lpips   = ao.metrics.current_lpips
@@ -58,7 +59,7 @@ def _latching_acceptance(ao):
         ao.metrics.current_hamming = int((ao.input_tensors.original_hash != ao.metrics.current_hash).sum().item())
         ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
         ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
-        if ao.metrics.current_hamming >= ao.hamming_threshold:
+        if ao.metrics.current_hamming >= ao.config.hamming_threshold:
             return True, True
         return False, False
     return _fn
@@ -70,7 +71,7 @@ def _step_acceptance(ao):
         ao.metrics.current_hamming = int((ao.input_tensors.original_hash != ao.metrics.current_hash).sum().item())
         ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
         ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
-        if ao.metrics.current_hamming >= ao.hamming_threshold:
+        if ao.metrics.current_hamming >= ao.config.hamming_threshold:
             if step_number < ao.metrics.min_steps:
                 ao.metrics.min_steps = step_number
                 return True, True

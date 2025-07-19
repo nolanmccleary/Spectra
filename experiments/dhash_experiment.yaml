@@ -1,10 +1,9 @@
-name: "dhash_experiment"
-description: "Comprehensive adversarial attacks on all hash functions"
-input_dir: "sample_images"
-output_dir: "output"
+experiment_name: "dhash_experiment"
+experiment_description: "Comprehensive adversarial attacks on all hash functions"
+experiment_input_dir: "sample_images"
+experiment_output_dir: "output"
 
 attacks:
-
   - attack_name: "dhash_attack"
     hash_function: "dhash"
     hamming_threshold: 24
@@ -13,10 +12,14 @@ attacks:
     attack_cycles: 100
     delta_scaledown: true
     gate: null
-    verbose: true
+    attack_verbose: true
+    colormode: "grayscale"
+    available_devices: ["cpu", "cuda", "mps"]
+    resize_width: 8
+    resize_height: 8
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: null
+    quant_func: "noop"
     lpips_func: null
     hyperparameters:
       alpha: 2.9

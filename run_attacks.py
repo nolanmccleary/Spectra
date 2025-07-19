@@ -28,6 +28,16 @@ def parse_float_or_tuple(value: Union[str, float]) -> Union[float, Tuple[float, 
         raise argparse.ArgumentTypeError(f"Invalid value '{value}': {e}")
     
     return ret
+    
+
+def parse_bool(value: str) -> bool:
+    """Parse a string as a boolean"""
+    if value.lower() in ['true', '1', 'yes', 'y']:
+        return True
+    elif value.lower() in ['false', '0', 'no', 'n']:
+        return False
+    else:
+        raise argparse.ArgumentTypeError(f"Invalid boolean value: {value}")
 
 
 def run_attacks(args):

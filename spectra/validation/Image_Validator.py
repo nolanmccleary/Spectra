@@ -5,7 +5,7 @@ import struct
 import zlib
 from spectra.utils import get_rgb_tensor, l2_delta
 from spectra.hashes.PDQ import PDQHasher
-from spectra.hashes.hash_algos import _generate_ahash, _generate_dhash, _generate_phash, _generate_pdq
+from spectra.hashes.hash_algos import generate_ahash_batched, generate_dhash_batched, generate_phash_batched, generate_pdq_batched
 from spectra.utils.transform import tensor_resize, rgb_to_grayscale
 
 
@@ -43,8 +43,8 @@ def ahash_compare_torch(img1, img2):
     img2 = tensor_resize(img2, 8, 8)
     gray1 = rgb_to_grayscale(img1)
     gray2 = rgb_to_grayscale(img2)
-    hash1 = _generate_ahash(gray1)
-    hash2 = _generate_ahash(gray2)
+    hash1 = generate_ahash_batched(gray1)
+    hash2 = generate_ahash_batched(gray2)
     return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
 
 
@@ -53,8 +53,8 @@ def dhash_compare_torch(img1, img2):
     img2 = tensor_resize(img2, 8, 8)
     gray1 = rgb_to_grayscale(img1)
     gray2 = rgb_to_grayscale(img2)
-    hash1 = _generate_dhash(gray1)
-    hash2 = _generate_dhash(gray2)
+    hash1 = generate_dhash_batched(gray1)
+    hash2 = generate_dhash_batched(gray2)
     return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
 
 
@@ -63,8 +63,8 @@ def phash_compare_torch(img1, img2):
     img2 = tensor_resize(img2, 8, 8)
     gray1 = rgb_to_grayscale(img1)
     gray2 = rgb_to_grayscale(img2)
-    hash1 = _generate_phash(gray1)
-    hash2 = _generate_phash(gray2)
+    hash1 = generate_phash_batched(gray1)
+    hash2 = generate_phash_batched(gray2)
     return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
 
 
@@ -73,8 +73,8 @@ def pdq_compare_torch(img1, img2):
     img2 = tensor_resize(img2, 256, 256)
     gray1 = rgb_to_grayscale(img1)
     gray2 = rgb_to_grayscale(img2)
-    hash1 = _generate_pdq(gray1, 16)
-    hash2 = _generate_pdq(gray2, 16)
+    hash1 = generate_pdq_batched(gray1, 16)
+    hash2 = generate_pdq_batched(gray2, 16)
     return {"original" : hash1, "output" : hash2, "hamming" : hash1.ne(hash2).sum().item()}
 
 

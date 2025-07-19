@@ -19,7 +19,7 @@ attacks:
     resize_height: 8
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: null
+    quant_func: "noop"
     lpips_func: null
     hyperparameters:
       alpha: 2.9
@@ -42,7 +42,7 @@ attacks:
     resize_height: 8
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: null
+    quant_func: "noop"
     lpips_func: null
     hyperparameters:
       alpha: 2.9
@@ -59,13 +59,13 @@ attacks:
     delta_scaledown: true
     gate: null
     attack_verbose: true
-    colormode: "luma"
+    colormode: "grayscale"
     available_devices: ["cpu", "cuda", "mps"]
     resize_width: 32
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: null
+    quant_func: "noop"
     lpips_func: null
     hyperparameters:
       alpha: 2.9
@@ -82,13 +82,13 @@ attacks:
     delta_scaledown: true
     gate: null
     attack_verbose: true
-    colormode: "luma"
+    colormode: "grayscale"
     available_devices: ["cpu", "cuda", "mps"]
     resize_width: 32
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: null
+    quant_func: "noop"
     lpips_func: null
     hyperparameters:
       alpha: 2.9

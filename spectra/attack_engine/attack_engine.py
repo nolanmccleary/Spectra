@@ -221,10 +221,11 @@ class Attack_Engine:
         os.makedirs(images_dir, exist_ok=True)
         os.makedirs(results_dir, exist_ok=True)
 
-        self.attack_log = {}
+        self.attack_log = {"experiment_config": self.experiment.check_and_dump(), "attacks": {}}
         
         for attack_tag, config in self.attacks.items():
-            self.attack_log[attack_tag] = {
+            self.attack_log["attacks"][attack_tag] = {
+                "attack_config": config.attack_object.config.check_and_dump(),
                 "per_image_results": {},
                 "average_results": {}
             }
@@ -234,12 +235,12 @@ class Attack_Engine:
                 input_path = f"{self.experiment.experiment_input_dir}/{image_name}"
                 output_path = f"{images_dir}/{attack_tag}_{image_name}"
                 result = config.attack_object.run_attack(input_path, output_path)
-                self.attack_log[attack_tag]["per_image_results"][image_name] = result
+                self.attack_log["attacks"][attack_tag]["per_image_results"][image_name] = result
             
             # Calculate averages
-            results_list = list(self.attack_log[attack_tag]["per_image_results"].values())
+            results_list = list(self.attack_log["attacks"][attack_tag]["per_image_results"].values())
             if config.attack_object.config.dry_run == False:
-                self.attack_log[attack_tag]["average_results"] = self._calculate_averages(results_list)
+                self.attack_log["attacks"][attack_tag]["average_results"] = self._calculate_averages(results_list)
 
         # Save results to JSON
         json_filename = f"{results_dir}/results.json"
@@ -352,7 +353,6 @@ class Attack_Object:
                 self.lpips_func = lpips_func
             
             else:
-                print(lpips_func)
                 self.lpips_model = None
                 
                 if lpips_func == 'alex_import':
@@ -505,7 +505,6 @@ class Attack_Object:
             for scale_factor in self.scale_factors:
 
                 for rep in range(self.num_reps):
-                    
                     step_count, curr_delta, accepted = self.optimizer.get_delta(
                         tensor=self.input_tensors.working_tensor,
                         config=Delta_Config(
@@ -525,7 +524,8 @@ class Attack_Object:
                         ret_set.step_count = step_count
                         ret_set.beta = beta
                         ret_set.scale_factor = scale_factor
-                        self.log(f"Accepted: steps={ret_set.step_count}, beta={ret_set.beta}, scale={ret_set.scale_factor}")
+                    
+                    self.log(f"Accepted={accepted}, steps={step_count}, beta={ret_set.beta}, scale={ret_set.scale_factor}")
 
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
@@ -543,7 +543,7 @@ class Attack_Object:
 
             self.output_tensors.output_tensor = self.input_tensors.rgb_tensor + rgb_delta * safe_scale
 
-            self.log(f"Cosine similarity: {torch.cosine_similarity(self.output_tensors.output_tensor.flatten(), self.input_tensors.rgb_tensor.flatten(), dim=0):.10f}")
+            self.log(f"Cosine similarity between input and output: {torch.cosine_similarity(self.output_tensors.output_tensor.flatten(), self.input_tensors.rgb_tensor.flatten(), dim=0):.10f}")
 
             cand_targ = self.conversion_func(self.output_tensors.output_tensor)
             if self.resize_flag:

@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, validator
-from typing import List, Optional, Union, Tuple, Any, Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from spectra.hashes import generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched, generate_phash_batched, generate_phash_rgb_batched, generate_pdq_batched
 from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Signed_Optimizer, Colinear_Optimizer, Optimizer_Config
 
@@ -45,10 +45,10 @@ class AttackConfig(BaseModel):
     attack_cycles: Optional[int] = Field(default=None, description="Number of attack cycles")
     
     # Optional features
-    delta_scaledown: Optional[bool] = Field(default=False, description="Enable delta scaledown")
+    delta_scaledown: Optional[bool] = Field(default=None, description="Enable delta scaledown")
     gate: Optional[float] = Field(default=None, description="Gate function name")
-    attack_verbose: Optional[bool] = Field(default=False, description="Enable verbose logging")
-    deltagrad_verbose: Optional[bool] = Field(default=False, description="Enable verbose logging for deltagrad components")
+    attack_verbose: Optional[bool] = Field(default=None, description="Enable verbose logging")
+    deltagrad_verbose: Optional[bool] = Field(default=None, description="Enable verbose logging for deltagrad components")
     
     attack_type: Optional[str] = Field(default=None, description="Attack type")
 
@@ -62,8 +62,7 @@ class AttackConfig(BaseModel):
     # LPIPS (optional) - can be string name or function object
     lpips_func: Optional[Union[str, Any]] = Field(default="alex", description="LPIPS function name or function object")
     
-    dry_run: Optional[bool] = Field(default=False, description="Dry run, don't save output")
-
+    dry_run: Optional[bool] = Field(default=None, description="Dry run, don't save output")
 
     resize_width: Optional[int] = Field(default=None, description="Resize width")
     resize_height: Optional[int] = Field(default=None, description="Resize height")
@@ -96,6 +95,14 @@ class AttackConfig(BaseModel):
         return optimizer_map[self.attack_type](config=config)
 
 
+    def check_and_dump(self) -> Dict[str, Any]:
+        """Check and dump the attack configuration, asserting all members are not None"""
+        for field_name, field_value in self.__dict__.items():
+            if field_name != "gate" and field_name != "lpips_func" and field_value is None:
+                raise ValueError(f"AttackConfig field '{field_name}' is None. All fields must be set before dumping.")
+        return self.model_dump()
+
+
     class Config:
         """Pydantic configuration"""
         use_enum_values = True
@@ -107,7 +114,7 @@ class ExperimentConfig(BaseModel):
     """Configuration for a complete experiment"""
     experiment_name: Optional[str] = Field(default=None, description="Experiment name")
     experiment_description: Optional[str] = Field(default=None, description="Experiment description")
-    engine_verbose: Optional[bool] = Field(default=False, description="Engine verbose")
+    engine_verbose: Optional[bool] = Field(default=None, description="Engine verbose")
 
     # Attacks
     attacks: List[AttackConfig] = Field(..., min_items=1, description="List of attack configurations")
@@ -115,6 +122,13 @@ class ExperimentConfig(BaseModel):
     # Input/Output paths (optional, can be set later)
     experiment_input_dir: Optional[str] = Field(default=None, description="Input directory path")
     experiment_output_dir: Optional[str] = Field(default=None, description="Output directory path")
+
+    def check_and_dump(self) -> Dict[str, Any]:
+        """Check and dump the experiment configuration, asserting all members are not None"""
+        for field_name, field_value in self.__dict__.items():
+            if field_value is None:
+                raise ValueError(f"ExperimentConfig field '{field_name}' is None. All fields must be set before dumping.")
+        return self.model_dump()
 
     class Config:
         """Pydantic configuration"""
