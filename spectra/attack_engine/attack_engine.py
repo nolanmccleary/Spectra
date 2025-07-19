@@ -2,7 +2,7 @@ import json
 import os
 
 from spectra.config import AttackConfig, ExperimentConfig, HyperparameterConfig
-from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer, Optimizer_Config, Delta_Config
+from spectra.deltagrad import NES_Signed_Optimizer, NES_Optimizer, Colinear_Optimizer, Optimizer_Config, Delta_Config
 from spectra.deltagrad.utils import anal_clamp
 from spectra.hashes import Hash_Wrapper
 from spectra.validation import image_compare
@@ -81,13 +81,12 @@ class Attack_Engine:
     def __init__(self, verbose: str):
         self.attacks: Dict[str, AttackRunConfig] = {}
         self.attack_log: Dict[str, Dict[str, Any]] = {}
-        self.verbose = verbose
         self.experiment = None
 
 
     def log(self, msg: str) -> None:
         """Log message if verbose mode is enabled"""
-        if self.verbose == "on":
+        if self.experiment.engine_verbose == "on":
             print(msg)
 
 
@@ -95,21 +94,27 @@ class Attack_Engine:
         """Load an experiment from a configuration object with optional parameter overrides"""
         self.experiment = config
         
-        # Apply engine-level overrides
-        if overrides.get('force_engine_verbose'):
-            self.verbose = "on"
-        
+        direct_params = ['experiment_name', 'experiment_description', 'experiment_input_dir', 'experiment_output_dir', 'engine_verbose']
+        for param in direct_params:
+            override_key = f'force_{param}'
+            if override_key in overrides and overrides[override_key] is not None:
+                print(f"Overriding {param} to {overrides[override_key]}")
+                setattr(self.experiment, param, overrides[override_key])
+
         for attack_config in config.attacks:
             # Apply attack-level overrides
             self._apply_overrides_to_config(attack_config, overrides)
             self.add_attack_from_config(attack_config)
+
+
 
     def _apply_overrides_to_config(self, config: AttackConfig, overrides: dict) -> None:
         """Apply overrides to attack configuration"""
         # Direct parameter overrides
         direct_params = ['device', 'dry_run',
                         'attack_cycles', 'num_reps', 'gate', 'acceptance_func', 
-                        'quant_func', 'lpips_func', 'attack_verbose', 'deltagrad_verbose', 'hamming_threshold']
+                        'quant_func', 'lpips_func', 'attack_verbose', 'deltagrad_verbose', 
+                        'hamming_threshold', 'attack_type', 'attack_name', 'hash_function', 'delta_scaledown']
         
         for param in direct_params:
             override_key = f'force_{param}'
@@ -118,6 +123,7 @@ class Attack_Engine:
                     from spectra.config import Device
                     setattr(config, param, Device(overrides[override_key]))
                 else:
+                    print(f"Overriding {param} to {overrides[override_key]}")
                     setattr(config, param, overrides[override_key])
         
         # Hyperparameter overrides
@@ -135,7 +141,8 @@ class Attack_Engine:
         """Register a new attack configuration using AttackConfig object with optional verbosity and device overrides"""
         assert self.experiment is not None, "Experiment not loaded"
         
-        input_path = Path(self.experiment.input_dir)
+        print(f"Experiment input dir: {self.experiment.experiment_input_dir}")
+        input_path = Path(str(self.experiment.experiment_input_dir))
         images = [
             f.name for f in input_path.iterdir() 
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
@@ -145,8 +152,8 @@ class Attack_Engine:
         
         self.attacks[config.attack_name] = AttackRunConfig(
             images=images,
-            input_dir=self.experiment.input_dir,
-            output_dir=self.experiment.output_dir,
+            input_dir=self.experiment.experiment_input_dir,
+            output_dir=self.experiment.experiment_output_dir,
             attack_object=attack_object
         )
 
@@ -212,7 +219,7 @@ class Attack_Engine:
         experiment_time = datetime.now().strftime("%H:%M:%S")
 
         # Create output directories
-        experiment_dir = f"{self.experiment.output_dir}/{self.experiment.name}_{str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))}"
+        experiment_dir = f"{self.experiment.experiment_output_dir}/{self.experiment.experiment_name}_{str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))}"
         images_dir = f"{experiment_dir}/images"
         results_dir = f"{experiment_dir}/results"
         os.makedirs(images_dir, exist_ok=True)
@@ -228,7 +235,7 @@ class Attack_Engine:
             
             # Run attack on each image
             for image_name in config.images:
-                input_path = f"{self.experiment.input_dir}/{image_name}"
+                input_path = f"{self.experiment.experiment_input_dir}/{image_name}"
                 output_path = f"{images_dir}/{attack_tag}_{image_name}"
                 result = config.attack_object.run_attack(input_path, output_path)
                 self.attack_log[attack_tag]["per_image_results"][image_name] = result
@@ -247,8 +254,8 @@ class Attack_Engine:
 
         
         self.attack_log["metadata"] = {
-            "experiment_name": self.experiment.name,
-            "experiment_description": self.experiment.description,
+            "experiment_name": self.experiment.experiment_name,
+            "experiment_description": self.experiment.experiment_description,
             "experiment_date": experiment_date,
             "experiment_time": experiment_time,
             "experiment_runtime": str(experiment_runtime)
@@ -455,7 +462,7 @@ class Attack_Object:
             verbose=self.deltagrad_verbose)
 
         # Setup optimizer
-        self.optimizer = NES_Optimizer(config=optimizer_config)
+        self.optimizer = self.config.get_optimizer(optimizer_config)
         
         # Calculate number of perturbations (must be even)
         self.num_perturbations = self.alpha

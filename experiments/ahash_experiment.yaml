@@ -22,6 +22,7 @@ attacks:
       beta: [1.0, null, null]
       step_coeff: 0.01
       scale_factor: [1.0, null, null]
+    attack_type: "nes"
 
 
 metadata:

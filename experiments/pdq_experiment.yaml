@@ -1,7 +1,7 @@
-name: "pdq_experiment"
-description: "Comprehensive adversarial attacks on all hash functions"
-input_dir: "sample_images"
-output_dir: "output"
+experiment_name: "pdq_experiment"
+experiment_description: "Comprehensive adversarial attacks on all hash functions"
+experiment_input_dir: "sample_images"
+experiment_output_dir: "output"
 
 attacks:
   - attack_name: "pdq_attack"
@@ -13,7 +13,7 @@ attacks:
     attack_cycles: 100
     delta_scaledown: true
     gate: null
-    verbose: false
+    attack_verbose: false
     deltagrad_verbose: false
     acceptance_func: "lpips"
     quant_func: null

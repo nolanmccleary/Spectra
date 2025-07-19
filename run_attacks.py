@@ -47,10 +47,6 @@ def run_attacks(args):
         # Load experiment configuration
         experiment_config = config_manager.load_experiment_config(experiment_file)
         
-        print(f"Experiment: {experiment_config.name}")
-        if experiment_config.description:
-            print(f"Description: {experiment_config.description}")
-        print(f"Number of attacks: {len(experiment_config.attacks)}")
         
         # Add attacks from configuration with verbosity and device overrides
         overrides = {
@@ -69,13 +65,27 @@ def run_attacks(args):
             'force_hyperparameters_alpha': args.alpha,
             'force_hyperparameters_beta': args.beta,
             'force_hyperparameters_step_coeff': args.step_coeff,
-            'force_hyperparameters_scale_factor': args.scale_factor
+            'force_hyperparameters_scale_factor': args.scale_factor,
+            'force_attack_type': args.attack_type,
+            'force_attack_name': args.attack_name,
+            'force_hash_function': args.hash_function,
+            'force_delta_scaledown': args.delta_scaledown,
+            'force_experiment_name': args.experiment_name,
+            'force_experiment_description': args.experiment_description,
+            'force_experiment_input_dir': args.input_dir,
+            'force_experiment_output_dir': args.output_dir
         }
         
         # Filter out None values to avoid overriding with None
         overrides = {k: v for k, v in overrides.items() if v is not None}
         
-        engine.load_experiment_from_config(experiment_config, **overrides)
+        exp = engine.load_experiment_from_config(experiment_config, **overrides)
+
+        print(f"Experiment: {engine.experiment.experiment_name}")
+        if engine.experiment.experiment_description:
+            print(f"Description: {engine.experiment.experiment_description}")
+        print(f"Number of attacks: {len(engine.experiment.attacks)}")
+
 
         # Run attacks for this experiment
         print(f"\nStarting attacks...")
@@ -96,7 +106,13 @@ if __name__ == '__main__':
     sys.path.append(os.path.join(os.path.dirname(__file__), "spectra/"))
     parser = argparse.ArgumentParser(description='Run adversarial attacks from experiment configurations')
     parser.add_argument('-d', '--device', type=str, default=None, help="Override device setting in config (cpu, cuda, mps)")
+    
     parser.add_argument('-f', '--files', nargs='+', required=True, help='Target experiment YAML files (without .yaml extension)')
+    parser.add_argument('-experiment_name', type=str, default=None, help='Override experiment name in config')
+    parser.add_argument('-experiment_description', type=str, default=None, help='Override experiment description in config')
+    parser.add_argument('-input_dir', type=str, default=None, help='Override experiment input directory in config')
+    parser.add_argument('-output_dir', type=str, default=None, help='Override experiment output directory in config')
+    
     parser.add_argument('-v1', '--v1', action='store_true', help='Force attack engine verbosity to high')
     parser.add_argument('-v2', '--v2', action='store_true', help='Force attack verbosity to high')
     parser.add_argument('-v3', '--v3', action='store_true', help='Force deltagrad verbosity to high')
@@ -111,7 +127,12 @@ if __name__ == '__main__':
     parser.add_argument('-beta', type=parse_float_or_tuple, default=None, help='Override beta in hyperparameters in config')
     parser.add_argument('-step_coeff', type=float, default=None, help='Override step_coeff in hyperparameters in config')
     parser.add_argument('-scale_factor', type=parse_float_or_tuple, default=None, help='Override scale_factor in hyperparameters in config')
-    parser.add_argument('--dry', action='store_true', help="dry run, don't save output")
+    parser.add_argument('-attack_type', type=str, default=None, help='Override attack type in config')
+    parser.add_argument('-dry', action='store_true', help="dry run, don't save output")
+    parser.add_argument('-attack_name', type=str, default=None, help='Override attack name in config')
+    parser.add_argument('-hash_function', type=str, default=None, help='Override hash function in config')
+    parser.add_argument('-delta_scaledown', action='store_true', help='Override delta scaledown in config')
+
     args = parser.parse_args()
     
     run_attacks(args)
