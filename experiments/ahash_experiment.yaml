@@ -4,7 +4,9 @@ experiment_input_dir: "sample_images"
 experiment_output_dir: "output"
 engine_verbose: true
 
-- attack_name: "ahash_attack"
+attacks:
+  - attack_name: "ahash_attack"
+    attack_type: "nes"
     hash_function: "ahash"
     hamming_threshold: 24
     device: "cpu"
@@ -13,6 +15,7 @@ engine_verbose: true
     delta_scaledown: true
     gate: null
     attack_verbose: true
+    dry_run: false
     colormode: "grayscale"
     available_devices: ["cpu", "cuda", "mps"]
     resize_width: 8

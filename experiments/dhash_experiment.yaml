@@ -1,7 +1,8 @@
 experiment_name: "dhash_experiment"
-experiment_description: "Comprehensive adversarial attacks on all hash functions"
+experiment_description: "Dhash experiment"
 experiment_input_dir: "sample_images"
 experiment_output_dir: "output"
+
 
 attacks:
   - attack_name: "dhash_attack"
@@ -9,6 +10,7 @@ attacks:
     hamming_threshold: 24
     device: "cpu"
     num_reps: 1
+    attack_type: "colinear"
     attack_cycles: 100
     delta_scaledown: true
     gate: null

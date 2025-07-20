@@ -10,7 +10,6 @@ attacks:
     device: "cpu"
     num_reps: 1
     attack_cycles: 200
-    delta_scaledown: true
     gate: null
     attack_verbose: true
     colormode: "grayscale"
@@ -20,6 +19,7 @@ attacks:
     deltagrad_verbose: false
     acceptance_func: "lpips"
     quant_func: "noop"
+    attack_type: "colinear"
     lpips_func: null
     hyperparameters:
       alpha: 2.9

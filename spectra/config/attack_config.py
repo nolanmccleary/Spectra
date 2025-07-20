@@ -5,9 +5,6 @@ from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Signed_Optimizer, Co
 
 
 
-
-
-
 class HyperparameterConfig(BaseModel):
     """Configuration for attack hyperparameters"""
     alpha: float = Field(..., gt=0, description="Alpha parameter for perturbations")
@@ -45,10 +42,10 @@ class AttackConfig(BaseModel):
     attack_cycles: Optional[int] = Field(default=None, description="Number of attack cycles")
     
     # Optional features
-    delta_scaledown: Optional[bool] = Field(default=None, description="Enable delta scaledown")
+    delta_scaledown: Optional[bool] = Field(default=True, description="Enable delta scaledown")
     gate: Optional[float] = Field(default=None, description="Gate function name")
-    attack_verbose: Optional[bool] = Field(default=None, description="Enable verbose logging")
-    deltagrad_verbose: Optional[bool] = Field(default=None, description="Enable verbose logging for deltagrad components")
+    attack_verbose: Optional[bool] = Field(default=False, description="Enable verbose logging")
+    deltagrad_verbose: Optional[bool] = Field(default=False, description="Enable verbose logging for deltagrad components")
     
     attack_type: Optional[str] = Field(default=None, description="Attack type")
 
@@ -62,7 +59,7 @@ class AttackConfig(BaseModel):
     # LPIPS (optional) - can be string name or function object
     lpips_func: Optional[Union[str, Any]] = Field(default="alex", description="LPIPS function name or function object")
     
-    dry_run: Optional[bool] = Field(default=None, description="Dry run, don't save output")
+    dry_run: Optional[bool] = Field(default=False, description="Dry run, don't save output")
 
     resize_width: Optional[int] = Field(default=None, description="Resize width")
     resize_height: Optional[int] = Field(default=None, description="Resize height")
@@ -113,8 +110,8 @@ class AttackConfig(BaseModel):
 class ExperimentConfig(BaseModel):
     """Configuration for a complete experiment"""
     experiment_name: Optional[str] = Field(default=None, description="Experiment name")
-    experiment_description: Optional[str] = Field(default=None, description="Experiment description")
-    engine_verbose: Optional[bool] = Field(default=None, description="Engine verbose")
+    experiment_description: Optional[str] = Field(default='', description="Experiment description")
+    engine_verbose: Optional[bool] = Field(default=False, description="Engine verbose")
 
     # Attacks
     attacks: List[AttackConfig] = Field(..., min_items=1, description="List of attack configurations")

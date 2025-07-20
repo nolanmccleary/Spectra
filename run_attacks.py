@@ -89,8 +89,8 @@ def run_attacks(args):
             'force_available_devices': args.available_devices
         }
         
-        # Filter out None values to avoid overriding with None
-        overrides = {k: v for k, v in overrides.items() if v is not None}
+        # Assumes all boolean arguments formatted through store_true
+        overrides = {k: v for k, v in overrides.items() if v is not None and v is not False}
         
         exp = engine.load_experiment_from_config(experiment_config, **overrides)
 
