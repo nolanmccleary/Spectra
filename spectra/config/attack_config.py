@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validator
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 from spectra.hashes import generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched, generate_phash_batched, generate_phash_rgb_batched, generate_pdq_batched
-from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Signed_Optimizer, Colinear_Optimizer, Optimizer_Config
+from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Signed_Optimizer, Colinear_Optimizer, Optimizer_Config, Gaussian_Optimizer
 
 
 
@@ -87,7 +87,8 @@ class AttackConfig(BaseModel):
         optimizer_map = {
             "nes": NES_Optimizer,
             "nes_signed": NES_Signed_Optimizer,
-            "colinear": Colinear_Optimizer
+            "colinear": Colinear_Optimizer,
+            "gaussian": Gaussian_Optimizer
         }
         return optimizer_map[self.attack_type](config=config)
 

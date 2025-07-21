@@ -1,55 +1,20 @@
-RESTRICTED RESEARCH LICENSE
+The MIT License (MIT)
 
-Copyright (c) 2024 Nolan McCleary
+Copyright (c) 2025 Nolan McCleary
 
-IMPORTANT: READ THIS LICENSE CAREFULLY BEFORE USING THIS SOFTWARE.
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-This software and associated documentation files (the "Software") are provided for RESEARCH AND EDUCATIONAL PURPOSES ONLY. By downloading, installing, or using this Software, you agree to be bound by the terms of this license.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-1. GRANT OF LICENSE
-   Permission is hereby granted, free of charge, to any person obtaining a copy of the Software, to use the Software STRICTLY for:
-   a) Academic or Industry research in computer vision and security with appropraite citation
-   b) Educational purposes in machine learning
-   d) Development of more robust content protection systems
-
-2. RESTRICTIONS
-   The following uses are STRICTLY PROHIBITED:
-   a) Circumventing content protection systems
-   b) Evading content moderation systems
-   c) Creating or distributing harmful content
-   d) Violating terms of service of any platform
-   e) Any use that could cause harm or violate laws
-   f) Commercial use without explicit written permission
-   g) Distribution of modified versions without explicit written permission
-   h) Use in any system that processes user content without explicit written permission
-
-3. RESPONSIBLE DISCLOSURE
-   Users must:
-   a) Report any discovered vulnerabilities privately to system owners
-   b) Follow responsible disclosure guidelines
-   c) Not publicly disclose vulnerabilities without permission
-   d) Provide reasonable time for fixes to be implemented
-
-4. LEGAL COMPLIANCE
-   Users are responsible for:
-   a) Ensuring compliance with all applicable laws
-   b) Obtaining necessary permissions before testing any systems
-   c) Complying with export control regulations
-   d) Following platform terms of service
-
-5. DISCLAIMER OF LIABILITY
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-6. INDEMNIFICATION
-   You agree to indemnify, defend, and hold harmless the copyright holder from and against any claims, damages, losses, liabilities, costs, and expenses (including reasonable attorneys' fees) arising from or relating to your use of the Software.
-
-7. TERMINATION
-   This license automatically terminates if you fail to comply with any of its terms and conditions.
-
-8. GOVERNING LAW
-   This license shall be governed by and construed in accordance with the laws of the jurisdiction in which the copyright holder resides, without regard to its conflict of law provisions.
-
-9. ENTIRE AGREEMENT
-   This license constitutes the entire agreement between you and the copyright holder regarding the Software and supersedes all prior or contemporaneous understandings regarding such subject matter. 
-
-This software was conceived and built in Toronto. If you are thinking about moving to Toronto, please reconsider your life choices.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

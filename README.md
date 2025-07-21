@@ -1,258 +1,66 @@
-# Spectra: Adversarially Testing Perceptual Hash Functions
+# SPECTRA: Spectral Perceptual Experimentation and Cross-Testing Research Adversary
 
-Spectra is a comprehensive toolkit designed to help evaluate the robusteness of perceptual hash algorithms against gradient-based adversarial attacks.
-
-## Quick Start
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/nolanmccleary/spectra.git
-cd spectra
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### Basic Usage
-
-Run attacks using the configuration system:
-
-```bash
-# Run a single experiment
-python run_attacks.py -f full_attack_suite
-
-# Run multiple experiments
-python run_attacks.py -f example_experiment ahash_attack_experiment
-
-# Run with custom device (if available)
-python run_attacks.py -f full_attack_suite -d cuda
-```
-
-## Configuration System
-
-The system uses a hierarchical configuration approach with YAML files:
-
-### Experiment Configuration
-
-Experiments are defined in `experiments/` directory. Each experiment contains one or more attack configurations:
-
-```yaml
-name: "Full Attack Suite Experiment"
-description: "Comprehensive adversarial attacks on all hash functions"
-device: "cpu"
-verbose: true
-attacks:
-  - attack_name: "ahash_attack"
-    hash_function: "ahash"
-    hamming_threshold: 24
-    colormode: "grayscale"
-    device: "cpu"
-    num_reps: 1
-    attack_cycles: 10000
-    delta_scaledown: true
-    acceptance_func: "lpips"
-    input_dir: "sample_images"
-    output_dir: "output"
-    hyperparameters:
-      alpha: 2.9
-      beta: [0.9, null, null]
-      step_coeff: 0.0001
-      scale_factor: [0.4, null, null]
-```
-
-### Attack Configuration Fields
-
-| Field | Description | Required |
-|-------|-------------|----------|
-| `attack_name` | Unique identifier for the attack | Yes |
-| `hash_function` | Target hash function (`ahash`, `dhash`, `phash`, `pdq`) | Yes |
-| `hamming_threshold` | Minimum hamming distance required | Yes |
-| `colormode` | Color processing mode (`grayscale`, `rgb`, `luma`) | Yes |
-| `device` | Computation device (`cpu`, `cuda`, `mps`) | Yes |
-| `num_reps` | Number of attack repetitions | Yes |
-| `attack_cycles` | Maximum attack iterations | Yes |
-| `delta_scaledown` | Enable delta scaling | Yes |
-| `acceptance_func` | Acceptance function (`lpips`, `l2`) | Yes |
-| `input_dir` | Directory containing input images | Yes |
-| `output_dir` | Directory for output images | Yes |
-| `hyperparameters` | Attack optimization parameters | Yes |
-
-### Hyperparameters
-
-Each attack configuration includes hyperparameters that control the optimization:
-
-```yaml
-hyperparameters:
-  alpha: 2.9          # Momentum coefficient
-  beta: [0.9, null, null]  # Current step weight (or sweep range)
-  step_coeff: 0.0001  # Gradient step size
-  scale_factor: [0.4, null, null]  # Perturbation scale (or sweep range)
-```
-
-## Supported Hash Functions
-
-The system currently supports four major perceptual hash algorithms:
-
-1. **AHASH** - Average Hash
-2. **DHASH** - Difference Hash  
-3. **PHASH** - Perceptual Hash
-4. **PDQ**   - DCT-Based Perceptual Hash, Similar to PHash
-
-## Input/Output
-
-### Input Images
-- Supported formats: JPEG, JPG, PNG
-- Images are automatically resized and converted to grayscale/RGB as needed by the chosen hash algorithm
-- Place images in the directory specified by `input_dir`
-
-### Output
-- **Attacked images**: Saved to `output_dir` with naming pattern `{attack_name}_{original_filename}`
-- **Results log**: JSON file with detailed attack metrics
-- **Validation data**: Post-attack hash comparisons across all algorithms
-
-### Output Metrics
-- Hamming distance between original and attacked hashes
-- LPIPS perceptual similarity score
-- L2 distance (Euclidean)
-- Number of optimization steps required
-- Success/failure status
-
-## Advanced Usage
-
-### Creating Custom Configurations
-
-```python
-from spectra.config import AttackConfig, ExperimentConfig, HyperparameterConfig
-
-# Create attack configuration
-attack_config = AttackConfig(
-    attack_name="custom_attack",
-    hash_function="phash",
-    hamming_threshold=32,
-    colormode="grayscale",
-    device="cpu",
-    num_reps=3,
-    attack_cycles=15000,
-    delta_scaledown=True,
-    acceptance_func="lpips",
-    input_dir="my_images",
-    output_dir="results",
-    hyperparameters=HyperparameterConfig(
-        alpha=2.9,
-        beta=0.85,
-        step_coeff=0.00005,
-        scale_factor=0.3
-    )
-)
-
-# Save configuration
-from spectra.config import ConfigManager
-config_manager = ConfigManager()
-config_manager.save_attack_config(attack_config, "my_custom_attack")
-```
-
-### Hyperparameter Tuning
-
-The system supports hyperparameter sweeps:
-
-```yaml
-hyperparameters:
-  alpha: 2.9
-  beta: [0.8, 0.95, 0.05]  # Sweep from 0.8 to 0.95 in steps of 0.05
-  step_coeff: 0.0001
-  scale_factor: [0.3, 0.6, 0.1]  # Sweep from 0.3 to 0.6 in steps of 0.1
-```
-
-### Batch Processing
-
-Run multiple experiments in sequence:
-
-```bash
-# Create a batch script
-python run_attacks.py -f experiment1 experiment2 experiment3
-```
-
-## Technical Details
-
-### Natural Evolution Strategies (NES)
-
-The core attack algorithm uses NES to estimate gradients for non-differentiable hash functions:
-
-1. **Perturbation Generation**: Creates normally distributed perturbation vectors
-2. **Gradient Estimation**: Computes gradient approximation from hash differences
-3. **Gradient Step**: Updates image in gradient direction with momentum (momentum is optional)
-
-### Algorithm Parameters
-
-- **`alpha`**: Proportionality constant relating perturbation vector count with image size (2.9 is recommended)
-- **`beta`**: Weight for current step vs. momentum
-- **`step_coeff`**: Scale factor for gradient steps
-- **`scale_factor`**: Perturbation (N(0, 1)) scale constant for gradient estimation
-
-### Performance Considerations
-
-- **Device Selection**: Use CUDA for GPU acceleration when available. MPS will run but torch's support is limited. 
-- **Image Resolution**: Higher resolution images require more compute
-- **Hash Complexity**: Different hashes will have different compute requirements. PDQ's compute requirement is comparatively very high. 
-
-## Research Applications
-
-This toolkit is designed for:
-
-1. **Hash Robustness Evaluation**: Compare vulnerability of different hash algorithms
-2. **Defense Development**: Test countermeasures against gradient-based attacks
-3. **Algorithm Comparison**: Evaluate hash function complementarity
-4. **Hash Algorithm Development**: Development of adversarially robust hashing algorithms
-
-## File Structure
-
-```
-gradient_injection/
-├── spectra/                 # Core attack engine
-│   ├── config/             # Configuration system
-│   ├── utils/              # Utility functions
-│   ├── deltagrad/          # Gradient compute engine
-│   └── attack_engine.py    # Main attack orchestration
-├── experiments/            # Configuration files
-├── sample_images/          # Test images
-├── output/                 # Attack results
-├── validation/             # Validation scripts and results
-├── run_attacks.py          # Main execution script
-└── requirements.txt        # Dependencies
-```
-
-## Dependencies
-
-- PyTorch (>= 1.9.0)
-- NumPy
-- Pillow
-- PyYAML
-- Pydantic
-- LPIPS (for perceptual similarity)
-
-## License
-
-This project is released under a Restricted Research License. See the LICENSE file for details.
-
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@software{spectra2024,
-  title={Spectra: Adversarially Testing Perceptual Hash Functions},
-  author={Nolan McCleary},
-  year={2025},
-  url={https://github.com/nolanmccleary/spectra}
-}
-```
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+Haters will say that I just wanted a dope project name and then tried to find some way to justify it with an acronym afterwards. I will neither confirm nor deny these baseless accusations.
 
 ## Disclaimer
+Spectra is inteded for research and educational use only. Users are responsible for ensuring ethical usage. The decision to open-source the system was largely made for the following reasons:
 
-This tool is intended for research purposes to evaluate the robustness of perceptual hash algorithms. Users are responsible for ensuring compliance with applicable laws and ethical guidelines when using this software.
+1. Gradient-based attacks tend to be algorithmically trivial. A motivated attacker could very easily create one. The real technical difficulty involved with this project so far has largely been due to architectural complexity, which would not provide too many advantages from an attacker's perspective, and largely exists to support more effective experimentation and testing. 
+
+2. It could be argued that this system could be used to develop more advanced gradient-based evasion attacks. This is valid, but developing a new attack is much more difficult than simply implementing one. If an attacker was technically competent enough to develop such an attack, it's highly unlikely that they would be dependent on a tool like this to do so.
+
+3. I believe that there is value in providing a reasonably well-written adversarial test harness in an open-source context. 
+
+4. All the hash algorithms that this system currently supports are toy algorithms and should not be used in real-word contexts regardless, save for PDQ. PDQ was developed by Meta, and it's highly likely that they have already internally tested their pipelines using it against attacks more powerful than what this system is capable of producing. 
+
+This repo implements Meta's PDQ algorithm and contains some original PDQ code too, which is licensed under the BSD license. You can find the original implementation [here](https://github.com/facebook/ThreatExchange/tree/main/pdq).
+
+## Overview
+Spectra is a comprehensive adversarial evaluation toolkit for perceptual hash algorithms. Inspired by [Foolbox](https://github.com/bethgelab/foolbox), Spectra makes it easy to benchmark the robustness of perceptual hash pipelines against black and white-box evasion based attacks. It's designed to be easily extensible in order to accomodate new attack strategies and hash algorithms, and also supports a very flexible experiment orchestration pipeline that can be used for quick one-off tests or highly comprehensive experiments alike.
+
+
+## How To Use
+
+You'll probably want to first clone this repo and then look at the code. After you've done this, try running an example experiment through the `run_attacks.py` script like so:
+
+```bash
+git clone https://github.com/nolanmccleary/Spectra.git
+python run_attacks.py -f pdq_attackmode_comparison.yaml
+```
+
+Or any other experiment you desire. You can also write your own, which is the primary purpose of this project. Please note that depending on your hardware, some experiments may take a while to run. 
+
+## Runtime Configuration
+
+You can look inside spectra/config/attack_config.py to view the configuration scheme for experiments and attacks. Very briefly, Spectra is designed to primarily execute at the experiment level. Experiments contain one or more attacks, and also specify the target files used by all attacks that make up the experiment. All other attack configuration info is stored within the attack configuration, and `run_attacks.py` provides overrides for them as well. Please note that in its current state, these overrides are applied throughout the entire scope of the experiment, so explicitly setting the individual experiment configurations is recommended when running larger tests. 
+
+Experiment and attack configurations can be set in three separate ways: 
+1. From a YAML file 
+2. From a dictionary
+3. Directly through the constructor
+
+For most cases, it's generally recommended to use either approach 1 or 3.
+
+The fields for experiment and attack configuration are resolved at the time of experiment execution, meaning that initializing configs with incomplete field data is permitted provided that all fields have been filled appropriately when the experiment is actually run. Some fields also have defaults (i.e. default verbosity is low), and will resolve to them if the field is not explicitly configured or overriden. 
+
+
+## Delta Generation
+
+Spectra is designed to take an input image tensor and create an optimal perturbation delta based on the current attack configuration. That delta is then post-processed according to the attack configuration's settings and added to a copy of the original image to create the adversarial image tensor. The process of generating that delta is performed by an Optimizer instance. Multiple instances are already present in order to facilitate a few different attack strategies (mainly for the sake of comparison) but the stanadardized interface makes it easy to add more depending on what sort of behaviour is desired. Strictly speaking, as long as there is some sort of loss function to define the optimization criteria, the `NES_Optimizer` should work relatively well in non-differentiable contexts. It's clearly overkill in a differentiable situation, but at that point just use Autograd lol. 
+
+
+
+
+
+
+## Contributions
+
+If you have a contribution that you think would make the system better, please open up a pull request. Some things that would be good to implement at some point:
+
+1. More loss function options to support different attack objectives beyond simple gradient ascent. For example, a Carlini Wagner optimization mode. 
+2. A better pipeline for user-specified hash, loss, and acceptance functions that doesn't require adding to the existing source code (i.e. being able to take custom function hooks inside the config instead of a string and mapping it to a function, which is kind of dumb).
+3. Smarter override logic in run_attacks.poy such that you can bind overrides at the level of an individual attack or experiment. Right now they are applied across all experiments, which is kind of dumb.
+4. Add an option to generate an attack artifact that stores all calculated delta tensors. Useful for training some sort of attack network in the future. This would be a really cool project and nobody has done it yet afaik.
+
+
+I might get around to implementing at least the first three of these myself, but at the moment I'm kinda sick of working on this thing, and I have a way more exciting project on the radar that I really wanna get started with. 

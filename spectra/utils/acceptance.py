@@ -13,7 +13,6 @@ def _lpips_acceptance(ao) -> Callable[[torch.Tensor, int], Tuple[bool, bool]]:
         ao.metrics.current_lpips   = ao.lpips_func(ao.input_tensors.working_tensor, tensor)
         ao.metrics.current_l2      = ao.l2_func(ao.input_tensors.working_tensor, tensor)
 
-
         break_loop, accepted = False, False
         if ao.gate is not None and ao.metrics.current_lpips >= ao.gate:
             break_loop = True

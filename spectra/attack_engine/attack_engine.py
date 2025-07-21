@@ -1,6 +1,5 @@
 import json
 import os
-
 from spectra.config import AttackConfig, ExperimentConfig
 from spectra.deltagrad import Optimizer_Config, Delta_Config
 from spectra.deltagrad.utils import anal_clamp
@@ -493,6 +492,8 @@ class Attack_Object:
 
 
     def run_attack(self, input_image_path: str, output_image_path: str) -> Dict[str, Any]:
+        """Run attack on a single image"""
+        
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
