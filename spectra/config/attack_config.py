@@ -9,11 +9,15 @@ from spectra.utils.acceptance import lpips_acceptance, l2_acceptance, step_accep
 
 class HyperparameterConfig(BaseModel):
     """Configuration for attack hyperparameters"""
-    alpha: float = Field(..., gt=0, description="Alpha parameter for perturbations")
+    alpha: Tuple[float, Optional[float], Optional[float]] = Field(
+        ..., description="Alpha value or sweep parameters (start, end, step)"
+    )
     beta: Tuple[float, Optional[float], Optional[float]] = Field(
         ..., description="Beta value or sweep parameters (start, end, step)"
     )
-    step_coeff: float = Field(..., gt=0, description="Step coefficient")
+    step_coeff: Tuple[float, Optional[float], Optional[float]] = Field(
+        ..., description="Step coefficient value or sweep parameters (start, end, step)"
+    )
     scale_factor: Tuple[float, Optional[float], Optional[float]] = Field(
         ..., description="Scale factor value or sweep parameters (start, end, step)"
     )
@@ -219,7 +223,7 @@ class AttackConfig(BaseModel):
         config_dict = self.model_dump()
 
         for key, value in config_dict.items():
-            if key not in ["gate", "quant_func"] and value is None:
+            if key not in ["gate"] and value is None:
                 raise ValueError(f"AttackConfig field '{key}' is None. All required fields must be set before a dump is taken.")
         
         return config_dict

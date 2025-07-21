@@ -65,10 +65,12 @@ class AttackRunConfig:
 
 @dataclass
 class AttackRetSet:
-    curr_delta: torch.Tensor
+    ideal_delta: torch.Tensor
     step_count: int
-    beta: float
-    scale_factor: float
+    ideal_alpha: float
+    ideal_step_coeff: float
+    ideal_beta: float
+    ideal_scale_factor: float
 
 
 
@@ -164,16 +166,18 @@ class Attack_Engine:
             "dhash_hamming_torch": 0,
             "phash_hamming_torch": 0,
             "pdq_hamming_torch": 0,
-            "ahash_hamming_imagehash": 0,
-            "dhash_hamming_imagehash": 0,
-            "pdq_hamming_imagehash": 0,
-            "phash_hamming_imagehash": 0,
+            "ahash_hamming_cannonical": 0,
+            "dhash_hamming_cannonical": 0,
+            "pdq_hamming_cannonical": 0,
+            "phash_hamming_cannonical": 0,
             "ahash_discrepency": 0,
             "dhash_discrepency": 0,
             "phash_discrepency": 0,
             "pdq_discrepency": 0,
             "lpips": 0.0,
             "l2": 0.0,
+            "ideal_step_coeff": 0,
+            "ideal_alpha": 0,
             "ideal_beta": 0,
             "ideal_scale_factor": 0,
             "num_steps": 0
@@ -187,16 +191,18 @@ class Attack_Engine:
             metrics["dhash_hamming_torch"] += int(post_val["dhash_hamming_torch"])
             metrics["pdq_hamming_torch"] += int(post_val["pdq_hamming_torch"])
             metrics["phash_hamming_torch"] += int(post_val["phash_hamming_torch"])
-            metrics["ahash_hamming_imagehash"] += int(post_val["ahash_hamming_imagehash"])
-            metrics["dhash_hamming_imagehash"] += int(post_val["dhash_hamming_imagehash"])
-            metrics["pdq_hamming_imagehash"] += int(post_val["pdq_hamming_imagehash"])
-            metrics["phash_hamming_imagehash"] += int(post_val["phash_hamming_imagehash"])
+            metrics["ahash_hamming_cannonical"] += int(post_val["ahash_hamming_cannonical"])
+            metrics["dhash_hamming_cannonical"] += int(post_val["dhash_hamming_cannonical"])
+            metrics["pdq_hamming_cannonical"] += int(post_val["pdq_hamming_cannonical"])
+            metrics["phash_hamming_cannonical"] += int(post_val["phash_hamming_cannonical"])
             metrics["ahash_discrepency"] += int(post_val["ahash_discrepency"])
             metrics["dhash_discrepency"] += int(post_val["dhash_discrepency"])
             metrics["phash_discrepency"] += int(post_val["phash_discrepency"])
             metrics["pdq_discrepency"] += int(post_val["pdq_discrepency"])
             metrics["lpips"] += float(post_val["lpips"])
             metrics["l2"] += float(post_val["l2"])
+            metrics["ideal_step_coeff"] += float(pre_val["ideal_step_coeff"])
+            metrics["ideal_alpha"] += float(pre_val["ideal_alpha"])
             metrics["ideal_beta"] += float(pre_val["ideal_beta"])
             metrics["ideal_scale_factor"] += float(pre_val["ideal_scale_factor"])
             metrics["num_steps"] += float(pre_val["num_steps"])
@@ -344,8 +350,8 @@ class Attack_Object:
 
     def _setup_hyperparameters_from_config(self, config: AttackConfig) -> None:
         """Setup hyperparameters from HyperparameterConfig object"""
-        self.alpha = config.hyperparameters.alpha
-        self.step_coeff = config.hyperparameters.step_coeff
+        self.alphas = create_sweep(config.hyperparameters.alpha)
+        self.step_coeffs = create_sweep(config.hyperparameters.step_coeff)
         self.betas = create_sweep(config.hyperparameters.beta)
         self.scale_factors = create_sweep(config.hyperparameters.scale_factor)
 
@@ -359,24 +365,12 @@ class Attack_Object:
     def _reset_state(self) -> None:
         """Reset all state variables for a new attack"""
         self.lpips_model = None
-        
-        # Input tensors
         self.input_tensors = InputTensors()
-        
-        # Dimensions
         self.dimensions = Dimensions()
-        
-        # Output tensors
         self.output_tensors = OutputTensors()
-
-        # Metrics
         self.metrics = Metrics(min_steps=self.attack_cycles)
-        
-        # Current state
         self.input_tensors = InputTensors()
         self.dimensions = Dimensions()
-        
-        # Attack state
         self.attack_success = False
         self.prev_step = None
         self.optimizer = None
@@ -431,12 +425,6 @@ class Attack_Object:
 
         # Setup optimizer
         self.optimizer = self.config.get_optimizer(optimizer_config)
-        
-        # Calculate number of perturbations (must be even)
-        self.num_perturbations = self.alpha
-        for k in self.input_tensors.working_tensor.shape:
-            self.num_perturbations *= k
-        self.num_perturbations = (int(self.num_perturbations) // 2) * 2
 
 
     def _apply_delta_scaledown(self, rgb_delta: torch.Tensor) -> None:
@@ -470,40 +458,50 @@ class Attack_Object:
         self.stage_attack(input_image_path)
         self.log("Running attack...\n")
 
-        ret_set = AttackRetSet(None, 0, 0, 0)
+        ret_set = AttackRetSet(None, 0, 0, 0, 0, 0)
 
+        self.log(f"Step coefficient sweep across: {self.step_coeffs}\n")
+        self.log(f"Alpha sweep across: {self.alphas}\n")
         self.log(f"Beta sweep across: {self.betas}\n")
         self.log(f"Perturbation scale factor sweep across: {self.scale_factors}\n")
 
-        for beta in self.betas:
-            for scale_factor in self.scale_factors:
-
-                for rep in range(self.num_reps):
-                    step_count, curr_delta, accepted = self.optimizer.get_delta(
-                        tensor=self.input_tensors.working_tensor,
-                        config=Delta_Config(
-                            step_coeff=self.step_coeff,
-                            num_steps=self.attack_cycles,
-                            perturbation_scale_factor=scale_factor,
-                            num_perturbations=self.num_perturbations,
-                            beta=beta, 
-                            acceptance_func=self.acceptance_func,
-                            vecMin=0.0,
-                            vecMax=1.0
-                        )
-                    )
-                    
-                    if accepted or ret_set.curr_delta is None:  # We get the acceptance best out of our entire sweep space for our output tensor
-                        ret_set.curr_delta = curr_delta
-                        ret_set.step_count = step_count
-                        ret_set.beta = beta
-                        ret_set.scale_factor = scale_factor
-                    
-                    self.log(f"Accepted={accepted}, steps={step_count}, beta={ret_set.beta}, scale={ret_set.scale_factor}")
+        for alpha in self.alphas:
+            num_perturbations = alpha
+            for k in self.input_tensors.working_tensor.shape:
+                num_perturbations *= k
+            num_perturbations = (int(num_perturbations) // 2) * 2
+            
+            for step_coeff in self.step_coeffs:
+                for beta in self.betas:
+                    for scale_factor in self.scale_factors:
+                        for rep in range(self.num_reps):
+                            step_count, curr_delta, accepted = self.optimizer.get_delta(
+                                tensor=self.input_tensors.working_tensor,
+                                config=Delta_Config(
+                                    step_coeff=step_coeff,
+                                    num_steps=self.attack_cycles,
+                                    perturbation_scale_factor=scale_factor,
+                                    num_perturbations=num_perturbations,
+                                    beta=beta, 
+                                    acceptance_func=self.acceptance_func,
+                                    vecMin=0.0,
+                                    vecMax=1.0
+                                )
+                            )
+                            
+                            if accepted or ret_set.ideal_delta is None:  # We get the acceptance best out of our entire sweep space for our output tensor
+                                ret_set.ideal_delta = curr_delta
+                                ret_set.step_count = step_count
+                                ret_set.ideal_beta = beta
+                                ret_set.ideal_scale_factor = scale_factor
+                                ret_set.ideal_step_coeff = step_coeff
+                                ret_set.ideal_alpha = alpha
+                            
+                            self.log(f"Accepted={accepted}, steps={step_count}, beta={ret_set.ideal_beta}, scale={ret_set.ideal_scale_factor}, step_coeff={ret_set.ideal_step_coeff}, alpha={ret_set.ideal_alpha}")
 
 
         ################################ RTQ - FROM HASH SPACE TO IMAGE SPACE #####################
-        output_delta = ret_set.curr_delta.clone()
+        output_delta = ret_set.ideal_delta.clone()
         if output_delta is not None:
 
             ret_delta = output_delta.clone()
@@ -543,7 +541,6 @@ class Attack_Object:
                 self.log(f"Saved attacked image to {output_image_path}")
                 self.log(f"Success status: {self.attack_success}")
 
-
         def null_guard(input):
             if input is None:
                 return "N/A"
@@ -564,8 +561,10 @@ class Attack_Object:
                 "lpips"                 : null_guard(self.metrics.current_lpips),
                 "l2"                    : null_guard(self.metrics.current_l2),
                 "num_steps"             : null_guard(ret_set.step_count),
-                "ideal_scale_factor"    : null_guard(ret_set.scale_factor),
-                "ideal_beta"            : null_guard(ret_set.beta)
+                "ideal_scale_factor"    : null_guard(ret_set.ideal_scale_factor),
+                "ideal_beta"            : null_guard(ret_set.ideal_beta),
+                "ideal_step_coeff"      : null_guard(ret_set.ideal_step_coeff),
+                "ideal_alpha"           : null_guard(ret_set.ideal_alpha)
             },
             "post_validation": post_validation
         }

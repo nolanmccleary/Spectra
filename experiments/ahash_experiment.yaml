@@ -1,6 +1,6 @@
 experiment_name: "ahash_experiment"
-experiment_description: "Comprehensive adversarial attacks on all hash functions"
-experiment_input_dir: "sample_images"
+experiment_description: "Quick AHash test"
+experiment_input_dir: "sample_images3"
 experiment_output_dir: "output"
 engine_verbose: true
 
@@ -14,6 +14,7 @@ attacks:
     attack_cycles: 100
     delta_scaledown: true
     gate: null
+    acceptance_func: "lpips"
     attack_verbose: true
     dry_run: false
     colormode: "grayscale"
@@ -21,12 +22,10 @@ attacks:
     resize_width: 8
     resize_height: 8
     deltagrad_verbose: false
-    quant_func: "noop"
-    lpips_func: null
     hyperparameters:
-      alpha: 2.9
-      beta: [1.0, null, null]
-      step_coeff: 0.01
+      alpha: [2.9, 3.2, 0.05]
+      beta: [0.9, 1.0, 0.01]
+      step_coeff: [0.01, 0.04, 0.01]
       scale_factor: [1.0, null, null]
 
 

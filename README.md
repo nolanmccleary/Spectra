@@ -28,6 +28,13 @@ git clone https://github.com/nolanmccleary/Spectra.git
 python run_attacks.py -f pdq_attackmode_comparison.yaml
 ```
 
+Before you run this, you'll probably need to install some dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+
 Or any other experiment you desire. You can also write your own, which is the primary purpose of this project. Please note that depending on your hardware, some experiments may take a while to run. 
 
 ## Runtime Configuration
@@ -59,7 +66,10 @@ If you have a contribution that you think would improve the project, please open
 
 1. More loss function options to support different attack objectives beyond simple gradient ascent. For example, a Carlini Wagner optimization mode. 
 2. Smarter override logic in run_attacks.py such that you can bind overrides at the level of an individual attack or experiment. Right now they are applied across all experiments, which is kind of dumb.
-3. Add an option to generate an attack artifact that stores all calculated delta tensors. Useful for training some sort of attack network in the future. This would be a really cool project and nobody has done it yet as far as I know.
+3. Add option to average across num_reps when sweeping for ideal hyperparameters such that outlier runs don't skew results.
+4. Randomized perturbation seeding such that more unique deltas are generated between any two runs.
+5. A smarter hyperparameter sweep algorithm.
+6. Add an option to generate an attack artifact that stores all calculated delta tensors. Useful for training some sort of attack network in the future. This would be a really cool project and nobody has done it yet as far as I know.
 
 
 I might get around to implementing some of these at some point, but at the moment I'm kinda sick of working on this thing, and I have a way more exciting project on the radar that I really wanna get started with. 

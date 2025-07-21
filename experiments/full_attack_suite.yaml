@@ -21,9 +21,9 @@ attacks:
     deltagrad_verbose: false
     acceptance_func: "lpips"
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
   - attack_name: "dhash_attack"
@@ -43,9 +43,9 @@ attacks:
     deltagrad_verbose: false
     acceptance_func: "lpips"
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
   - attack_name: "phash_attack"
@@ -65,9 +65,9 @@ attacks:
     deltagrad_verbose: false
     acceptance_func: "lpips"
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
   - attack_name: "pdq_attack"
@@ -87,9 +87,9 @@ attacks:
     deltagrad_verbose: false
     acceptance_func: "lpips"
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
 metadata:

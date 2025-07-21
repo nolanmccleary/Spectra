@@ -18,13 +18,11 @@ attacks:
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
     attack_type: "nes"
-    lpips_func: null
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
   - attack_name: "pdq_attack_nes_signed"
@@ -41,13 +39,11 @@ attacks:
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
     attack_type: "nes_signed"
-    lpips_func: null
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
   - attack_name: "pdq_attack_colinear"
@@ -64,13 +60,11 @@ attacks:
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
     attack_type: "colinear"
-    lpips_func: null
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
   - attack_name: "pdq_attack_gaussian"
@@ -87,13 +81,11 @@ attacks:
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
     attack_type: "gaussian"
-    lpips_func: null
     hyperparameters:
-      alpha: 2.9
+      alpha: [2.9, null, null]
       beta: [1.0, null, null]
-      step_coeff: 0.01
+      step_coeff: [0.01, null, null]
       scale_factor: [1.0, null, null]
 
 
