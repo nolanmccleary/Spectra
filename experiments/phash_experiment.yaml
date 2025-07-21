@@ -1,5 +1,5 @@
 experiment_name: "phash_experiment"
-experiment_description: "Comprehensive adversarial attacks on all hash functions"
+experiment_description: "Comprehensive adversarial attack on phash"
 experiment_input_dir: "sample_images"
 experiment_output_dir: "output"
 
@@ -18,7 +18,7 @@ attacks:
     available_devices: ["cpu", "cuda", "mps"]
     resize_width: 32
     resize_height: 32
-    attack_type: "nes_signed"
+    attack_type: "nes"
     deltagrad_verbose: false
     acceptance_func: "lpips"
     hyperparameters:
