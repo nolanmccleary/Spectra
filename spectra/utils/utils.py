@@ -1,6 +1,6 @@
+import json
 import numpy as np
 import torch
-from spectra.utils.acceptance import create_acceptance as _create_acceptance
 from typing import Tuple, Optional
 
 def get_rgb_tensor(image_object, rgb_device):
@@ -9,16 +9,6 @@ def get_rgb_tensor(image_object, rgb_device):
     arr = np.array(image_object).astype(np.float32) / 255.0
     tensor = torch.from_numpy(arr).permute(2, 0, 1).to(rgb_device)
     return tensor
-
-
-def generate_quant(quant_str):
-    if quant_str == "noop":
-        return noop
-    else:
-        quant_table = {"byte_quantize" : byte_quantize}
-        if quant_str not in quant_table.keys():
-            raise ValueError(f"'{quant_str}' not in set of valid acceptance function handles: {quant_table.keys()}")
-    return quant_table[quant_str]
 
 
 '''
@@ -45,13 +35,6 @@ def l2_delta(a, b):
     return torch.sqrt(torch.mean((a - b).pow(2))).item()
 
 
-def generate_acceptance(self, acceptance_str):
-    """Compatibility wrapper – delegates to spectra.utils.acceptance.create_acceptance.
-    Keeps the original public symbol so existing import paths remain valid.
-    """
-    return _create_acceptance(self, acceptance_str)
-
-
 def noop(tensor):
     return tensor
 
@@ -64,3 +47,20 @@ def create_sweep(hp_tuple: Tuple[float, Optional[float], Optional[float]]):
     else:
         ret = [start + step * i for i in range(int((stop + step - start) / step + 1E-6))]
     return ret
+
+
+def make_json_serializable(obj):
+    if isinstance(obj, dict):
+        return {k: make_json_serializable(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [make_json_serializable(v) for v in obj]
+    elif callable(obj):
+        return getattr(obj, '__name__', str(obj))
+    elif hasattr(obj, '__class__') and obj.__class__.__name__ == 'Optimizer':
+        return obj.__class__.__name__
+    else:
+        try:
+            json.dumps(obj)
+            return obj
+        except TypeError:
+            return str(obj)

@@ -55,12 +55,11 @@ Spectra is designed to take an input image tensor and create an optimal perturba
 
 ## Contributions
 
-If you have a contribution that you think would make the system better, please open up a pull request. Some things that would be good to implement at some point:
+If you have a contribution that you think would improve the project, please open up a pull request. Some things that would be good to implement at some point:
 
 1. More loss function options to support different attack objectives beyond simple gradient ascent. For example, a Carlini Wagner optimization mode. 
-2. A better pipeline for user-specified hash, loss, and acceptance functions that doesn't require adding to the existing source code (i.e. being able to take custom function hooks inside the config instead of a string and mapping it to a function, which is kind of dumb).
-3. Smarter override logic in run_attacks.poy such that you can bind overrides at the level of an individual attack or experiment. Right now they are applied across all experiments, which is kind of dumb.
-4. Add an option to generate an attack artifact that stores all calculated delta tensors. Useful for training some sort of attack network in the future. This would be a really cool project and nobody has done it yet afaik.
+2. Smarter override logic in run_attacks.py such that you can bind overrides at the level of an individual attack or experiment. Right now they are applied across all experiments, which is kind of dumb.
+3. Add an option to generate an attack artifact that stores all calculated delta tensors. Useful for training some sort of attack network in the future. This would be a really cool project and nobody has done it yet as far as I know.
 
 
-I might get around to implementing at least the first three of these myself, but at the moment I'm kinda sick of working on this thing, and I have a way more exciting project on the radar that I really wanna get started with. 
+I might get around to implementing some of these at some point, but at the moment I'm kinda sick of working on this thing, and I have a way more exciting project on the radar that I really wanna get started with. 

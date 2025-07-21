@@ -9,6 +9,7 @@ attacks:
     hamming_threshold: 24
     device: "cpu"
     num_reps: 1
+    attack_type: "nes"
     attack_cycles: 100
     delta_scaledown: true
     gate: null
@@ -19,8 +20,6 @@ attacks:
     resize_height: 8
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
-    lpips_func: null
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
@@ -32,6 +31,7 @@ attacks:
     hamming_threshold: 24
     device: "cpu"
     num_reps: 1
+    attack_type: "nes"
     attack_cycles: 100
     delta_scaledown: true
     gate: null
@@ -42,8 +42,6 @@ attacks:
     resize_height: 8
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
-    lpips_func: null
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
@@ -55,6 +53,7 @@ attacks:
     hamming_threshold: 28
     device: "cpu"
     num_reps: 1
+    attack_type: "nes"
     attack_cycles: 200
     delta_scaledown: true
     gate: null
@@ -65,8 +64,6 @@ attacks:
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
-    lpips_func: null
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]
@@ -78,6 +75,7 @@ attacks:
     hamming_threshold: 80
     device: "cpu"
     num_reps: 1
+    attack_type: "nes"
     attack_cycles: 200
     delta_scaledown: true
     gate: null
@@ -88,8 +86,6 @@ attacks:
     resize_height: 32
     deltagrad_verbose: false
     acceptance_func: "lpips"
-    quant_func: "noop"
-    lpips_func: null
     hyperparameters:
       alpha: 2.9
       beta: [1.0, null, null]

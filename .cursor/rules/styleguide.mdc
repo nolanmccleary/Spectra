@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-Please use snake case for all variable and function names you add. Use snake case with the first letter of each word capitalized for class names. 

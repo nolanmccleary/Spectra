@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-You must always ask for permission to modify the code inside deltagrad/

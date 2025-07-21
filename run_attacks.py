@@ -70,6 +70,7 @@ def run_attacks(args):
             'force_gate': args.gate,
             'force_acceptance_func': args.acceptance_func,
             'force_quant_func': args.quant_func,
+            'force_loss_func': args.loss_func,
             'force_lpips_func': args.lpips_func,
             'force_hyperparameters_alpha': args.alpha,
             'force_hyperparameters_beta': args.beta,
@@ -132,6 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('-gate', type=float, default=None, help='Override gate in config')
     parser.add_argument('-acceptance_func', type=str, default=None, help='Override acceptance function in config')
     parser.add_argument('-quant_func', type=str, default=None, help='Override quantization function in config')
+    parser.add_argument('-loss_func', type=str, default=None, help='Override loss function in config')
     parser.add_argument('-lpips_func', type=str, default=None, help='Override lpips function in config')
     parser.add_argument('-alpha', type=float, default=None, help='Override alpha in hyperparameters in config')
     parser.add_argument('-beta', type=parse_float_or_tuple, default=None, help='Override beta in hyperparameters in config')

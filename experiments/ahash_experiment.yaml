@@ -21,7 +21,6 @@ attacks:
     resize_width: 8
     resize_height: 8
     deltagrad_verbose: false
-    acceptance_func: "lpips"
     quant_func: "noop"
     lpips_func: null
     hyperparameters:

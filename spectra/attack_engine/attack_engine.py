@@ -6,13 +6,12 @@ from spectra.deltagrad.utils import anal_clamp
 from spectra.validation import image_compare
 from pathlib import Path
 from PIL import Image
-from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, bool_tensor_delta, l2_delta, generate_acceptance, generate_conversion, generate_inversion, generate_quant, create_sweep
+from spectra.utils import get_rgb_tensor, tensor_resize, to_hex, l2_delta, generate_conversion, generate_inversion, create_sweep, make_json_serializable
 import torch
 from torchvision.transforms import ToPILImage
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Dict, Any, Optional
-from spectra.lpips import ALEX_IMPORT, ALEX_ONNX
 
 # Constants
 SUPPORTED_IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
@@ -110,7 +109,7 @@ class Attack_Engine:
         # Direct parameter overrides
         direct_params = ['device', 'dry_run',
                         'attack_cycles', 'num_reps', 'gate', 'acceptance_func', 
-                        'quant_func', 'lpips_func', 'attack_verbose', 'deltagrad_verbose', 
+                        'quant_func', 'lpips_func', 'attack_verbose', 'deltagrad_verbose', 'loss_func',
                         'hamming_threshold', 'attack_type', 'attack_name', 'hash_function', 'delta_scaledown',
                         'resize_width', 'resize_height', 'colormode', 'available_devices']
         
@@ -258,7 +257,7 @@ class Attack_Engine:
         }
 
         with open(json_filename, 'w') as f:
-            json.dump(self.attack_log, f, indent=4)
+            json.dump(make_json_serializable(self.attack_log), f, indent=4)
     
         self.log(f"Attack log saved to {json_filename}")
 
@@ -300,9 +299,9 @@ class Attack_Object:
         self._setup_hash_params()
         
         # Function generators
-        self.acceptance_func = generate_acceptance(self, config.acceptance_func)
-        self.quant_func = generate_quant(config.quant_func)
-        self.loss_func = bool_tensor_delta
+        self.acceptance_func = self.config.get_acceptance_func(self)
+        self.quant_func = self.config.get_quant_func()
+        self.loss_func = self.config.get_loss_func()
         self.quant_func_device = self.device
         self.loss_func_device = self.device
 
@@ -312,7 +311,7 @@ class Attack_Object:
         self.resize_flag = self.resize_height > 0 and self.resize_width > 0
         
         # LPIPS setup
-        self._setup_lpips()
+        self.lpips_func = self.config.get_lpips_func(self)
         self.l2_func = l2_delta
         
         # Hyperparameters
@@ -341,32 +340,6 @@ class Attack_Object:
             self.log(f"Warning, current hash function '{self.config.hash_function}' does not support the chosen device {self.device}. Defaulting to CPU for hash function calls; this will add overhead.")
             self.hash_func_device = "cpu"
 
-
-    def _setup_lpips(self) -> None:
-        """Setup LPIPS function for perceptual similarity"""
-        lpips_func = self.config.lpips_func
-        
-        if lpips_func is not None:
-            # Handle both function objects and string names
-            if callable(lpips_func):
-                self.lpips_func = lpips_func
-            
-            else:
-                self.lpips_model = None
-                
-                if lpips_func == 'alex_import':
-                    self.lpips_model = ALEX_IMPORT(self.device)
-
-                elif lpips_func == 'alex_onnx':
-                    self.lpips_model = ALEX_ONNX(self.device)
-
-                else:
-                    raise KeyError("Error! Invalid LPIPS function selection")
-        else:
-            self.log("\nNo LPIPS selected! Defaulting to ALEXNET import!\n")
-            self.lpips_model = ALEX_IMPORT(self.device)
-        
-        self.lpips_func = self.lpips_model.get_lpips
 
 
     def _setup_hyperparameters_from_config(self, config: AttackConfig) -> None:
