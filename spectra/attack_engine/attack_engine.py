@@ -80,33 +80,33 @@ class Attack_Engine:
     def __init__(self, verbose: str):
         self.attacks: Dict[str, AttackRunConfig] = {}
         self.attack_log: Dict[str, Dict[str, Any]] = {}
-        self.experiment = None
+        self.experiment_configs: List[ExperimentConfig] = []
+        self.current_experiment = None
 
-
-    def log(self, msg: str) -> None:
+    def log(self, experiment_index: int, msg: str) -> None:
         """Log message if verbose mode is enabled"""
-        if self.experiment.engine_verbose == "on":
+        if self.experiment_configs[experiment_index].engine_verbose == "on":
             print(msg)
 
 
-    def load_experiment_from_config(self, config: ExperimentConfig, **overrides) -> None:
+    def load_experiment_from_config(self, experiment_index: int, config: ExperimentConfig, **overrides) -> None:
         """Load an experiment from a configuration object with optional parameter overrides"""
-        self.experiment = config
+        self.experiment_configs.append(config)
         
         direct_params = ['experiment_name', 'experiment_description', 'experiment_input_dir', 'experiment_output_dir', 'engine_verbose']
         for param in direct_params:
             override_key = f'force_{param}'
             if override_key in overrides and overrides[override_key] is not None:
-                self.log(f"Overriding {param} to {overrides[override_key]}")
-                setattr(self.experiment, param, overrides[override_key])
+                self.log(experiment_index, f"Overriding {param} to {overrides[override_key]}")
+                setattr(self.experiment_configs[experiment_index], param, overrides[override_key])
 
         for attack_config in config.attacks:
             # Apply attack-level overrides
-            self._apply_overrides_to_config(attack_config, overrides)
-            self.add_attack_from_config(attack_config)
+            self._apply_overrides_to_config(experiment_index, attack_config, overrides)
+            self.add_attack_from_config(experiment_index, attack_config)
 
 
-    def _apply_overrides_to_config(self, config: AttackConfig, overrides: dict) -> None:
+    def _apply_overrides_to_config(self, experiment_index: int, config: AttackConfig, overrides: dict) -> None:
         """Apply overrides to attack configuration"""
         # Direct parameter overrides
         direct_params = ['device', 'dry_run',
@@ -118,7 +118,7 @@ class Attack_Engine:
         for param in direct_params:
             override_key = f'force_{param}'
             if override_key in overrides and overrides[override_key] is not None:
-                self.log(f"Overriding {param} to {overrides[override_key]}")
+                self.log(experiment_index, f"Overriding {param} to {overrides[override_key]}")
                 setattr(config, param, overrides[override_key])
         
         # Hyperparameter overrides
@@ -133,12 +133,12 @@ class Attack_Engine:
                 setattr(config.hyperparameters, hyperparam, overrides[override_key])
 
 
-    def add_attack_from_config(self, config: AttackConfig) -> None:
+    def add_attack_from_config(self, experiment_index: int, config: AttackConfig) -> None:
         """Register a new attack configuration using AttackConfig object with optional verbosity and device overrides"""
-        assert self.experiment is not None, "Experiment not loaded"
+        assert self.experiment_configs[experiment_index] is not None, "Experiment not loaded"
         
-        self.log(f"Experiment input dir: {self.experiment.experiment_input_dir}")
-        input_path = Path(str(self.experiment.experiment_input_dir))
+        self.log(experiment_index, f"Experiment input dir: {self.experiment_configs[experiment_index].experiment_input_dir}")
+        input_path = Path(str(self.experiment_configs[experiment_index].experiment_input_dir))
         images = [
             f.name for f in input_path.iterdir() 
             if f.suffix.lower() in SUPPORTED_IMAGE_EXTENSIONS
@@ -148,8 +148,8 @@ class Attack_Engine:
         
         self.attacks[config.attack_name] = AttackRunConfig(
             images=images,
-            input_dir=self.experiment.experiment_input_dir,
-            output_dir=self.experiment.experiment_output_dir,
+            input_dir=self.experiment_configs[experiment_index].experiment_input_dir,
+            output_dir=self.experiment_configs[experiment_index].experiment_output_dir,
             attack_object=attack_object
         )
 
@@ -211,21 +211,24 @@ class Attack_Engine:
         return {f"average_{k}": v / count for k, v in metrics.items()}
 
 
-    def run_attacks(self) -> None:
+    def run_experiment(self, experiment_index: int) -> None:
         """Execute all registered attacks and save results"""
-        assert self.experiment is not None, "Experiment not loaded"
+        self.current_experiment = experiment_index
+        
+        assert self.experiment_configs[self.current_experiment] is not None, "Experiment not loaded"
+        
         
         experiment_date = datetime.now().strftime("%Y-%m-%d")
         experiment_time = datetime.now().strftime("%H:%M:%S")
 
         # Create output directories
-        experiment_dir = f"{self.experiment.experiment_output_dir}/{self.experiment.experiment_name}_{str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))}"
+        experiment_dir = f"{self.experiment_configs[self.current_experiment].experiment_output_dir}/{self.experiment_configs[self.current_experiment].experiment_name}_{str(datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))}"
         images_dir = f"{experiment_dir}/images"
         results_dir = f"{experiment_dir}/results"
         os.makedirs(images_dir, exist_ok=True)
         os.makedirs(results_dir, exist_ok=True)
 
-        self.attack_log = {"experiment_config": self.experiment.check_and_dump(), "attacks": {}}
+        self.attack_log = {"experiment_config": self.experiment_configs[self.current_experiment].check_and_dump(), "attacks": {}}
         
         for attack_tag, config in self.attacks.items():
             self.attack_log["attacks"][attack_tag] = {
@@ -236,7 +239,7 @@ class Attack_Engine:
             
             # Run attack on each image
             for image_name in config.images:
-                input_path = f"{self.experiment.experiment_input_dir}/{image_name}"
+                input_path = f"{self.experiment_configs[self.current_experiment].experiment_input_dir}/{image_name}"
                 output_path = f"{images_dir}/{attack_tag}_{image_name}"
                 result = config.attack_object.run_attack(input_path, output_path)
                 self.attack_log["attacks"][attack_tag]["per_image_results"][image_name] = result
@@ -255,8 +258,8 @@ class Attack_Engine:
 
         
         self.attack_log["metadata"] = {
-            "experiment_name": self.experiment.experiment_name,
-            "experiment_description": self.experiment.experiment_description,
+            "experiment_name": self.experiment_configs[self.current_experiment].experiment_name,
+            "experiment_description": self.experiment_configs[self.current_experiment].experiment_description,
             "experiment_date": experiment_date,
             "experiment_time": experiment_time,
             "experiment_runtime": str(experiment_runtime)
@@ -265,7 +268,7 @@ class Attack_Engine:
         with open(json_filename, 'w') as f:
             json.dump(make_json_serializable(self.attack_log), f, indent=4)
     
-        self.log(f"Attack log saved to {json_filename}")
+        self.log(self.current_experiment, f"Attack log saved to {json_filename}")
 
 
 

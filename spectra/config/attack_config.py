@@ -62,7 +62,7 @@ class AttackConfig(BaseModel):
     hyperparameters: Optional[HyperparameterConfig] = Field(default=None, description="Hyperparameters")
     
     # LPIPS (optional) - can be string name or function object
-    lpips_func: Optional[Union[str, Any]] = Field(default='alex_import', description="LPIPS function name or function object")
+    lpips_func: Optional[Union[str, Any]] = Field(default='alex_onnx', description="LPIPS function name or function object")
     loss_func: Optional[Union[str, Any]] = Field(default=bool_tensor_delta, description="Loss function name or function object")
     quant_func: Optional[Union[str, Any]] = Field(default=noop, description="Quantization function name or function object")
 
@@ -165,7 +165,7 @@ class AttackConfig(BaseModel):
 
                 elif self.lpips_func == 'alex_onnx':
                     ao.log("Using ALEXNET ONNX for LPIPS!")
-                    ao.lpips_model = ALEX_ONNX(ao.device)
+                    ao.lpips_model = ALEX_ONNX("lpips_alex.onnx", ao.device)
             
                 ret = ao.lpips_model.get_lpips
             

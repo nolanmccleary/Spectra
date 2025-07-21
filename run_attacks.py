@@ -93,17 +93,17 @@ def run_attacks(args):
         # Assumes all boolean arguments formatted through store_true
         overrides = {k: v for k, v in overrides.items() if v is not None and v is not False}
         
-        exp = engine.load_experiment_from_config(experiment_config, **overrides)
+        exp = engine.load_experiment_from_config(i, experiment_config, **overrides)
 
-        print(f"Experiment: {engine.experiment.experiment_name}")
-        if engine.experiment.experiment_description:
-            print(f"Description: {engine.experiment.experiment_description}")
-        print(f"Number of attacks: {len(engine.experiment.attacks)}")
+        print(f"Experiment: {engine.experiment_configs[i].experiment_name}")
+        if engine.experiment_configs[i].experiment_description:
+            print(f"Description: {engine.experiment_configs[i].experiment_description}")
+        print(f"Number of attacks: {len(engine.experiment_configs[i].attacks)}")
 
         # Run attacks for this experiment
         print(f"\nStarting attacks...")
         start_time = time.time()
-        engine.run_attacks()
+        engine.run_experiment(i)
         end_time = time.time()
         print(f"\nExperiment completed in {end_time - start_time:.2f} seconds")
             

@@ -10,7 +10,7 @@ attacks:
     hamming_threshold: 24
     device: "cpu"
     num_reps: 1
-    attack_type: "colinear"
+    attack_type: "nes"
     attack_cycles: 100
     delta_scaledown: true
     gate: null
