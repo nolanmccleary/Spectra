@@ -1,7 +1,8 @@
 from pydantic import BaseModel, Field, validator
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from spectra.deltagrad.optimizer.optimizer import NES_Adam_Optimizer, NES_Adamax_Optimizer
 from spectra.hashes import generate_ahash_batched, generate_ahash_rgb_batched, generate_dhash_batched, generate_dhash_rgb_batched, generate_phash_batched, generate_phash_rgb_batched, generate_pdq_batched
-from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Signed_Optimizer, Colinear_Optimizer, Optimizer_Config, Gaussian_Optimizer
+from spectra.deltagrad import Optimizer, NES_Optimizer, NES_Adam_Optimizer, NES_Adamax_Optimizer, NES_Signed_Optimizer, Colinear_Optimizer, Optimizer_Config, Gaussian_Optimizer
 from spectra.lpips import ALEX_IMPORT, ALEX_ONNX
 from spectra.utils import bool_tensor_delta, noop, byte_quantize
 from spectra.utils.acceptance import lpips_acceptance, l2_acceptance, step_acceptance, latching_acceptance, dummy_acceptance
@@ -112,7 +113,9 @@ class AttackConfig(BaseModel):
                     "nes": NES_Optimizer,
                     "nes_signed": NES_Signed_Optimizer,
                     "colinear": Colinear_Optimizer,
-                    "gaussian": Gaussian_Optimizer
+                    "gaussian": Gaussian_Optimizer,
+                    "nes_adamax": NES_Adamax_Optimizer,
+                    "nes_adam": NES_Adam_Optimizer
                 }
                 
                 if self.attack_type not in optimizer_map.keys():

@@ -245,3 +245,14 @@ This project was based on the following work:
   year={2019}
 }
 ```
+
+**Adam and Adamax optimizers**
+```bibtex
+@article{kingma2014adam,
+  title={Adam: A method for stochastic optimization},
+  author={Kingma, Diederik P and Ba, Jimmy},
+  journal={arXiv preprint arXiv:1412.6980},
+  year={2014},
+  url={https://arxiv.org/pdf/1412.6980}
+}
+```
